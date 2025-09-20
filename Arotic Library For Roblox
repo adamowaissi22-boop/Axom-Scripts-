@@ -7,23 +7,44 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local Arotic = {}
 Arotic.__index = Arotic
 Arotic.Theme = {Background=Color3.fromRGB(25,25,25),Primary=Color3.fromRGB(35,35,35),Accent=Color3.fromRGB(200,50,50),Text=Color3.fromRGB(255,255,255)}
+Arotic.Elements = {}
+
+function Arotic:Load()
+    local loading = Instance.new("Frame", PlayerGui)
+    loading.Size = UDim2.new(0,200,0,50)
+    loading.Position = UDim2.new(0.5,-100,0.5,-25)
+    loading.BackgroundColor3 = Color3.fromRGB(35,35,35)
+    loading.BackgroundTransparency = 0.6
+    local uic = Instance.new("UICorner", loading)
+    uic.CornerRadius = UDim.new(0,12)
+    local label = Instance.new("TextLabel", loading)
+    label.Size = UDim2.new(1,0,1,0)
+    label.BackgroundTransparency = 1
+    label.Text = "Loading..."
+    label.TextColor3 = Color3.fromRGB(255,255,255)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 18
+    label.TextScaled = true
+    TweenService:Create(loading, TweenInfo.new(1.5,Enum.EasingStyle.Bounce), {Size=UDim2.new(0,220,0,60)}):Play()
+    wait(7)
+    loading:Destroy()
+end
 
 function Arotic:CreateWindow(options)
     local Window = {}
     Window.Tabs = {}
-    local gui = Instance.new("ScreenGui")
+    local gui = Instance.new("ScreenGui", PlayerGui)
     gui.Name = options.Title or "Arotic"
-    gui.Parent = PlayerGui
     gui.ResetOnSpawn = false
-    local frame = Instance.new("Frame")
+    local frame = Instance.new("Frame", gui)
     frame.Size = options.Size or UDim2.new(0,500,0,400)
     frame.Position = options.Position or UDim2.new(0.5,-250,0.5,-200)
     frame.BackgroundColor3 = self.Theme.Background
     frame.AnchorPoint = Vector2.new(0.5,0.5)
-    frame.Parent = gui
-    local uicorner = Instance.new("UICorner",frame)
+    frame.BackgroundTransparency = 0.6
+    local uicorner = Instance.new("UICorner", frame)
     uicorner.CornerRadius = UDim.new(0,12)
-    local titleLabel = Instance.new("TextLabel")
+    local titleLabel = Instance.new("TextLabel", frame)
     titleLabel.Size = UDim2.new(1,0,0,30)
     titleLabel.Position = UDim2.new(0,0,0,0)
     titleLabel.BackgroundTransparency = 1
@@ -31,8 +52,7 @@ function Arotic:CreateWindow(options)
     titleLabel.TextColor3 = self.Theme.Text
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextSize = 18
-    titleLabel.Parent = frame
-    local closeBtn = Instance.new("TextButton")
+    local closeBtn = Instance.new("TextButton", frame)
     closeBtn.Size = UDim2.new(0,30,0,30)
     closeBtn.Position = UDim2.new(1,-35,0,0)
     closeBtn.BackgroundColor3 = self.Theme.Accent
@@ -40,10 +60,10 @@ function Arotic:CreateWindow(options)
     closeBtn.TextColor3 = self.Theme.Text
     closeBtn.Font = Enum.Font.GothamBold
     closeBtn.TextSize = 18
-    closeBtn.Parent = frame
-    local uiclose = Instance.new("UICorner",closeBtn)
+    local uiclose = Instance.new("UICorner", closeBtn)
     uiclose.CornerRadius = UDim.new(0,6)
-    local hideBtn = Instance.new("TextButton")
+    closeBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
+    local hideBtn = Instance.new("TextButton", frame)
     hideBtn.Size = UDim2.new(0,40,0,30)
     hideBtn.Position = UDim2.new(0,5,0,0)
     hideBtn.BackgroundColor3 = self.Theme.Primary
@@ -51,39 +71,17 @@ function Arotic:CreateWindow(options)
     hideBtn.TextColor3 = self.Theme.Text
     hideBtn.Font = Enum.Font.GothamBold
     hideBtn.TextSize = 20
-    hideBtn.Parent = frame
-    local uihide = Instance.new("UICorner",hideBtn)
+    local uihide = Instance.new("UICorner", hideBtn)
     uihide.CornerRadius = UDim.new(0,6)
-    local showBtn = Instance.new("TextButton")
-    showBtn.Size = UDim2.new(0,60,0,30)
-    showBtn.Position = UDim2.new(0.5,-30,0,5)
-    showBtn.BackgroundColor3 = self.Theme.Primary
-    showBtn.Text = "Show"
-    showBtn.TextColor3 = self.Theme.Text
-    showBtn.Font = Enum.Font.GothamBold
-    showBtn.TextSize = 16
-    showBtn.Visible = false
-    showBtn.Parent = PlayerGui
-    local uishow = Instance.new("UICorner",showBtn)
-    uishow.CornerRadius = UDim.new(0,6)
-    hideBtn.MouseButton1Click:Connect(function()
-        frame.Visible = false
-        showBtn.Visible = true
-    end)
-    showBtn.MouseButton1Click:Connect(function()
-        frame.Visible = true
-        showBtn.Visible = false
-    end)
-    local tabBar = Instance.new("Frame")
+    hideBtn.MouseButton1Click:Connect(function() frame.Visible=false end)
+    local tabBar = Instance.new("Frame", frame)
     tabBar.Size = UDim2.new(1,0,0,30)
     tabBar.Position = UDim2.new(0,0,0,30)
     tabBar.BackgroundTransparency = 1
-    tabBar.Parent = frame
-    local contentFrame = Instance.new("Frame")
+    local contentFrame = Instance.new("Frame", frame)
     contentFrame.Size = UDim2.new(1,-10,1,-70)
     contentFrame.Position = UDim2.new(0,5,0,60)
     contentFrame.BackgroundTransparency = 1
-    contentFrame.Parent = frame
     local dragging,dragInput,dragStart,startPos
     local function update(input)
         local delta = input.Position - dragStart
@@ -94,24 +92,19 @@ function Arotic:CreateWindow(options)
             dragging=true
             dragStart=input.Position
             startPos=frame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState==Enum.UserInputState.End then dragging=false end
-            end)
+            input.Changed:Connect(function() if input.UserInputState==Enum.UserInputState.End then dragging=false end end)
         end
     end)
-    frame.InputChanged:Connect(function(input)
-        if input.UserInputType==Enum.UserInputType.MouseMovement then dragInput=input end
-    end)
-    UserInputService.InputChanged:Connect(function(input)
-        if input==dragInput and dragging then update(input) end
-    end)
+    frame.InputChanged:Connect(function(input) if input.UserInputType==Enum.UserInputType.MouseMovement then dragInput=input end end)
+    UserInputService.InputChanged:Connect(function(input) if input==dragInput and dragging then update(input) end end)
     Window.Frame = frame
     Window.Gui = gui
-    Window.ShowButton = showBtn
     Window.TabBar = tabBar
     Window.ContentFrame = contentFrame
     setmetatable(Window,Window)
     setmetatable(Window,{__index=Arotic})
+    self:Load()
+    Window:CreateSettings()
     return Window
 end
 
@@ -119,27 +112,26 @@ function Arotic:CreateTab(name)
     local Tab = {}
     Tab.Sections = {}
     Tab.Name = name
-    local tabButton = Instance.new("TextButton")
+    local tabButton = Instance.new("TextButton", self.TabBar)
     tabButton.Size = UDim2.new(0,100,1,0)
     tabButton.Position = UDim2.new(#self.Tabs*100,0,0,0)
-    tabButton.BackgroundTransparency=1
-    tabButton.Text=name
-    tabButton.TextColor3=Arotic.Theme.Text
-    tabButton.Font=Enum.Font.Gotham
-    tabButton.TextSize=16
-    tabButton.Parent=self.TabBar
+    tabButton.BackgroundTransparency = 1
+    tabButton.Text = name
+    tabButton.TextColor3 = self.Theme.Text
+    tabButton.Font = Enum.Font.Gotham
+    tabButton.TextSize = 16
     tabButton.MouseButton1Click:Connect(function()
-        for _,t in pairs(self.Tabs) do if t.ContentFrame then t.ContentFrame.Visible=false end end
-        if Tab.ContentFrame then Tab.ContentFrame.Visible=true end
+        for _,t in pairs(self.Tabs) do if t.ContentFrame then TweenService:Create(t.ContentFrame,TweenInfo.new(0.3),{BackgroundTransparency=1}):Play() t.ContentFrame.Visible=false end end
+        Tab.ContentFrame.Visible = true
+        TweenService:Create(Tab.ContentFrame,TweenInfo.new(0.3),{BackgroundTransparency=0}):Play()
     end)
-    local contentFrame = Instance.new("Frame")
-    contentFrame.Size=UDim2.new(1,0,1,0)
-    contentFrame.Position=UDim2.new(0,0,0,0)
-    contentFrame.BackgroundTransparency=1
-    contentFrame.Parent=self.ContentFrame
-    contentFrame.Visible=(#self.Tabs==0)
-    Tab.ContentFrame=contentFrame
-    Tab.Frame=contentFrame
+    local contentFrame = Instance.new("Frame", self.ContentFrame)
+    contentFrame.Size = UDim2.new(1,0,1,0)
+    contentFrame.Position = UDim2.new(0,0,0,0)
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.Visible = (#self.Tabs==0)
+    Tab.ContentFrame = contentFrame
+    Tab.Frame = contentFrame
     setmetatable(Tab,Tab)
     setmetatable(Tab,{__index=Arotic})
     table.insert(self.Tabs,Tab)
@@ -150,15 +142,13 @@ function Arotic:CreateSection(name)
     local Section = {}
     Section.Elements = {}
     Section.Name = name
-    local sectionFrame = Instance.new("Frame")
-    sectionFrame.Size=UDim2.new(1,0,0,100)
-    sectionFrame.BackgroundTransparency=1
-    sectionFrame.LayoutOrder=#self.Sections*110
-    sectionFrame.Parent=self.Frame
-    local layout = Instance.new("UIListLayout",sectionFrame)
-    layout.Padding=UDim.new(0,10)
-    layout.FillDirection=Enum.FillDirection.Vertical
-    Section.SectionFrame=sectionFrame
+    local sectionFrame = Instance.new("Frame", self.Frame)
+    sectionFrame.Size = UDim2.new(1,0,0,100)
+    sectionFrame.BackgroundTransparency = 0.6
+    local layout = Instance.new("UIListLayout", sectionFrame)
+    layout.Padding = UDim.new(0,10)
+    layout.FillDirection = Enum.FillDirection.Vertical
+    Section.SectionFrame = sectionFrame
     setmetatable(Section,Section)
     setmetatable(Section,{__index=Arotic})
     table.insert(self.Sections,Section)
@@ -166,129 +156,163 @@ function Arotic:CreateSection(name)
 end
 
 function Arotic:CreateButton(name,callback)
-    local btn=Instance.new("TextButton")
-    btn.Size=UDim2.new(1,-20,0,40)
-    btn.BackgroundColor3=Arotic.Theme.Primary
-    btn.Text=name
-    btn.TextColor3=Arotic.Theme.Text
-    btn.Font=Enum.Font.Gotham
-    btn.TextSize=16
-    btn.Parent=self.SectionFrame
-    local uicorner=Instance.new("UICorner",btn)
-    uicorner.CornerRadius=UDim.new(0,8)
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(btn,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(55,55,55)}):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        TweenService:Create(btn,TweenInfo.new(0.2),{BackgroundColor3=Arotic.Theme.Primary}):Play()
-    end)
+    local btn = Instance.new("TextButton", self.SectionFrame)
+    btn.Size = UDim2.new(1,-20,0,40)
+    btn.BackgroundColor3 = self.Theme.Primary
+    btn.Text = name
+    btn.TextColor3 = self.Theme.Text
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 16
+    local uicorner = Instance.new("UICorner", btn)
+    uicorner.CornerRadius = UDim.new(0,8)
+    btn.MouseEnter:Connect(function() TweenService:Create(btn,TweenInfo.new(0.2),{BackgroundColor3=Color3.fromRGB(55,55,55)}):Play() end)
+    btn.MouseLeave:Connect(function() TweenService:Create(btn,TweenInfo.new(0.2),{BackgroundColor3=self.Theme.Primary}):Play() end)
     btn.MouseButton1Click:Connect(callback)
     table.insert(self.Elements,btn)
 end
 
 function Arotic:CreateToggle(name,callback)
-    local frame=Instance.new("Frame")
-    frame.Size=UDim2.new(1,-20,0,40)
-    frame.BackgroundColor3=Arotic.Theme.Primary
-    frame.Parent=self.SectionFrame
-    local uicorner=Instance.new("UICorner",frame)
-    uicorner.CornerRadius=UDim.new(0,8)
-    local label=Instance.new("TextLabel")
-    label.Text=name
-    label.Size=UDim2.new(0.7,0,1,0)
-    label.Position=UDim2.new(0,10,0,0)
-    label.BackgroundTransparency=1
-    label.TextColor3=Arotic.Theme.Text
-    label.Font=Enum.Font.Gotham
-    label.TextSize=16
-    label.Parent=frame
-    local toggleBtn=Instance.new("TextButton")
-    toggleBtn.Size=UDim2.new(0,40,0,25)
-    toggleBtn.Position=UDim2.new(1,-50,0.5,-12)
-    toggleBtn.BackgroundColor3=Arotic.Theme.Accent
-    toggleBtn.Text=""
-    toggleBtn.Parent=frame
-    local uic=Instance.new("UICorner",toggleBtn)
-    uic.CornerRadius=UDim.new(0,12)
-    local toggled=false
+    local frame = Instance.new("Frame", self.SectionFrame)
+    frame.Size = UDim2.new(1,-20,0,40)
+    frame.BackgroundColor3 = self.Theme.Primary
+    local uicorner = Instance.new("UICorner", frame)
+    uicorner.CornerRadius = UDim.new(0,12)
+    local label = Instance.new("TextLabel", frame)
+    label.Text = name
+    label.Size = UDim2.new(0.7,0,1,0)
+    label.Position = UDim2.new(0,10,0,0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = self.Theme.Text
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 16
+    local toggleBtn = Instance.new("TextButton", frame)
+    toggleBtn.Size = UDim2.new(0,40,0,25)
+    toggleBtn.Position = UDim2.new(1,-50,0.5,-12)
+    toggleBtn.BackgroundColor3 = self.Theme.Accent
+    toggleBtn.Text = ""
+    local uic = Instance.new("UICorner", toggleBtn)
+    uic.CornerRadius = UDim.new(0,12)
+    local toggled = false
     toggleBtn.MouseButton1Click:Connect(function()
-        toggled=not toggled
-        toggleBtn.BackgroundColor3=toggled and Color3.fromRGB(50,200,50) or Arotic.Theme.Accent
+        toggled = not toggled
+        toggleBtn.BackgroundColor3 = toggled and Color3.fromRGB(50,200,50) or self.Theme.Accent
         callback(toggled)
     end)
     table.insert(self.Elements,frame)
 end
 
 function Arotic:CreateTextbox(name,placeholder,callback)
-    local frame=Instance.new("Frame")
-    frame.Size=UDim2.new(1,-20,0,40)
-    frame.BackgroundColor3=Arotic.Theme.Primary
-    frame.Parent=self.SectionFrame
-    local uicorner=Instance.new("UICorner",frame)
-    uicorner.CornerRadius=UDim.new(0,8)
-    local label=Instance.new("TextLabel")
-    label.Text=name
-    label.Size=UDim2.new(0.4,0,1,0)
-    label.Position=UDim2.new(0,10,0,0)
-    label.BackgroundTransparency=1
-    label.TextColor3=Arotic.Theme.Text
-    label.Font=Enum.Font.Gotham
-    label.TextSize=16
-    label.TextXAlignment=Enum.TextXAlignment.Left
-    label.Parent=frame
-    local box=Instance.new("TextBox")
-    box.Size=UDim2.new(0.55,0,0.7,0)
-    box.Position=UDim2.new(0.45,0,0.15,0)
-    box.BackgroundColor3=Color3.fromRGB(55,55,55)
-    box.TextColor3=Arotic.Theme.Text
-    box.PlaceholderText=placeholder or ""
-    box.Font=Enum.Font.Gotham
-    box.TextSize=16
-    box.ClearTextOnFocus=false
-    box.Parent=frame
-    local boxCorner=Instance.new("UICorner",box)
-    boxCorner.CornerRadius=UDim.new(0,6)
-    box.FocusLost:Connect(function(enterPressed)
-        if enterPressed then callback(box.Text) end
-    end)
+    local frame = Instance.new("Frame", self.SectionFrame)
+    frame.Size = UDim2.new(1,-20,0,40)
+    frame.BackgroundColor3 = self.Theme.Primary
+    local uicorner = Instance.new("UICorner", frame)
+    uicorner.CornerRadius = UDim.new(0,8)
+    local label = Instance.new("TextLabel", frame)
+    label.Text = name
+    label.Size = UDim2.new(0.4,0,1,0)
+    label.Position = UDim2.new(0,10,0,0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = self.Theme.Text
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 16
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    local box = Instance.new("TextBox", frame)
+    box.Size = UDim2.new(0.55,0,0.7,0)
+    box.Position = UDim2.new(0.45,0,0.15,0)
+    box.BackgroundColor3 = Color3.fromRGB(55,55,55)
+    box.TextColor3 = self.Theme.Text
+    box.PlaceholderText = placeholder or ""
+    box.Font = Enum.Font.Gotham
+    box.TextSize = 16
+    box.ClearTextOnFocus = false
+    local boxCorner = Instance.new("UICorner", box)
+    boxCorner.CornerRadius = UDim.new(0,6)
+    box.FocusLost:Connect(function(enterPressed) if enterPressed then callback(box.Text) end end)
     table.insert(self.Elements,frame)
+end
+
+function Arotic:CreateSlider(name,min,max,callback)
+    local frame = Instance.new("Frame", self.SectionFrame)
+    frame.Size = UDim2.new(1,-20,0,40)
+    frame.BackgroundColor3 = self.Theme.Primary
+    local uicorner = Instance.new("UICorner", frame)
+    uicorner.CornerRadius = UDim.new(0,8)
+    local label = Instance.new("TextLabel", frame)
+    label.Text = name
+    label.Size = UDim2.new(0.4,0,1,0)
+    label.Position = UDim2.new(0,10,0,0)
+    label.BackgroundTransparency = 1
+    label.TextColor3 = self.Theme.Text
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 16
+    local sliderFrame = Instance.new("Frame", frame)
+    sliderFrame.Size = UDim2.new(0.5,0,0.3,0)
+    sliderFrame.Position = UDim2.new(0.45,0,0.35,0)
+    sliderFrame.BackgroundColor3 = Color3.fromRGB(55,55,55)
+    local sliderCorner = Instance.new("UICorner", sliderFrame)
+    sliderCorner.CornerRadius = UDim.new(0,6)
+    local dragging=false
+    sliderFrame.InputBegan:Connect(function(input) if input.UserInputType==Enum.UserInputType.MouseButton1 then dragging=true end end)
+    sliderFrame.InputEnded:Connect(function(input) if input.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end end)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
+            local pos = math.clamp((input.Position.X - sliderFrame.AbsolutePosition.X)/sliderFrame.AbsoluteSize.X,0,1)
+            sliderFrame.Size = UDim2.new(pos,0,0.3,0)
+            callback(min + (max-min)*pos)
+        end
+    end)
+    table.insert(self.Elements, frame)
 end
 
 function Arotic:CreateSettings()
     local tab = self:CreateTab("Settings")
     local section = tab:CreateSection("General")
-    section:CreateButton("Reset Position",function()
-        self.Frame.Position = UDim2.new(0.5,-250,0.5,-200)
-    end)
+    section:CreateButton("Reset Position",function() self.Frame.Position=UDim2.new(0.5,-250,0.5,-200) end)
     section:CreateButton("Theme 1",function()
-        Arotic.Theme.Background=Color3.fromRGB(25,25,25)
-        Arotic.Theme.Primary=Color3.fromRGB(35,35,35)
-        Arotic.Theme.Accent=Color3.fromRGB(200,50,50)
+        self.Theme.Background = Color3.fromRGB(25,25,25)
+        self.Theme.Primary = Color3.fromRGB(35,35,35)
+        self.Theme.Accent = Color3.fromRGB(200,50,50)
+        for _,e in pairs(self.Elements) do
+            if e:IsA("Frame") or e:IsA("TextButton") or e:IsA("TextLabel") then
+                e.BackgroundColor3 = self.Theme.Primary
+                e.TextColor3 = self.Theme.Text
+            end
+        end
+        self.Frame.BackgroundColor3 = self.Theme.Background
     end)
     section:CreateButton("Theme 2",function()
-        Arotic.Theme.Background=Color3.fromRGB(20,20,40)
-        Arotic.Theme.Primary=Color3.fromRGB(40,40,60)
-        Arotic.Theme.Accent=Color3.fromRGB(50,150,255)
+        self.Theme.Background = Color3.fromRGB(20,20,40)
+        self.Theme.Primary = Color3.fromRGB(40,40,60)
+        self.Theme.Accent = Color3.fromRGB(50,150,255)
+        for _,e in pairs(self.Elements) do
+            if e:IsA("Frame") or e:IsA("TextButton") or e:IsA("TextLabel") then
+                e.BackgroundColor3 = self.Theme.Primary
+                e.TextColor3 = self.Theme.Text
+            end
+        end
+        self.Frame.BackgroundColor3 = self.Theme.Background
     end)
     section:CreateButton("Theme 3",function()
-        Arotic.Theme.Background=Color3.fromRGB(30,20,20)
-        Arotic.Theme.Primary=Color3.fromRGB(50,35,35)
-        Arotic.Theme.Accent=Color3.fromRGB(255,100,50)
+        self.Theme.Background = Color3.fromRGB(30,20,20)
+        self.Theme.Primary = Color3.fromRGB(50,35,35)
+        self.Theme.Accent = Color3.fromRGB(255,100,50)
+        for _,e in pairs(self.Elements) do
+            if e:IsA("Frame") or e:IsA("TextButton") or e:IsA("TextLabel") then
+                e.BackgroundColor3 = self.Theme.Primary
+                e.TextColor3 = self.Theme.Text
+            end
+        end
+        self.Frame.BackgroundColor3 = self.Theme.Background
     end)
     section:CreateToggle("Glow Buttons",function(state)
         for _,e in pairs(self.Elements) do
             if e:IsA("TextButton") then
-                if state then
-                    e.TextStrokeTransparency=0
-                    e.TextStrokeColor3=Color3.fromRGB(255,255,255)
-                else
-                    e.TextStrokeTransparency=1
-                end
+                e.TextStrokeTransparency = state and 0 or 1
             end
         end
     end)
     section:CreateTextbox("UI Scale","1-2",function(txt)
-        local scale=tonumber(txt)
+        local scale = tonumber(txt)
         if scale then
             self.Frame.Size = UDim2.new(0,500*scale,0,400*scale)
         end
