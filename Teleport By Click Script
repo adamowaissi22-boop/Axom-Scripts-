@@ -1,0 +1,119 @@
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local rainbowText = Instance.new("TextLabel")
+rainbowText.Size = UDim2.new(1, 0, 0, 50)
+rainbowText.Position = UDim2.new(0, 0, 0, 0)
+rainbowText.BackgroundTransparency = 1
+rainbowText.Text = "Teleport by click script - Made by Axom"
+rainbowText.TextScaled = true
+rainbowText.Font = Enum.Font.SourceSansBold
+rainbowText.Parent = game:GetService("CoreGui")
+
+task.spawn(function()
+    for _ = 1, 70 do
+        rainbowText.TextColor3 = Color3.fromHSV((tick() % 5) / 5, 1, 1)
+        wait(0.1)
+    end
+    rainbowText:Destroy()
+end)
+
+local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+ScreenGui.Name = "TeleportClickGUI"
+
+local Main = Instance.new("Frame")
+Main.Size = UDim2.new(0, 260, 0, 170)
+Main.Position = UDim2.new(0.4, 0, 0.35, 0)
+Main.BackgroundColor3 = Color3.fromHSV(math.random(), 1, 1)
+Main.BorderSizePixel = 0
+Main.Active = true
+Main.Draggable = true
+Main.Parent = ScreenGui
+
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 30)
+Header.Position = UDim2.new(0, 0, 0, 0)
+Header.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Header.Parent = Main
+
+local Title = Instance.new("TextLabel")
+Title.Text = "Axom Teleport by Click"
+Title.Size = UDim2.new(0.85, 0, 1, 0)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.Font = Enum.Font.GothamBold
+Title.TextScaled = true
+Title.BackgroundTransparency = 1
+Title.TextColor3 = Color3.fromHSV(math.random(), 1, 1)
+Title.Parent = Header
+
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0.15, 0, 1, 0)
+CloseBtn.Position = UDim2.new(0.85, 0, 0, 0)
+CloseBtn.Text = "X"
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.TextScaled = true
+CloseBtn.TextColor3 = Color3.new(1, 1, 1)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+CloseBtn.BorderSizePixel = 0
+CloseBtn.Parent = Header
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+local TeleportBtn = Instance.new("TextButton")
+TeleportBtn.Size = UDim2.new(0.8, 0, 0, 40)
+TeleportBtn.Position = UDim2.new(0.1, 0, 0.45, 0)
+TeleportBtn.Text = "Teleport by click tool"
+TeleportBtn.BackgroundColor3 = Color3.fromHSV(math.random(), 1, 1)
+TeleportBtn.TextColor3 = Color3.new(1, 1, 1)
+TeleportBtn.Font = Enum.Font.GothamBold
+TeleportBtn.TextScaled = true
+TeleportBtn.Parent = Main
+
+local DropBtn = Instance.new("TextButton")
+DropBtn.Size = UDim2.new(0.8, 0, 0, 40)
+DropBtn.Position = UDim2.new(0.1, 0, 0.72, 0)
+DropBtn.Text = "Drop tool"
+DropBtn.BackgroundColor3 = Color3.fromHSV(math.random(), 1, 1)
+DropBtn.TextColor3 = Color3.new(1, 1, 1)
+DropBtn.Font = Enum.Font.GothamBold
+DropBtn.TextScaled = true
+DropBtn.Parent = Main
+
+TeleportBtn.MouseButton1Click:Connect(function()
+    if LocalPlayer.Backpack:FindFirstChild("ClickTeleportTool") then return end
+
+    local Tool = Instance.new("Tool")
+    Tool.Name = "ClickTeleportTool"
+    Tool.RequiresHandle = false
+    Tool.CanBeDropped = false
+    Tool.Parent = LocalPlayer.Backpack
+
+    Tool.Activated:Connect(function()
+        local mouse = LocalPlayer:GetMouse()
+        if mouse then
+            local position = mouse.Hit.Position
+            LocalPlayer.Character:MoveTo(position)
+        end
+    end)
+end)
+
+DropBtn.MouseButton1Click:Connect(function()
+    local tool = LocalPlayer.Backpack:FindFirstChild("ClickTeleportTool")
+    if tool then
+        tool:Destroy()
+    end
+end)
+
+task.spawn(function()
+    while true do
+        local color = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+        Main.BackgroundColor3 = color
+        Title.TextColor3 = color
+        TeleportBtn.BackgroundColor3 = color
+        DropBtn.BackgroundColor3 = color
+        wait(0.1)
+    end
+end)
