@@ -1,0 +1,19 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ChatEvent = Instance.new("RemoteEvent")
+ChatEvent.Name = "ChatEvent"
+ChatEvent.Parent = ReplicatedStorage
+
+local badWords = {
+    "fuck","fuk","fock","fukkk","fucking","motherfucker","mf","nigga","nigger","niga","zangi",
+    "dick","dik","d1ck","cock","kok","ك","كس","زب","طيز","ايري","اير","أيري","إيري","شرموطة","قحبة","قحبه","شرموطه","گس"
+}
+
+ChatEvent.OnServerEvent:Connect(function(player, message)
+    local lowerMsg = message:lower()
+    for _, word in ipairs(badWords) do
+        if string.find(lowerMsg, word) then
+            message = string.gsub(message, word, string.rep("*", #word))
+        end
+    end
+    ChatEvent:FireAllClients(player.Name, message, player.UserId)
+end)
