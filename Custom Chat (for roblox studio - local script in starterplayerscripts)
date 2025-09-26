@@ -78,7 +78,7 @@ SendButton.Parent = Frame
 
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Size = UDim2.new(0, 60, 0, 60)
-ToggleButton.Position = UDim2.new(0, 10, 1, -70)
+ToggleButton.Position = UDim2.new(0, 10, 1, -180)
 ToggleButton.Text = "💬"
 ToggleButton.Font = Enum.Font.GothamBold
 ToggleButton.TextSize = 28
@@ -137,7 +137,7 @@ local function addMessage(playerName, message, userId)
     end
     local player = Players:FindFirstChild(playerName)
     if player and player.Character and player.Character:FindFirstChild("Head") then
-        ChatService:Chat(player.Character.Head, message, Enum.ChatColor.White)
+        game:GetService("Chat"):Chat(player.Character.Head, message, Enum.ChatColor.White)
     end
 end
 
