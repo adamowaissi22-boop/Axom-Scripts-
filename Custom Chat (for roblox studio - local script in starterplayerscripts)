@@ -1,0 +1,163 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local ChatEvent = ReplicatedStorage:WaitForChild("ChatEvent")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0, 350, 0, 300)
+Frame.Position = UDim2.new(0, 10, 0, 10)
+Frame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Frame.BackgroundTransparency = 0.4
+Frame.Visible = false
+Frame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner", Frame)
+UICorner.CornerRadius = UDim.new(0, 12)
+
+local UIGradient = Instance.new("UIGradient", Frame)
+UIGradient.Color = ColorSequence.new{
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 50, 100))
+}
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "Chat 💬"
+Title.Font = Enum.Font.GothamBlack
+Title.TextScaled = true
+Title.TextColor3 = Color3.fromRGB(0, 255, 255)
+Title.Parent = Frame
+
+local MadeBy = Instance.new("TextLabel")
+MadeBy.Size = UDim2.new(1, 0, 0, 20)
+MadeBy.Position = UDim2.new(0, 0, 1, -20)
+MadeBy.BackgroundTransparency = 1
+MadeBy.Text = "Made By Axom"
+MadeBy.Font = Enum.Font.Gotham
+MadeBy.TextSize = 12
+MadeBy.TextColor3 = Color3.fromRGB(200, 200, 200)
+MadeBy.Parent = Frame
+
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Size = UDim2.new(1, -10, 1, -90)
+ScrollingFrame.Position = UDim2.new(0, 5, 0, 45)
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.ScrollBarThickness = 6
+ScrollingFrame.Parent = Frame
+
+local UIListLayout = Instance.new("UIListLayout", ScrollingFrame)
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Padding = UDim.new(0, 4)
+
+local TextBox = Instance.new("TextBox")
+TextBox.Size = UDim2.new(0.7, -10, 0, 30)
+TextBox.Position = UDim2.new(0, 5, 1, -40)
+TextBox.PlaceholderText = "Type message..."
+TextBox.Font = Enum.Font.Gotham
+TextBox.TextSize = 16
+TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextBox.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+TextBox.Parent = Frame
+
+local SendButton = Instance.new("TextButton")
+SendButton.Size = UDim2.new(0.3, -10, 0, 30)
+SendButton.Position = UDim2.new(0.7, 5, 1, -40)
+SendButton.Text = "Send"
+SendButton.Font = Enum.Font.GothamBold
+SendButton.TextSize = 16
+SendButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+SendButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+SendButton.Parent = Frame
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)
+ToggleButton.Position = UDim2.new(0, 10, 1, -70)
+ToggleButton.Text = "💬"
+ToggleButton.Font = Enum.Font.GothamBold
+ToggleButton.TextSize = 28
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ToggleButton.Parent = ScreenGui
+
+local Badge = Instance.new("TextLabel")
+Badge.Size = UDim2.new(0, 24, 0, 24)
+Badge.Position = UDim2.new(1, -15, 0, -5)
+Badge.AnchorPoint = Vector2.new(1, 0)
+Badge.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+Badge.TextColor3 = Color3.fromRGB(255, 255, 255)
+Badge.Text = "0"
+Badge.Font = Enum.Font.GothamBold
+Badge.TextScaled = true
+Badge.Visible = false
+Badge.Parent = ToggleButton
+Instance.new("UICorner", Badge).CornerRadius = UDim.new(1, 0)
+
+local isOpen = false
+local notifCount = 0
+
+local function toggleChat()
+    isOpen = not isOpen
+    if isOpen then
+        Frame.Visible = true
+        TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Position = UDim2.new(0, 10, 0, 10)}):Play()
+        notifCount = 0
+        Badge.Text = "0"
+        Badge.Visible = false
+    else
+        TweenService:Create(Frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Position = UDim2.new(-1, -400, 0, 10)}):Play()
+        task.wait(0.4)
+        Frame.Visible = false
+    end
+end
+
+ToggleButton.MouseButton1Click:Connect(toggleChat)
+
+local function addMessage(playerName, message, userId)
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, -10, 0, 20)
+    textLabel.BackgroundTransparency = 1
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    textLabel.Font = Enum.Font.Gotham
+    textLabel.TextSize = 16
+    textLabel.TextColor3 = Color3.fromHSV((userId % 255) / 255, 0.8, 1)
+    textLabel.Text = playerName .. ": " .. message
+    textLabel.Parent = ScrollingFrame
+    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
+    if not isOpen then
+        notifCount += 1
+        Badge.Text = tostring(notifCount)
+        Badge.Visible = true
+    end
+    local player = Players:FindFirstChild(playerName)
+    if player and player.Character and player.Character:FindFirstChild("Head") then
+        local billboard = Instance.new("BillboardGui")
+        billboard.Adornee = player.Character.Head
+        billboard.Size = UDim2.new(0, 200, 0, 50)
+        billboard.StudsOffset = Vector3.new(0, 3, 0)
+        billboard.Parent = player.Character.Head
+        local msgLabel = Instance.new("TextLabel")
+        msgLabel.Size = UDim2.new(1, 0, 1, 0)
+        msgLabel.BackgroundTransparency = 1
+        msgLabel.Text = message
+        msgLabel.Font = Enum.Font.GothamBold
+        msgLabel.TextScaled = true
+        msgLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        msgLabel.Parent = billboard
+        game:GetService("Debris"):AddItem(billboard, 4)
+    end
+end
+
+SendButton.MouseButton1Click:Connect(function()
+    if TextBox.Text ~= "" then
+        ChatEvent:FireServer(TextBox.Text)
+        TextBox.Text = ""
+    end
+end)
+
+ChatEvent.OnClientEvent:Connect(addMessage)
