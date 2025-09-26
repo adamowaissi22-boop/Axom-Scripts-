@@ -3,6 +3,9 @@ local MainUI
 local Tabs = {}
 local CurrentTab
 local Elements = {}
+local Dragging = false
+local DragStart
+local StartPos
 
 local function CreateUI()
 	local ScreenGui = Instance.new("ScreenGui")
@@ -12,16 +15,16 @@ local function CreateUI()
 	ScreenGui.Parent = game:GetService("CoreGui")
 
 	local MainFrame = Instance.new("Frame")
-	MainFrame.Size = UDim2.new(0, 300, 0, 400)
-	MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
-	MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+	MainFrame.Size = UDim2.new(0, 420, 0, 520)
+	MainFrame.Position = UDim2.new(0.5, -210, 0.5, -260)
+	MainFrame.BackgroundColor3 = Color3.fromRGB(28, 28, 32)
 	MainFrame.BorderSizePixel = 0
 	MainFrame.ClipsDescendants = true
 	MainFrame.Parent = ScreenGui
 
 	local Header = Instance.new("Frame")
-	Header.Size = UDim2.new(1, 0, 0, 30)
-	Header.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+	Header.Size = UDim2.new(1, 0, 0, 36)
+	Header.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
 	Header.BorderSizePixel = 0
 	Header.Parent = MainFrame
 
@@ -31,18 +34,18 @@ local function CreateUI()
 	Title.BackgroundTransparency = 1
 	Title.Text = "AroticUi"
 	Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Title.TextSize = 14
+	Title.TextSize = 16
 	Title.Font = Enum.Font.GothamBold
 	Title.Parent = Header
 
 	local CloseBtn = Instance.new("TextButton")
-	CloseBtn.Size = UDim2.new(0, 20, 0, 20)
-	CloseBtn.Position = UDim2.new(1, -25, 0, 5)
+	CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+	CloseBtn.Position = UDim2.new(1, -29, 0, 6)
 	CloseBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
 	CloseBtn.BorderSizePixel = 0
 	CloseBtn.Text = "X"
 	CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	CloseBtn.TextSize = 12
+	CloseBtn.TextSize = 14
 	CloseBtn.Font = Enum.Font.GothamBold
 	CloseBtn.Parent = Header
 
@@ -50,46 +53,40 @@ local function CreateUI()
 		ScreenGui:Destroy()
 	end)
 
-	local dragging = false
-	local dragStart
-	local startPos
-
-	local function updateDrag(input)
-		if dragging then
-			local delta = input.Position - dragStart
-			MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-		end
-	end
-
 	Header.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			dragging = true
-			dragStart = input.Position
-			startPos = MainFrame.Position
-			game:GetService("UserInputService").InputChanged:Connect(updateDrag)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 and AroticUi.Draggable then
+			Dragging = true
+			DragStart = input.Position
+			StartPos = MainFrame.Position
+			game:GetService("UserInputService").InputChanged:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseMovement and Dragging then
+					local delta = input.Position - DragStart
+					MainFrame.Position = UDim2.new(StartPos.X.Scale, StartPos.X.Offset + delta.X, StartPos.Y.Scale, StartPos.Y.Offset + delta.Y)
+				end
+			end)
 		end
 	end)
 
 	Header.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 then
-			dragging = false
+			Dragging = false
 		end
 	end)
 
 	local TabHolder = Instance.new("ScrollingFrame")
-	TabHolder.Size = UDim2.new(0, 80, 1, -30)
-	TabHolder.Position = UDim2.new(0, 0, 0, 30)
+	TabHolder.Size = UDim2.new(0, 100, 1, -36)
+	TabHolder.Position = UDim2.new(0, 0, 0, 36)
 	TabHolder.BackgroundTransparency = 1
 	TabHolder.BorderSizePixel = 0
-	TabHolder.CanvasSize = UDim2.new(0, 0, 0, #Tabs * 35)
-	TabHolder.ScrollBarThickness = 5
+	TabHolder.CanvasSize = UDim2.new(0, 0, 0, 0)
+	TabHolder.ScrollBarThickness = 6
 	TabHolder.ScrollBarImageColor3 = Color3.fromRGB(50, 50, 55)
 	TabHolder.Parent = MainFrame
 
 	local ContentHolder = Instance.new("Frame")
-	ContentHolder.Size = UDim2.new(0, 220, 1, -30)
-	ContentHolder.Position = UDim2.new(0, 80, 0, 30)
-	ContentHolder.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+	ContentHolder.Size = UDim2.new(0, 320, 1, -36)
+	ContentHolder.Position = UDim2.new(0, 100, 0, 36)
+	ContentHolder.BackgroundColor3 = Color3.fromRGB(33, 33, 38)
 	ContentHolder.BorderSizePixel = 0
 	ContentHolder.Parent = MainFrame
 
@@ -104,24 +101,16 @@ end
 function AroticUi:CreateTab(Name)
 	if not MainUI then CreateUI() end
 	local TabButton = Instance.new("TextButton")
-	TabButton.Size = UDim2.new(1, -5, 0, 30)
-	TabButton.Position = UDim2.new(0, 2.5, 0, #Tabs * 35)
-	TabButton.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+	TabButton.Size = UDim2.new(1, -5, 0, 36)
+	TabButton.Position = UDim2.new(0, 2.5, 0, #Tabs * 42)
+	TabButton.BackgroundColor3 = Color3.fromRGB(38, 38, 43)
 	TabButton.BorderSizePixel = 0
 	TabButton.Text = Name
-	TabButton.TextColor3 = Color3.fromRGB(220, 220, 220)
-	TabButton.TextSize = 13
+	TabButton.TextColor3 = Color3.fromRGB(200, 200, 200)
+	TabButton.TextSize = 14
 	TabButton.Font = Enum.Font.Gotham
+	TabButton.AutoButtonColor = false
 	TabButton.Parent = MainUI.TabHolder
-
-	TabButton.MouseButton1Click:Connect(function()
-		for _, tab in pairs(Tabs) do
-			tab.Button.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-			tab.Content.Visible = false
-		end
-		TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
-		CurrentTab.Content.Visible = true
-	end)
 
 	local TabContent = Instance.new("Frame")
 	TabContent.Size = UDim2.new(1, 0, 1, 0)
@@ -130,11 +119,12 @@ function AroticUi:CreateTab(Name)
 	TabContent.Parent = MainUI.ContentHolder
 
 	local ScrollingContent = Instance.new("ScrollingFrame")
-	ScrollingContent.Size = UDim2.new(1, 0, 1, 0)
+	ScrollingContent.Size = UDim2.new(1, -6, 1, -6)
+	ScrollingContent.Position = UDim2.new(0, 3, 0, 3)
 	ScrollingContent.BackgroundTransparency = 1
 	ScrollingContent.BorderSizePixel = 0
 	ScrollingContent.CanvasSize = UDim2.new(0, 0, 0, 0)
-	ScrollingContent.ScrollBarThickness = 4
+	ScrollingContent.ScrollBarThickness = 5
 	ScrollingContent.ScrollBarImageColor3 = Color3.fromRGB(60, 60, 65)
 	ScrollingContent.Parent = TabContent
 
@@ -145,102 +135,140 @@ function AroticUi:CreateTab(Name)
 		NextY = 0
 	}
 
+	TabButton.MouseButton1Click:Connect(function()
+		if CurrentTab then
+			CurrentTab.Button.BackgroundColor3 = Color3.fromRGB(38, 38, 43)
+			CurrentTab.Content:TweenPosition(UDim2.new(0, -320, 0, 0), "Out", "Quart", 0.3, true)
+			task.delay(0.3, function()
+				if CurrentTab then
+					CurrentTab.Content.Visible = false
+				end
+			end)
+		end
+		TabButton.BackgroundColor3 = Color3.fromRGB(48, 48, 53)
+		TabContent.Visible = true
+		TabContent.Position = UDim2.new(0, 320, 0, 0)
+		TabContent:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quart", 0.3, true)
+		CurrentTab = TabData
+	end)
+
 	if #Tabs == 0 then
-		TabButton.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+		TabButton.BackgroundColor3 = Color3.fromRGB(48, 48, 53)
 		TabContent.Visible = true
 		CurrentTab = TabData
 	end
 
 	table.insert(Tabs, TabData)
-	MainUI.TabHolder.CanvasSize = UDim2.new(0, 0, 0, #Tabs * 35)
+	MainUI.TabHolder.CanvasSize = UDim2.new(0, 0, 0, #Tabs * 42)
 	return TabData
 end
 
 function AroticUi:CreateButton(Tab, Name, Callback)
 	local Button = Instance.new("TextButton")
-	Button.Size = UDim2.new(1, -10, 0, 30)
-	Button.Position = UDim2.new(0, 5, 0, Tab.NextY)
-	Button.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+	Button.Size = UDim2.new(1, -12, 0, 36)
+	Button.Position = UDim2.new(0, 6, 0, Tab.NextY)
+	Button.BackgroundColor3 = Color3.fromRGB(48, 48, 53)
 	Button.BorderSizePixel = 0
 	Button.Text = Name
 	Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-	Button.TextSize = 13
+	Button.TextSize = 14
 	Button.Font = Enum.Font.GothamBold
+	Button.AutoButtonColor = false
 	Button.Parent = Tab.ScrollingContent
 
-	Button.MouseButton1Click:Connect(Callback)
+	Button.MouseEnter:Connect(function()
+		Button:TweenSize(UDim2.new(1, -8, 0, 32), "Out", "Quart", 0.1, true)
+	end)
 
-	Tab.NextY = Tab.NextY + 35
+	Button.MouseLeave:Connect(function()
+		Button:TweenSize(UDim2.new(1, -12, 0, 36), "Out", "Quart", 0.1, true)
+	end)
+
+	Button.MouseButton1Click:Connect(function()
+		Button.BackgroundColor3 = Color3.fromRGB(58, 58, 63)
+		task.delay(0.1, function()
+			Button.BackgroundColor3 = Color3.fromRGB(48, 48, 53)
+			if Callback then Callback() end
+		end)
+	end)
+
+	Tab.NextY = Tab.NextY + 42
 	Tab.ScrollingContent.CanvasSize = UDim2.new(0, 0, 0, Tab.NextY)
 	return Button
 end
 
 function AroticUi:CreateTextBox(Tab, Name, Default, Callback)
 	local Frame = Instance.new("Frame")
-	Frame.Size = UDim2.new(1, -10, 0, 30)
-	Frame.Position = UDim2.new(0, 5, 0, Tab.NextY)
-	Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+	Frame.Size = UDim2.new(1, -12, 0, 36)
+	Frame.Position = UDim2.new(0, 6, 0, Tab.NextY)
+	Frame.BackgroundColor3 = Color3.fromRGB(43, 43, 48)
 	Frame.BorderSizePixel = 0
 	Frame.Parent = Tab.ScrollingContent
 
 	local Label = Instance.new("TextLabel")
-	Label.Size = UDim2.new(0, 100, 1, 0)
+	Label.Size = UDim2.new(0, 120, 1, 0)
 	Label.BackgroundTransparency = 1
 	Label.Text = Name
 	Label.TextColor3 = Color3.fromRGB(220, 220, 220)
-	Label.TextSize = 13
+	Label.TextSize = 14
 	Label.Font = Enum.Font.Gotham
 	Label.Parent = Frame
 
 	local TextBox = Instance.new("TextBox")
-	TextBox.Size = UDim2.new(0, 100, 1, -4)
-	TextBox.Position = UDim2.new(1, -105, 0, 2)
-	TextBox.BackgroundColor3 = Color3.fromRGB(55, 55, 60)
+	TextBox.Size = UDim2.new(0, 140, 1, -4)
+	TextBox.Position = UDim2.new(1, -145, 0, 2)
+	TextBox.BackgroundColor3 = Color3.fromRGB(53, 53, 58)
 	TextBox.BorderSizePixel = 0
 	TextBox.Text = Default or ""
 	TextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-	TextBox.TextSize = 13
+	TextBox.TextSize = 14
 	TextBox.Font = Enum.Font.Gotham
+	TextBox.ClearTextOnFocus = false
 	TextBox.Parent = Frame
 
+	TextBox.Focused:Connect(function()
+		TextBox:TweenPosition(UDim2.new(1, -140, 0, 0), "Out", "Quart", 0.15, true)
+	end)
+
 	TextBox.FocusLost:Connect(function(enterPressed)
+		TextBox:TweenPosition(UDim2.new(1, -145, 0, 2), "Out", "Quart", 0.15, true)
 		if enterPressed or not game:GetService("UserInputService"):GetFocusedTextBox() then
 			if Callback then Callback(TextBox.Text) end
 		end
 	end)
 
-	Tab.NextY = Tab.NextY + 35
+	Tab.NextY = Tab.NextY + 42
 	Tab.ScrollingContent.CanvasSize = UDim2.new(0, 0, 0, Tab.NextY)
 	return TextBox
 end
 
 function AroticUi:CreateToggle(Tab, Name, Default, Callback)
 	local Frame = Instance.new("Frame")
-	Frame.Size = UDim2.new(1, -10, 0, 30)
-	Frame.Position = UDim2.new(0, 5, 0, Tab.NextY)
-	Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+	Frame.Size = UDim2.new(1, -12, 0, 36)
+	Frame.Position = UDim2.new(0, 6, 0, Tab.NextY)
+	Frame.BackgroundColor3 = Color3.fromRGB(43, 43, 48)
 	Frame.BorderSizePixel = 0
 	Frame.Parent = Tab.ScrollingContent
 
 	local Label = Instance.new("TextLabel")
-	Label.Size = UDim2.new(1, -50, 1, 0)
+	Label.Size = UDim2.new(1, -60, 1, 0)
 	Label.BackgroundTransparency = 1
 	Label.Text = Name
 	Label.TextColor3 = Color3.fromRGB(220, 220, 220)
-	Label.TextSize = 13
+	Label.TextSize = 14
 	Label.Font = Enum.Font.Gotham
 	Label.Parent = Frame
 
 	local ToggleFrame = Instance.new("Frame")
-	ToggleFrame.Size = UDim2.new(0, 40, 0, 20)
-	ToggleFrame.Position = UDim2.new(1, -45, 0, 5)
-	ToggleFrame.BackgroundColor3 = Default and Color3.fromRGB(60, 200, 100) or Color3.fromRGB(60, 60, 70)
+	ToggleFrame.Size = UDim2.new(0, 48, 0, 24)
+	ToggleFrame.Position = UDim2.new(1, -54, 0, 6)
+	ToggleFrame.BackgroundColor3 = Default and Color3.fromRGB(50, 180, 100) or Color3.fromRGB(55, 55, 60)
 	ToggleFrame.BorderSizePixel = 0
 	ToggleFrame.Parent = Frame
 
 	local ToggleCircle = Instance.new("Frame")
-	ToggleCircle.Size = UDim2.new(0, 16, 0, 16)
-	ToggleCircle.Position = UDim2.new(Default and 1 or 0, Default and -18 or 2, 0, 2)
+	ToggleCircle.Size = UDim2.new(0, 20, 0, 20)
+	ToggleCircle.Position = UDim2.new(Default and 1 or 0, Default and -22 or 2, 0, 2)
 	ToggleCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	ToggleCircle.BorderSizePixel = 0
 	ToggleCircle.Parent = ToggleFrame
@@ -249,15 +277,15 @@ function AroticUi:CreateToggle(Tab, Name, Default, Callback)
 
 	local function UpdateToggle()
 		Toggled = not Toggled
-		ToggleFrame.BackgroundColor3 = Toggled and Color3.fromRGB(60, 200, 100) or Color3.fromRGB(60, 60, 70)
-		ToggleCircle:TweenPosition(Toggled and UDim2.new(1, -18, 0, 2) or UDim2.new(0, 2, 0, 2), "Out", "Quad", 0.1, true)
+		ToggleFrame:TweenBackgroundColor3(Toggled and Color3.fromRGB(50, 180, 100) or Color3.fromRGB(55, 55, 60), "Out", "Quart", 0.2)
+		ToggleCircle:TweenPosition(Toggled and UDim2.new(1, -22, 0, 2) or UDim2.new(0, 2, 0, 2), "Out", "Quart", 0.2)
 		if Callback then Callback(Toggled) end
 	end
 
 	Frame.MouseButton1Click:Connect(UpdateToggle)
 	ToggleFrame.MouseButton1Click:Connect(UpdateToggle)
 
-	Tab.NextY = Tab.NextY + 35
+	Tab.NextY = Tab.NextY + 42
 	Tab.ScrollingContent.CanvasSize = UDim2.new(0, 0, 0, Tab.NextY)
 	return {Toggle = UpdateToggle, Set = function(state)
 		if Toggled ~= state then
@@ -268,38 +296,38 @@ end
 
 function AroticUi:CreateSlider(Tab, Name, Min, Max, Default, Callback)
 	local Frame = Instance.new("Frame")
-	Frame.Size = UDim2.new(1, -10, 0, 40)
-	Frame.Position = UDim2.new(0, 5, 0, Tab.NextY)
-	Frame.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+	Frame.Size = UDim2.new(1, -12, 0, 48)
+	Frame.Position = UDim2.new(0, 6, 0, Tab.NextY)
+	Frame.BackgroundColor3 = Color3.fromRGB(43, 43, 48)
 	Frame.BorderSizePixel = 0
 	Frame.Parent = Tab.ScrollingContent
 
 	local Label = Instance.new("TextLabel")
-	Label.Size = UDim2.new(1, -10, 0, 20)
+	Label.Size = UDim2.new(1, -12, 0, 20)
 	Label.Position = UDim2.new(0, 0, 0, 0)
 	Label.BackgroundTransparency = 1
 	Label.Text = Name .. ": " .. tostring(Default)
 	Label.TextColor3 = Color3.fromRGB(220, 220, 220)
-	Label.TextSize = 13
+	Label.TextSize = 14
 	Label.Font = Enum.Font.Gotham
 	Label.Parent = Frame
 
 	local SliderFrame = Instance.new("Frame")
-	SliderFrame.Size = UDim2.new(1, -10, 0, 10)
-	SliderFrame.Position = UDim2.new(0, 5, 0, 25)
-	SliderFrame.BackgroundColor3 = Color3.fromRGB(55, 55, 60)
+	SliderFrame.Size = UDim2.new(1, -12, 0, 12)
+	SliderFrame.Position = UDim2.new(0, 6, 0, 28)
+	SliderFrame.BackgroundColor3 = Color3.fromRGB(53, 53, 58)
 	SliderFrame.BorderSizePixel = 0
 	SliderFrame.Parent = Frame
 
 	local SliderBar = Instance.new("Frame")
 	SliderBar.Size = UDim2.new((Default - Min) / (Max - Min), 0, 1, 0)
-	SliderBar.BackgroundColor3 = Color3.fromRGB(60, 120, 200)
+	SliderBar.BackgroundColor3 = Color3.fromRGB(50, 120, 200)
 	SliderBar.BorderSizePixel = 0
 	SliderBar.Parent = SliderFrame
 
 	local SliderThumb = Instance.new("Frame")
-	SliderThumb.Size = UDim2.new(0, 15, 0, 15)
-	SliderThumb.Position = UDim2.new((Default - Min) / (Max - Min), -7.5, 0, -2.5)
+	SliderThumb.Size = UDim2.new(0, 18, 0, 18)
+	SliderThumb.Position = UDim2.new((Default - Min) / (Max - Min), -9, 0, -3)
 	SliderThumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	SliderThumb.BorderSizePixel = 0
 	SliderThumb.Parent = SliderFrame
@@ -310,8 +338,8 @@ function AroticUi:CreateSlider(Tab, Name, Min, Max, Default, Callback)
 		local relPos = (mousePos.X - SliderFrame.AbsolutePosition.X) / SliderFrame.AbsoluteSize.X
 		relPos = math.clamp(relPos, 0, 1)
 		Value = math.floor(Min + (Max - Min) * relPos + 0.5)
-		SliderBar.Size = UDim2.new(relPos, 0, 1, 0)
-		SliderThumb.Position = UDim2.new(relPos, -7.5, 0, -2.5)
+		SliderBar:TweenSize(UDim2.new(relPos, 0, 1, 0), "Out", "Quart", 0.1)
+		SliderThumb:TweenPosition(UDim2.new(relPos, -9, 0, -3), "Out", "Quart", 0.1)
 		Label.Text = Name .. ": " .. tostring(Value)
 		if Callback then Callback(Value) end
 	end
@@ -333,16 +361,45 @@ function AroticUi:CreateSlider(Tab, Name, Min, Max, Default, Callback)
 		end
 	end)
 
-	Tab.NextY = Tab.NextY + 45
+	Tab.NextY = Tab.NextY + 54
 	Tab.ScrollingContent.CanvasSize = UDim2.new(0, 0, 0, Tab.NextY)
 	return {Set = function(v)
 		v = math.clamp(v, Min, Max)
 		Value = v
 		local rel = (v - Min) / (Max - Min)
-		SliderBar.Size = UDim2.new(rel, 0, 1, 0)
-		SliderThumb.Position = UDim2.new(rel, -7.5, 0, -2.5)
+		SliderBar:TweenSize(UDim2.new(rel, 0, 1, 0), "Out", "Quart", 0.2)
+		SliderThumb:TweenPosition(UDim2.new(rel, -9, 0, -3), "Out", "Quart", 0.2)
 		Label.Text = Name .. ": " .. tostring(v)
 	end, Get = function() return Value end}
 end
 
+function AroticUi:LoadingAnimation(Duration)
+	if not MainUI then return end
+	local LoadingFrame = Instance.new("Frame")
+	LoadingFrame.Size = UDim2.new(1, 0, 1, 0)
+	LoadingFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
+	LoadingFrame.BackgroundTransparency = 0.7
+	LoadingFrame.BorderSizePixel = 0
+	LoadingFrame.ZIndex = 10
+	LoadingFrame.Parent = MainUI.MainFrame
+
+	local Spinner = Instance.new("Frame")
+	Spinner.Size = UDim2.new(0, 40, 0, 40)
+	Spinner.Position = UDim2.new(0.5, -20, 0.5, -20)
+	Spinner.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
+	Spinner.BorderSizePixel = 0
+	Spinner.ZIndex = 11
+	Spinner.Parent = LoadingFrame
+
+	coroutine.wrap(function()
+		local start = tick()
+		while tick() - start < (Duration or 2) do
+			Spinner.Rotation = Spinner.Rotation + 10
+			task.wait()
+		end
+		LoadingFrame:Destroy()
+	end)()
+end
+
+AroticUi.Draggable = true
 return AroticUi
