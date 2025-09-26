@@ -1,6 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local ChatService = game:GetService("Chat")
 local LocalPlayer = Players.LocalPlayer
 local ChatEvent = ReplicatedStorage:WaitForChild("ChatEvent")
 
@@ -136,20 +137,7 @@ local function addMessage(playerName, message, userId)
     end
     local player = Players:FindFirstChild(playerName)
     if player and player.Character and player.Character:FindFirstChild("Head") then
-        local billboard = Instance.new("BillboardGui")
-        billboard.Adornee = player.Character.Head
-        billboard.Size = UDim2.new(0, 200, 0, 50)
-        billboard.StudsOffset = Vector3.new(0, 3, 0)
-        billboard.Parent = player.Character.Head
-        local msgLabel = Instance.new("TextLabel")
-        msgLabel.Size = UDim2.new(1, 0, 1, 0)
-        msgLabel.BackgroundTransparency = 1
-        msgLabel.Text = message
-        msgLabel.Font = Enum.Font.GothamBold
-        msgLabel.TextScaled = true
-        msgLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-        msgLabel.Parent = billboard
-        game:GetService("Debris"):AddItem(billboard, 4)
+        ChatService:Chat(player.Character.Head, message, Enum.ChatColor.White)
     end
 end
 
