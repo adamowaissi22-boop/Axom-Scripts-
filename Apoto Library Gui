@@ -353,7 +353,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	TemporaryText.Position = UDim2.new(0.0111111114, 0, 0.00055286038, 0)
 	TemporaryText.Size = UDim2.new(0, 444, 0, 31)
 	TemporaryText.Font = Enum.Font.SourceSansBold
-	TemporaryText.Text = `<b>{ConfigArgs.Name}</b> x <b>Apoto UI v1 </b>`
+	TemporaryText.Text = `<b>{ConfigArgs.Name}</b> x <b>Apoto UI By Axom</b>`
 	TemporaryText.TextColor3 = Color3.fromRGB(150, 150, 150)
 	TemporaryText.TextSize = 15
 	TemporaryText.RichText = true
