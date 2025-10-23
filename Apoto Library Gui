@@ -353,7 +353,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	TemporaryText.Position = UDim2.new(0.0111111114, 0, 0.00055286038, 0)
 	TemporaryText.Size = UDim2.new(0, 444, 0, 31)
 	TemporaryText.Font = Enum.Font.SourceSansBold
-	TemporaryText.Text = `<b>{ConfigArgs.Name}</b> x <b>Apoto UI By Axom</b>`
+	TemporaryText.Text = `<b>{ConfigArgs.Name}</b> x <b>Apoto UI v1 </b>`
 	TemporaryText.TextColor3 = Color3.fromRGB(150, 150, 150)
 	TemporaryText.TextSize = 15
 	TemporaryText.RichText = true
@@ -1833,6 +1833,116 @@ function Apoto:CreateWindow(ConfigArgs)
 					args.CallBack(false)
 				end
 			end)
+		end
+		function thisTab:CreateBox(args)
+			args.Text = args.Text or "Text Box"
+			args.Placeholder = args.Placeholder or "Enter text..."
+			args.Default = args.Default or ""
+			args.Callback = args.Callback or function() end
+
+			table.insert(self.Contents.Objects, {
+				ObjectType = 'Box',
+				Text = args.Text,
+				Placeholder = args.Placeholder,
+				Default = args.Default,
+				Callback = args.Callback
+			})
+
+			local TextBox = Instance.new("Frame")
+			local UICorner = Instance.new("UICorner")
+			local TextLabel = Instance.new("TextLabel")
+			local InputFrame = Instance.new("Frame")
+			local UICorner_2 = Instance.new("UICorner")
+			local TextBoxInput = Instance.new("TextBox")
+			local UIStroke = Instance.new("UIStroke")
+
+			TextBox.Name = tabName.."_TextBox"
+			TextBox.Parent = TabContentsFrame
+			TextBox.BackgroundColor3 = Color3.fromRGB(17, 18, 22)
+			TextBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextBox.BorderSizePixel = 0
+			TextBox.Position = UDim2.new(0, 0, 0.383512557, 0)
+			TextBox.Size = UDim2.new(0, 423, 0, 60)
+			TextBox.Visible = false
+
+			UICorner.CornerRadius = UDim.new(0, 6)
+			UICorner.Parent = TextBox
+
+			TextLabel.Name = "TextLabel"
+			TextLabel.Parent = TextBox
+			TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextLabel.BackgroundTransparency = 1.000
+			TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextLabel.BorderSizePixel = 0
+			TextLabel.Position = UDim2.new(0.0283687934, 0, 0, 0)
+			TextLabel.Size = UDim2.new(0.482269496, 0, 0.5, 0)
+			TextLabel.FontFace = defaultFont
+			TextLabel.Text = args.Text
+			TextLabel.TextColor3 = Color3.fromRGB(193, 193, 193)
+			TextLabel.TextSize = 21.000
+			TextLabel.TextWrapped = true
+			TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			InputFrame.Name = "InputFrame"
+			InputFrame.Parent = TextBox
+			InputFrame.BackgroundColor3 = Color3.fromRGB(28, 29, 35)
+			InputFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			InputFrame.BorderSizePixel = 0
+			InputFrame.Position = UDim2.new(0.0283687934, 0, 0.5, 0)
+			InputFrame.Size = UDim2.new(0.94, 0, 0.4, 0)
+
+			UICorner_2.CornerRadius = UDim.new(0, 4)
+			UICorner_2.Parent = InputFrame
+
+			TextBoxInput.Name = "TextBoxInput"
+			TextBoxInput.Parent = InputFrame
+			TextBoxInput.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			TextBoxInput.BackgroundTransparency = 1.000
+			TextBoxInput.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			TextBoxInput.BorderSizePixel = 0
+			TextBoxInput.Position = UDim2.new(0.02, 0, 0, 0)
+			TextBoxInput.Size = UDim2.new(0.96, 0, 1, 0)
+			TextBoxInput.FontFace = defaultFont
+			TextBoxInput.PlaceholderText = args.Placeholder
+			TextBoxInput.Text = args.Default
+			TextBoxInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TextBoxInput.TextSize = 18.000
+			TextBoxInput.TextXAlignment = Enum.TextXAlignment.Left
+			TextBoxInput.ClearTextOnFocus = false
+
+			UIStroke.Parent = InputFrame
+			UIStroke.Color = setHueAndSaturation(ConfigArgs.AccentColor3, 0.5, 0.8)
+			UIStroke.Thickness = 1.5
+
+			-- Focus effects
+			TextBoxInput.Focused:Connect(function()
+				game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Thickness = 2.5,
+					Color = ConfigArgs.AccentColor3
+				}):Play()
+			end)
+
+			TextBoxInput.FocusLost:Connect(function(enterPressed)
+				game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+					Thickness = 1.5,
+					Color = setHueAndSaturation(ConfigArgs.AccentColor3, 0.5, 0.8)
+				}):Play()
+				
+				if enterPressed then
+					args.Callback(TextBoxInput.Text)
+				end
+			end)
+
+			local box = {}
+			function box:Set(text)
+				TextBoxInput.Text = text
+				args.Callback(text)
+			end
+			function box:Get()
+				return TextBoxInput.Text
+			end
+			
+			return box
 		end
 		return thisTab
 	end
