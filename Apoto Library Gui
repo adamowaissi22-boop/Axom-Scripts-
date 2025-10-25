@@ -1179,8 +1179,8 @@ function Apoto:CreateWindow(ConfigArgs)
 				UIListLayout.Padding = UDim.new(0, 7)
 
 				SideBar.ClipsDescendants = true
-				local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(.4,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
-				introTween:Play()
+				local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(0.1,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
+                 introTween:Play()
 
 				local isPlayerSelected = false
 				for i,v in pairs(playerIcons) do
