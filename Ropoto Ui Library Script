@@ -6,13 +6,14 @@ local Players = game:GetService("Players")
 
 local Theme = {
     Primary = Color3.fromRGB(65, 150, 255),
-    Secondary = Color3.fromRGB(40, 40, 50),
+    Secondary = Color3.fromRGB(45, 45, 55),
     Background = Color3.fromRGB(30, 30, 40),
     Text = Color3.fromRGB(240, 240, 240),
     Accent = Color3.fromRGB(80, 170, 255),
     Success = Color3.fromRGB(65, 255, 135),
     Warning = Color3.fromRGB(255, 185, 65),
-    Error = Color3.fromRGB(255, 85, 85)
+    Error = Color3.fromRGB(255, 85, 85),
+    Dark = Color3.fromRGB(20, 20, 30)
 }
 
 local function CreateShadow(frame)
@@ -28,6 +29,15 @@ local function CreateShadow(frame)
     shadow.Position = UDim2.new(0, -5, 0, -5)
     shadow.Parent = frame
     return shadow
+end
+
+local function CreateStroke(frame)
+    local stroke = Instance.new("UIStroke")
+    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    stroke.Color = Color3.fromRGB(60, 60, 70)
+    stroke.Thickness = 1
+    stroke.Parent = frame
+    return stroke
 end
 
 local function Tween(obj, props, duration, style)
@@ -52,16 +62,17 @@ function Ropoto:CreateWindow(name)
     MainFrame.BackgroundColor3 = Theme.Background
     MainFrame.BorderSizePixel = 0
     MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-    MainFrame.Size = UDim2.new(0, 400, 0, 450)
+    MainFrame.Size = UDim2.new(0, 450, 0, 500)
     MainFrame.Parent = ScreenGui
     
     CreateShadow(MainFrame)
+    CreateStroke(MainFrame)
     
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
-    TopBar.BackgroundColor3 = Theme.Secondary
+    TopBar.BackgroundColor3 = Theme.Dark
     TopBar.BorderSizePixel = 0
-    TopBar.Size = UDim2.new(1, 0, 0, 35)
+    TopBar.Size = UDim2.new(1, 0, 0, 40)
     TopBar.Parent = MainFrame
     
     local Title = Instance.new("TextLabel")
@@ -72,7 +83,7 @@ function Ropoto:CreateWindow(name)
     Title.Font = Enum.Font.GothamSemibold
     Title.Text = name or "Ropoto UI"
     Title.TextColor3 = Theme.Text
-    Title.TextSize = 14
+    Title.TextSize = 16
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.Parent = TopBar
     
@@ -84,7 +95,7 @@ function Ropoto:CreateWindow(name)
     CreditsButton.Font = Enum.Font.GothamBold
     CreditsButton.Text = "ℹ"
     CreditsButton.TextColor3 = Theme.Text
-    CreditsButton.TextSize = 16
+    CreditsButton.TextSize = 18
     CreditsButton.Parent = TopBar
     
     local CloseButton = Instance.new("TextButton")
@@ -95,69 +106,72 @@ function Ropoto:CreateWindow(name)
     CloseButton.Font = Enum.Font.GothamBold
     CloseButton.Text = "×"
     CloseButton.TextColor3 = Theme.Text
-    CloseButton.TextSize = 18
+    CloseButton.TextSize = 20
     CloseButton.Parent = TopBar
     
     local CreditsFrame = Instance.new("Frame")
     CreditsFrame.Name = "CreditsFrame"
     CreditsFrame.BackgroundColor3 = Theme.Background
     CreditsFrame.BorderSizePixel = 0
-    CreditsFrame.Position = UDim2.new(0.5, -100, 0.5, -75)
-    CreditsFrame.Size = UDim2.new(0, 200, 0, 150)
+    CreditsFrame.Position = UDim2.new(0.5, -125, 0.5, -75)
+    CreditsFrame.Size = UDim2.new(0, 250, 0, 150)
     CreditsFrame.Visible = false
     CreditsFrame.ZIndex = 10
     CreditsFrame.Parent = ScreenGui
     
     CreateShadow(CreditsFrame)
+    CreateStroke(CreditsFrame)
     
     local CreditsTopBar = Instance.new("Frame")
     CreditsTopBar.Name = "CreditsTopBar"
-    CreditsTopBar.BackgroundColor3 = Theme.Secondary
+    CreditsTopBar.BackgroundColor3 = Theme.Dark
     CreditsTopBar.BorderSizePixel = 0
-    CreditsTopBar.Size = UDim2.new(1, 0, 0, 25)
+    CreditsTopBar.Size = UDim2.new(1, 0, 0, 30)
     CreditsTopBar.ZIndex = 11
     CreditsTopBar.Parent = CreditsFrame
     
     local CreditsTitle = Instance.new("TextLabel")
     CreditsTitle.Name = "CreditsTitle"
     CreditsTitle.BackgroundTransparency = 1
-    CreditsTitle.Size = UDim2.new(1, 0, 1, 0)
+    CreditsTitle.Size = UDim2.new(1, -30, 1, 0)
     CreditsTitle.Font = Enum.Font.GothamSemibold
     CreditsTitle.Text = "Credits"
     CreditsTitle.TextColor3 = Theme.Text
-    CreditsTitle.TextSize = 12
+    CreditsTitle.TextSize = 14
+    CreditsTitle.TextXAlignment = Enum.TextXAlignment.Left
+    CreditsTitle.Position = UDim2.new(0, 10, 0, 0)
     CreditsTitle.ZIndex = 12
     CreditsTitle.Parent = CreditsTopBar
     
     local CreditsClose = Instance.new("TextButton")
     CreditsClose.Name = "CreditsClose"
     CreditsClose.BackgroundTransparency = 1
-    CreditsClose.Position = UDim2.new(1, -25, 0, 0)
-    CreditsClose.Size = UDim2.new(0, 25, 1, 0)
+    CreditsClose.Position = UDim2.new(1, -30, 0, 0)
+    CreditsClose.Size = UDim2.new(0, 30, 1, 0)
     CreditsClose.Font = Enum.Font.GothamBold
     CreditsClose.Text = "×"
     CreditsClose.TextColor3 = Theme.Text
-    CreditsClose.TextSize = 14
+    CreditsClose.TextSize = 16
     CreditsClose.ZIndex = 12
     CreditsClose.Parent = CreditsTopBar
     
     local CreditsContent = Instance.new("Frame")
     CreditsContent.Name = "CreditsContent"
     CreditsContent.BackgroundTransparency = 1
-    CreditsContent.Position = UDim2.new(0, 0, 0, 25)
-    CreditsContent.Size = UDim2.new(1, 0, 1, -25)
+    CreditsContent.Position = UDim2.new(0, 0, 0, 30)
+    CreditsContent.Size = UDim2.new(1, 0, 1, -30)
     CreditsContent.ZIndex = 11
     CreditsContent.Parent = CreditsFrame
     
     local MadeBy = Instance.new("TextLabel")
     MadeBy.Name = "MadeBy"
     MadeBy.BackgroundTransparency = 1
-    MadeBy.Position = UDim2.new(0, 10, 0, 20)
-    MadeBy.Size = UDim2.new(1, -20, 0, 40)
+    MadeBy.Position = UDim2.new(0, 15, 0, 20)
+    MadeBy.Size = UDim2.new(1, -30, 0, 50)
     MadeBy.Font = Enum.Font.Gotham
     MadeBy.Text = "Made By Axom\nreal name : Adam Owaissi"
     MadeBy.TextColor3 = Theme.Text
-    MadeBy.TextSize = 12
+    MadeBy.TextSize = 13
     MadeBy.TextYAlignment = Enum.TextYAlignment.Top
     MadeBy.ZIndex = 12
     MadeBy.Parent = CreditsContent
@@ -166,30 +180,41 @@ function Ropoto:CreateWindow(name)
     YTButton.Name = "YTButton"
     YTButton.BackgroundColor3 = Theme.Primary
     YTButton.BorderSizePixel = 0
-    YTButton.Position = UDim2.new(0.5, -40, 1, -40)
-    YTButton.Size = UDim2.new(0, 80, 0, 25)
-    YTButton.Font = Enum.Font.Gotham
+    YTButton.Position = UDim2.new(0.5, -45, 1, -40)
+    YTButton.Size = UDim2.new(0, 90, 0, 30)
+    YTButton.Font = Enum.Font.GothamSemibold
     YTButton.Text = "YouTube"
     YTButton.TextColor3 = Theme.Text
-    YTButton.TextSize = 12
+    YTButton.TextSize = 13
     YTButton.ZIndex = 12
     YTButton.Parent = CreditsContent
+    
+    CreateStroke(YTButton)
     
     local Container = Instance.new("ScrollingFrame")
     Container.Name = "Container"
     Container.BackgroundTransparency = 1
     Container.BorderSizePixel = 0
-    Container.Position = UDim2.new(0, 0, 0, 35)
-    Container.Size = UDim2.new(1, 0, 1, -35)
+    Container.Position = UDim2.new(0, 0, 0, 40)
+    Container.Size = UDim2.new(1, 0, 1, -40)
     Container.CanvasSize = UDim2.new(0, 0, 0, 0)
-    Container.ScrollBarThickness = 3
+    Container.ScrollBarThickness = 4
     Container.ScrollBarImageColor3 = Theme.Primary
+    Container.ScrollBarImageTransparency = 0.7
     Container.Parent = MainFrame
     
     local UIListLayout = Instance.new("UIListLayout")
-    UIListLayout.Padding = UDim.new(0, 5)
+    UIListLayout.Padding = UDim.new(0, 8)
     UIListLayout.Parent = Container
     
+    local UIPadding = Instance.new("UIPadding")
+    UIPadding.PaddingLeft = UDim.new(0, 10)
+    UIPadding.PaddingRight = UDim.new(0, 10)
+    UIPadding.PaddingTop = UDim.new(0, 10)
+    UIPadding.PaddingBottom = UDim.new(0, 10)
+    UIPadding.Parent = Container
+    
+    -- Enhanced dragging for both mobile and PC
     local dragging = false
     local dragInput, dragStart, startPos
 
@@ -198,40 +223,51 @@ function Ropoto:CreateWindow(name)
         MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
     end
 
-    TopBar.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+    local function onInputBegan(input, processed)
+        if processed then return end
+        
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = MainFrame.Position
             
-            input.Changed:Connect(function()
+            local connection
+            connection = input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
+                    connection:Disconnect()
                 end
             end)
         end
-    end)
+    end
 
-    TopBar.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
+    local function onInputChanged(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
+    end
+
+    TopBar.InputBegan:Connect(function(input, processed)
+        onInputBegan(input, processed)
     end)
 
+    TopBar.InputChanged:Connect(onInputChanged)
+
     UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
+        if (input == dragInput) and dragging then
             update(input)
         end
     end)
 
+    -- Credits functionality
     CreditsButton.MouseButton1Click:Connect(function()
         CreditsFrame.Visible = true
         CreditsFrame.Size = UDim2.new(0, 0, 0, 0)
-        Tween(CreditsFrame, {Size = UDim2.new(0, 200, 0, 150)}, 0.3)
+        Tween(CreditsFrame, {Size = UDim2.new(0, 250, 0, 150)}, 0.3, Enum.EasingStyle.Back)
     end)
 
     CreditsClose.MouseButton1Click:Connect(function()
-        Tween(CreditsFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+        Tween(CreditsFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3, Enum.EasingStyle.Back)
         wait(0.3)
         CreditsFrame.Visible = false
     end)
@@ -245,12 +281,7 @@ function Ropoto:CreateWindow(name)
         Tween(YTButton, {BackgroundColor3 = Theme.Primary}, 0.2)
     end)
 
-    CloseButton.MouseButton1Click:Connect(function()
-        Tween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
-        wait(0.3)
-        ScreenGui:Destroy()
-    end)
-
+    -- Button hover effects
     CreditsButton.MouseEnter:Connect(function()
         Tween(CreditsButton, {TextColor3 = Theme.Primary}, 0.2)
     end)
@@ -267,10 +298,17 @@ function Ropoto:CreateWindow(name)
         Tween(CloseButton, {TextColor3 = Theme.Text}, 0.2)
     end)
 
-    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        Container.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+    CloseButton.MouseButton1Click:Connect(function()
+        Tween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3, Enum.EasingStyle.Back)
+        wait(0.3)
+        ScreenGui:Destroy()
     end)
 
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        Container.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 20)
+    end)
+
+    -- UI Elements with RayField-like styling
     function Window:MakeSection(name)
         local Section = {}
         
@@ -278,16 +316,18 @@ function Ropoto:CreateWindow(name)
         SectionFrame.Name = "SectionFrame"
         SectionFrame.BackgroundColor3 = Theme.Secondary
         SectionFrame.BorderSizePixel = 0
-        SectionFrame.Size = UDim2.new(1, -20, 0, 30)
+        SectionFrame.Size = UDim2.new(1, 0, 0, 35)
         SectionFrame.Parent = Container
+        
+        CreateStroke(SectionFrame)
         
         local SectionTitle = Instance.new("TextLabel")
         SectionTitle.Name = "SectionTitle"
         SectionTitle.BackgroundTransparency = 1
-        SectionTitle.Position = UDim2.new(0, 10, 0, 0)
-        SectionTitle.Size = UDim2.new(1, -20, 1, 0)
+        SectionTitle.Position = UDim2.new(0, 12, 0, 0)
+        SectionTitle.Size = UDim2.new(1, -24, 1, 0)
         SectionTitle.Font = Enum.Font.GothamSemibold
-        SectionTitle.Text = name
+        SectionTitle.Text = string.upper(name)
         SectionTitle.TextColor3 = Theme.Primary
         SectionTitle.TextSize = 12
         SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
@@ -296,19 +336,20 @@ function Ropoto:CreateWindow(name)
         local SectionContainer = Instance.new("Frame")
         SectionContainer.Name = "SectionContainer"
         SectionContainer.BackgroundTransparency = 1
-        SectionContainer.Position = UDim2.new(0, 0, 1, 0)
+        SectionContainer.Position = UDim2.new(0, 0, 1, 5)
         SectionContainer.Size = UDim2.new(1, 0, 0, 0)
         SectionContainer.ClipsDescendants = true
         SectionContainer.Parent = SectionFrame
         
         local SectionUIList = Instance.new("UIListLayout")
-        SectionUIList.Padding = UDim.new(0, 5)
+        SectionUIList.Padding = UDim.new(0, 6)
         SectionUIList.Parent = SectionContainer
         
         local expanded = false
         
-        SectionFrame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        SectionFrame.InputBegan:Connect(function(input, processed)
+            if processed then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 expanded = not expanded
                 if expanded then
                     SectionContainer.Size = UDim2.new(1, 0, 0, SectionUIList.AbsoluteContentSize.Y)
@@ -339,24 +380,20 @@ function Ropoto:CreateWindow(name)
         ButtonFrame.Name = "ButtonFrame"
         ButtonFrame.BackgroundColor3 = Theme.Secondary
         ButtonFrame.BorderSizePixel = 0
-        ButtonFrame.Size = UDim2.new(1, -20, 0, 30)
+        ButtonFrame.Size = UDim2.new(1, 0, 0, 35)
         ButtonFrame.Parent = Container
+        
+        CreateStroke(ButtonFrame)
         
         local Button = Instance.new("TextButton")
         Button.Name = "Button"
         Button.BackgroundTransparency = 1
         Button.Size = UDim2.new(1, 0, 1, 0)
-        Button.Font = Enum.Font.Gotham
-        Button.Text = name
+        Button.Font = Enum.Font.GothamSemibold
+        Button.Text = string.upper(name)
         Button.TextColor3 = Theme.Text
-        Button.TextSize = 12
+        Button.TextSize = 13
         Button.Parent = ButtonFrame
-        
-        local ButtonStroke = Instance.new("UIStroke")
-        ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        ButtonStroke.Color = Theme.Primary
-        ButtonStroke.Thickness = 1
-        ButtonStroke.Parent = ButtonFrame
         
         Button.MouseButton1Click:Connect(function()
             Tween(ButtonFrame, {BackgroundColor3 = Theme.Primary}, 0.1)
@@ -370,7 +407,7 @@ function Ropoto:CreateWindow(name)
         end)
         
         Button.MouseEnter:Connect(function()
-            Tween(ButtonFrame, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, 0.2)
+            Tween(ButtonFrame, {BackgroundColor3 = Color3.fromRGB(55, 55, 65)}, 0.2)
         end)
         
         Button.MouseLeave:Connect(function()
@@ -386,18 +423,20 @@ function Ropoto:CreateWindow(name)
         ToggleFrame.Name = "ToggleFrame"
         ToggleFrame.BackgroundColor3 = Theme.Secondary
         ToggleFrame.BorderSizePixel = 0
-        ToggleFrame.Size = UDim2.new(1, -20, 0, 25)
+        ToggleFrame.Size = UDim2.new(1, 0, 0, 30)
         ToggleFrame.Parent = Container
+        
+        CreateStroke(ToggleFrame)
         
         local ToggleLabel = Instance.new("TextLabel")
         ToggleLabel.Name = "ToggleLabel"
         ToggleLabel.BackgroundTransparency = 1
-        ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+        ToggleLabel.Position = UDim2.new(0, 12, 0, 0)
         ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
         ToggleLabel.Font = Enum.Font.Gotham
         ToggleLabel.Text = name
         ToggleLabel.TextColor3 = Theme.Text
-        ToggleLabel.TextSize = 12
+        ToggleLabel.TextSize = 13
         ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
         ToggleLabel.Parent = ToggleFrame
         
@@ -405,16 +444,18 @@ function Ropoto:CreateWindow(name)
         ToggleButton.Name = "ToggleButton"
         ToggleButton.BackgroundColor3 = Theme.Background
         ToggleButton.BorderSizePixel = 0
-        ToggleButton.Position = UDim2.new(1, -35, 0.5, -8)
-        ToggleButton.Size = UDim2.new(0, 35, 0, 16)
+        ToggleButton.Position = UDim2.new(1, -42, 0.5, -10)
+        ToggleButton.Size = UDim2.new(0, 40, 0, 20)
         ToggleButton.Parent = ToggleFrame
+        
+        CreateStroke(ToggleButton)
         
         local ToggleInner = Instance.new("Frame")
         ToggleInner.Name = "ToggleInner"
         ToggleInner.BackgroundColor3 = Theme.Text
         ToggleInner.BorderSizePixel = 0
-        ToggleInner.Position = UDim2.new(0, 2, 0.5, -6)
-        ToggleInner.Size = UDim2.new(0, 12, 0, 12)
+        ToggleInner.Position = UDim2.new(0, 2, 0.5, -8)
+        ToggleInner.Size = UDim2.new(0, 16, 0, 16)
         ToggleInner.Parent = ToggleButton
         
         local state = default or false
@@ -422,15 +463,16 @@ function Ropoto:CreateWindow(name)
         local function updateToggle()
             if state then
                 Tween(ToggleButton, {BackgroundColor3 = Theme.Primary}, 0.2)
-                Tween(ToggleInner, {Position = UDim2.new(1, -14, 0.5, -6)}, 0.2)
+                Tween(ToggleInner, {Position = UDim2.new(1, -18, 0.5, -8)}, 0.2)
             else
                 Tween(ToggleButton, {BackgroundColor3 = Theme.Background}, 0.2)
-                Tween(ToggleInner, {Position = UDim2.new(0, 2, 0.5, -6)}, 0.2)
+                Tween(ToggleInner, {Position = UDim2.new(0, 2, 0.5, -8)}, 0.2)
             end
         end
         
-        ToggleButton.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        ToggleButton.InputBegan:Connect(function(input, processed)
+            if processed then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 state = not state
                 updateToggle()
                 if callback then
@@ -450,18 +492,20 @@ function Ropoto:CreateWindow(name)
         BoxFrame.Name = "BoxFrame"
         BoxFrame.BackgroundColor3 = Theme.Secondary
         BoxFrame.BorderSizePixel = 0
-        BoxFrame.Size = UDim2.new(1, -20, 0, 25)
+        BoxFrame.Size = UDim2.new(1, 0, 0, 30)
         BoxFrame.Parent = Container
+        
+        CreateStroke(BoxFrame)
         
         local BoxLabel = Instance.new("TextLabel")
         BoxLabel.Name = "BoxLabel"
         BoxLabel.BackgroundTransparency = 1
-        BoxLabel.Position = UDim2.new(0, 10, 0, 0)
-        BoxLabel.Size = UDim2.new(0, 100, 1, 0)
+        BoxLabel.Position = UDim2.new(0, 12, 0, 0)
+        BoxLabel.Size = UDim2.new(0, 120, 1, 0)
         BoxLabel.Font = Enum.Font.Gotham
         BoxLabel.Text = name
         BoxLabel.TextColor3 = Theme.Text
-        BoxLabel.TextSize = 12
+        BoxLabel.TextSize = 13
         BoxLabel.TextXAlignment = Enum.TextXAlignment.Left
         BoxLabel.Parent = BoxFrame
         
@@ -469,18 +513,21 @@ function Ropoto:CreateWindow(name)
         TextBox.Name = "TextBox"
         TextBox.BackgroundColor3 = Theme.Background
         TextBox.BorderSizePixel = 0
-        TextBox.Position = UDim2.new(0, 120, 0, 2)
-        TextBox.Size = UDim2.new(1, -130, 1, -4)
+        TextBox.Position = UDim2.new(0, 140, 0, 5)
+        TextBox.Size = UDim2.new(1, -152, 1, -10)
         TextBox.Font = Enum.Font.Gotham
         TextBox.PlaceholderText = placeholder or ""
+        TextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
         TextBox.Text = ""
         TextBox.TextColor3 = Theme.Text
-        TextBox.TextSize = 12
+        TextBox.TextSize = 13
         TextBox.Parent = BoxFrame
         
-        TextBox.FocusLost:Connect(function()
+        CreateStroke(TextBox)
+        
+        TextBox.FocusLost:Connect(function(enterPressed)
             if callback then
-                callback(TextBox.Text)
+                callback(TextBox.Text, enterPressed)
             end
         end)
         
@@ -493,30 +540,32 @@ function Ropoto:CreateWindow(name)
         SliderFrame.Name = "SliderFrame"
         SliderFrame.BackgroundColor3 = Theme.Secondary
         SliderFrame.BorderSizePixel = 0
-        SliderFrame.Size = UDim2.new(1, -20, 0, 40)
+        SliderFrame.Size = UDim2.new(1, 0, 0, 50)
         SliderFrame.Parent = Container
+        
+        CreateStroke(SliderFrame)
         
         local SliderLabel = Instance.new("TextLabel")
         SliderLabel.Name = "SliderLabel"
         SliderLabel.BackgroundTransparency = 1
-        SliderLabel.Position = UDim2.new(0, 10, 0, 0)
-        SliderLabel.Size = UDim2.new(1, -20, 0, 15)
+        SliderLabel.Position = UDim2.new(0, 12, 0, 5)
+        SliderLabel.Size = UDim2.new(1, -24, 0, 15)
         SliderLabel.Font = Enum.Font.Gotham
         SliderLabel.Text = name
         SliderLabel.TextColor3 = Theme.Text
-        SliderLabel.TextSize = 12
+        SliderLabel.TextSize = 13
         SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
         SliderLabel.Parent = SliderFrame
         
         local SliderValue = Instance.new("TextLabel")
         SliderValue.Name = "SliderValue"
         SliderValue.BackgroundTransparency = 1
-        SliderValue.Position = UDim2.new(1, -60, 0, 0)
+        SliderValue.Position = UDim2.new(1, -60, 0, 5)
         SliderValue.Size = UDim2.new(0, 50, 0, 15)
         SliderValue.Font = Enum.Font.Gotham
         SliderValue.Text = tostring(default or min)
-        SliderValue.TextColor3 = Theme.Text
-        SliderValue.TextSize = 12
+        SliderValue.TextColor3 = Theme.Primary
+        SliderValue.TextSize = 13
         SliderValue.TextXAlignment = Enum.TextXAlignment.Right
         SliderValue.Parent = SliderFrame
         
@@ -524,9 +573,11 @@ function Ropoto:CreateWindow(name)
         SliderTrack.Name = "SliderTrack"
         SliderTrack.BackgroundColor3 = Theme.Background
         SliderTrack.BorderSizePixel = 0
-        SliderTrack.Position = UDim2.new(0, 10, 0, 25)
-        SliderTrack.Size = UDim2.new(1, -20, 0, 5)
+        SliderTrack.Position = UDim2.new(0, 12, 0, 30)
+        SliderTrack.Size = UDim2.new(1, -24, 0, 6)
         SliderTrack.Parent = SliderFrame
+        
+        CreateStroke(SliderTrack)
         
         local SliderFill = Instance.new("Frame")
         SliderFill.Name = "SliderFill"
@@ -539,8 +590,8 @@ function Ropoto:CreateWindow(name)
         SliderButton.Name = "SliderButton"
         SliderButton.BackgroundColor3 = Theme.Text
         SliderButton.BorderSizePixel = 0
-        SliderButton.Position = UDim2.new(0, -5, 0, -3)
-        SliderButton.Size = UDim2.new(0, 11, 0, 11)
+        SliderButton.Position = UDim2.new(0, -6, 0, -4)
+        SliderButton.Size = UDim2.new(0, 14, 0, 14)
         SliderButton.Text = ""
         SliderButton.Parent = SliderFill
         
@@ -557,18 +608,21 @@ function Ropoto:CreateWindow(name)
             end
         end
         
-        SliderButton.MouseButton1Down:Connect(function()
-            sliding = true
+        SliderButton.InputBegan:Connect(function(input, processed)
+            if processed then return end
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                sliding = true
+            end
         end)
         
         UserInputService.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
                 sliding = false
             end
         end)
         
         UserInputService.InputChanged:Connect(function(input)
-            if sliding and input.UserInputType == Enum.UserInputType.MouseMovement then
+            if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
                 local mousePos = UserInputService:GetMouseLocation()
                 local trackPos = SliderTrack.AbsolutePosition
                 local trackSize = SliderTrack.AbsoluteSize
@@ -590,18 +644,20 @@ function Ropoto:CreateWindow(name)
         DropdownFrame.Name = "DropdownFrame"
         DropdownFrame.BackgroundColor3 = Theme.Secondary
         DropdownFrame.BorderSizePixel = 0
-        DropdownFrame.Size = UDim2.new(1, -20, 0, 25)
+        DropdownFrame.Size = UDim2.new(1, 0, 0, 30)
         DropdownFrame.Parent = Container
+        
+        CreateStroke(DropdownFrame)
         
         local DropdownLabel = Instance.new("TextLabel")
         DropdownLabel.Name = "DropdownLabel"
         DropdownLabel.BackgroundTransparency = 1
-        DropdownLabel.Position = UDim2.new(0, 10, 0, 0)
+        DropdownLabel.Position = UDim2.new(0, 12, 0, 0)
         DropdownLabel.Size = UDim2.new(0, 150, 1, 0)
         DropdownLabel.Font = Enum.Font.Gotham
         DropdownLabel.Text = name
         DropdownLabel.TextColor3 = Theme.Text
-        DropdownLabel.TextSize = 12
+        DropdownLabel.TextSize = 13
         DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
         DropdownLabel.Parent = DropdownFrame
         
@@ -609,25 +665,29 @@ function Ropoto:CreateWindow(name)
         DropdownButton.Name = "DropdownButton"
         DropdownButton.BackgroundColor3 = Theme.Background
         DropdownButton.BorderSizePixel = 0
-        DropdownButton.Position = UDim2.new(1, -100, 0, 2)
-        DropdownButton.Size = UDim2.new(0, 90, 1, -4)
+        DropdownButton.Position = UDim2.new(1, -112, 0, 5)
+        DropdownButton.Size = UDim2.new(0, 100, 1, -10)
         DropdownButton.Font = Enum.Font.Gotham
         DropdownButton.Text = "Select..."
         DropdownButton.TextColor3 = Theme.Text
         DropdownButton.TextSize = 12
         DropdownButton.Parent = DropdownFrame
         
+        CreateStroke(DropdownButton)
+        
         local DropdownList = Instance.new("ScrollingFrame")
         DropdownList.Name = "DropdownList"
         DropdownList.BackgroundColor3 = Theme.Background
         DropdownList.BorderSizePixel = 0
-        DropdownList.Position = UDim2.new(0, 0, 1, 2)
-        DropdownList.Size = UDim2.new(1, 0, 0, 100)
+        DropdownList.Position = UDim2.new(0, 0, 1, 5)
+        DropdownList.Size = UDim2.new(1, 0, 0, 120)
         DropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
-        DropdownList.ScrollBarThickness = 3
+        DropdownList.ScrollBarThickness = 4
         DropdownList.ScrollBarImageColor3 = Theme.Primary
         DropdownList.Visible = false
         DropdownList.Parent = DropdownFrame
+        
+        CreateStroke(DropdownList)
         
         local ListLayout = Instance.new("UIListLayout")
         ListLayout.Parent = DropdownList
@@ -642,12 +702,15 @@ function Ropoto:CreateWindow(name)
                 OptionButton.Name = "OptionButton"
                 OptionButton.BackgroundColor3 = Theme.Secondary
                 OptionButton.BorderSizePixel = 0
-                OptionButton.Size = UDim2.new(1, 0, 0, 20)
+                OptionButton.Size = UDim2.new(1, -8, 0, 25)
+                OptionButton.Position = UDim2.new(0, 4, 0, (i-1)*30 + 4)
                 OptionButton.Font = Enum.Font.Gotham
                 OptionButton.Text = option
                 OptionButton.TextColor3 = Theme.Text
                 OptionButton.TextSize = 12
                 OptionButton.Parent = DropdownList
+                
+                CreateStroke(OptionButton)
                 
                 OptionButton.MouseButton1Click:Connect(function()
                     DropdownButton.Text = option
@@ -659,7 +722,7 @@ function Ropoto:CreateWindow(name)
                 end)
                 
                 OptionButton.MouseEnter:Connect(function()
-                    Tween(OptionButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, 0.2)
+                    Tween(OptionButton, {BackgroundColor3 = Color3.fromRGB(55, 55, 65)}, 0.2)
                 end)
                 
                 OptionButton.MouseLeave:Connect(function()
@@ -667,7 +730,7 @@ function Ropoto:CreateWindow(name)
                 end)
             end
             
-            DropdownList.CanvasSize = UDim2.new(0, 0, 0, #options * 20)
+            DropdownList.CanvasSize = UDim2.new(0, 0, 0, #options * 30)
         end
         
         DropdownButton.MouseButton1Click:Connect(function()
@@ -689,18 +752,20 @@ function Ropoto:CreateWindow(name)
         PlayerFrame.Name = "PlayerFrame"
         PlayerFrame.BackgroundColor3 = Theme.Secondary
         PlayerFrame.BorderSizePixel = 0
-        PlayerFrame.Size = UDim2.new(1, -20, 0, 25)
+        PlayerFrame.Size = UDim2.new(1, 0, 0, 30)
         PlayerFrame.Parent = Container
+        
+        CreateStroke(PlayerFrame)
         
         local PlayerLabel = Instance.new("TextLabel")
         PlayerLabel.Name = "PlayerLabel"
         PlayerLabel.BackgroundTransparency = 1
-        PlayerLabel.Position = UDim2.new(0, 10, 0, 0)
-        PlayerLabel.Size = UDim2.new(0, 100, 1, 0)
+        PlayerLabel.Position = UDim2.new(0, 12, 0, 0)
+        PlayerLabel.Size = UDim2.new(0, 120, 1, 0)
         PlayerLabel.Font = Enum.Font.Gotham
         PlayerLabel.Text = "Select Player"
         PlayerLabel.TextColor3 = Theme.Text
-        PlayerLabel.TextSize = 12
+        PlayerLabel.TextSize = 13
         PlayerLabel.TextXAlignment = Enum.TextXAlignment.Left
         PlayerLabel.Parent = PlayerFrame
         
@@ -708,25 +773,29 @@ function Ropoto:CreateWindow(name)
         PlayerButton.Name = "PlayerButton"
         PlayerButton.BackgroundColor3 = Theme.Background
         PlayerButton.BorderSizePixel = 0
-        PlayerButton.Position = UDim2.new(1, -100, 0, 2)
-        PlayerButton.Size = UDim2.new(0, 90, 1, -4)
+        PlayerButton.Position = UDim2.new(1, -112, 0, 5)
+        PlayerButton.Size = UDim2.new(0, 100, 1, -10)
         PlayerButton.Font = Enum.Font.Gotham
         PlayerButton.Text = "Select..."
         PlayerButton.TextColor3 = Theme.Text
         PlayerButton.TextSize = 12
         PlayerButton.Parent = PlayerFrame
         
+        CreateStroke(PlayerButton)
+        
         local PlayerList = Instance.new("ScrollingFrame")
         PlayerList.Name = "PlayerList"
         PlayerList.BackgroundColor3 = Theme.Background
         PlayerList.BorderSizePixel = 0
-        PlayerList.Position = UDim2.new(0, 0, 1, 2)
-        PlayerList.Size = UDim2.new(1, 0, 0, 100)
+        PlayerList.Position = UDim2.new(0, 0, 1, 5)
+        PlayerList.Size = UDim2.new(1, 0, 0, 120)
         PlayerList.CanvasSize = UDim2.new(0, 0, 0, 0)
-        PlayerList.ScrollBarThickness = 3
+        PlayerList.ScrollBarThickness = 4
         PlayerList.ScrollBarImageColor3 = Theme.Primary
         PlayerList.Visible = false
         PlayerList.Parent = PlayerFrame
+        
+        CreateStroke(PlayerList)
         
         local ListLayout = Instance.new("UIListLayout")
         ListLayout.Parent = PlayerList
@@ -742,12 +811,15 @@ function Ropoto:CreateWindow(name)
                 PlayerOption.Name = "PlayerOption"
                 PlayerOption.BackgroundColor3 = Theme.Secondary
                 PlayerOption.BorderSizePixel = 0
-                PlayerOption.Size = UDim2.new(1, 0, 0, 20)
+                PlayerOption.Size = UDim2.new(1, -8, 0, 25)
+                PlayerOption.Position = UDim2.new(0, 4, 0, (i-1)*30 + 4)
                 PlayerOption.Font = Enum.Font.Gotham
                 PlayerOption.Text = player.Name
                 PlayerOption.TextColor3 = Theme.Text
                 PlayerOption.TextSize = 12
                 PlayerOption.Parent = PlayerList
+                
+                CreateStroke(PlayerOption)
                 
                 PlayerOption.MouseButton1Click:Connect(function()
                     PlayerButton.Text = player.Name
@@ -759,7 +831,7 @@ function Ropoto:CreateWindow(name)
                 end)
                 
                 PlayerOption.MouseEnter:Connect(function()
-                    Tween(PlayerOption, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, 0.2)
+                    Tween(PlayerOption, {BackgroundColor3 = Color3.fromRGB(55, 55, 65)}, 0.2)
                 end)
                 
                 PlayerOption.MouseLeave:Connect(function()
@@ -767,7 +839,7 @@ function Ropoto:CreateWindow(name)
                 end)
             end
             
-            PlayerList.CanvasSize = UDim2.new(0, 0, 0, #players * 20)
+            PlayerList.CanvasSize = UDim2.new(0, 0, 0, #players * 30)
         end
         
         PlayerButton.MouseButton1Click:Connect(function()
@@ -794,17 +866,18 @@ function Ropoto:CreateWindow(name)
         Notification.Name = "Notification"
         Notification.BackgroundColor3 = Theme.Secondary
         Notification.BorderSizePixel = 0
-        Notification.Position = UDim2.new(1, 10, 1, -100)
-        Notification.Size = UDim2.new(0, 250, 0, 80)
+        Notification.Position = UDim2.new(1, 10, 1, -120)
+        Notification.Size = UDim2.new(0, 300, 0, 100)
         Notification.Parent = ScreenGui
         
         CreateShadow(Notification)
+        CreateStroke(Notification)
         
         local NotifTitle = Instance.new("TextLabel")
         NotifTitle.Name = "NotifTitle"
         NotifTitle.BackgroundTransparency = 1
-        NotifTitle.Position = UDim2.new(0, 10, 0, 10)
-        NotifTitle.Size = UDim2.new(1, -20, 0, 20)
+        NotifTitle.Position = UDim2.new(0, 15, 0, 10)
+        NotifTitle.Size = UDim2.new(1, -30, 0, 20)
         NotifTitle.Font = Enum.Font.GothamSemibold
         NotifTitle.Text = title
         NotifTitle.TextColor3 = Theme.Primary
@@ -815,8 +888,8 @@ function Ropoto:CreateWindow(name)
         local NotifMessage = Instance.new("TextLabel")
         NotifMessage.Name = "NotifMessage"
         NotifMessage.BackgroundTransparency = 1
-        NotifMessage.Position = UDim2.new(0, 10, 0, 35)
-        NotifMessage.Size = UDim2.new(1, -20, 1, -45)
+        NotifMessage.Position = UDim2.new(0, 15, 0, 35)
+        NotifMessage.Size = UDim2.new(1, -30, 1, -45)
         NotifMessage.Font = Enum.Font.Gotham
         NotifMessage.Text = message
         NotifMessage.TextColor3 = Theme.Text
@@ -826,11 +899,11 @@ function Ropoto:CreateWindow(name)
         NotifMessage.TextYAlignment = Enum.TextYAlignment.Top
         NotifMessage.Parent = Notification
         
-        Notification.Position = UDim2.new(1, 260, 1, -100)
-        Tween(Notification, {Position = UDim2.new(1, 10, 1, -100)}, 0.3)
+        Notification.Position = UDim2.new(1, 310, 1, -120)
+        Tween(Notification, {Position = UDim2.new(1, 10, 1, -120)}, 0.3)
         
         delay(duration, function()
-            Tween(Notification, {Position = UDim2.new(1, 260, 1, -100)}, 0.3)
+            Tween(Notification, {Position = UDim2.new(1, 310, 1, -120)}, 0.3)
             wait(0.3)
             Notification:Destroy()
         end)
@@ -843,18 +916,20 @@ function Ropoto:CreateWindow(name)
         ColorFrame.Name = "ColorFrame"
         ColorFrame.BackgroundColor3 = Theme.Secondary
         ColorFrame.BorderSizePixel = 0
-        ColorFrame.Size = UDim2.new(1, -20, 0, 25)
+        ColorFrame.Size = UDim2.new(1, 0, 0, 30)
         ColorFrame.Parent = Container
+        
+        CreateStroke(ColorFrame)
         
         local ColorLabel = Instance.new("TextLabel")
         ColorLabel.Name = "ColorLabel"
         ColorLabel.BackgroundTransparency = 1
-        ColorLabel.Position = UDim2.new(0, 10, 0, 0)
+        ColorLabel.Position = UDim2.new(0, 12, 0, 0)
         ColorLabel.Size = UDim2.new(0, 150, 1, 0)
         ColorLabel.Font = Enum.Font.Gotham
         ColorLabel.Text = name
         ColorLabel.TextColor3 = Theme.Text
-        ColorLabel.TextSize = 12
+        ColorLabel.TextSize = 13
         ColorLabel.TextXAlignment = Enum.TextXAlignment.Left
         ColorLabel.Parent = ColorFrame
         
@@ -862,26 +937,12 @@ function Ropoto:CreateWindow(name)
         ColorButton.Name = "ColorButton"
         ColorButton.BackgroundColor3 = default or Theme.Primary
         ColorButton.BorderSizePixel = 0
-        ColorButton.Position = UDim2.new(1, -35, 0.5, -8)
-        ColorButton.Size = UDim2.new(0, 25, 0, 16)
+        ColorButton.Position = UDim2.new(1, -42, 0.5, -10)
+        ColorButton.Size = UDim2.new(0, 30, 0, 20)
         ColorButton.Text = ""
         ColorButton.Parent = ColorFrame
         
-        local ColorPicker = Instance.new("Frame")
-        ColorPicker.Name = "ColorPicker"
-        ColorPicker.BackgroundColor3 = Theme.Background
-        ColorPicker.BorderSizePixel = 0
-        ColorPicker.Position = UDim2.new(0, 0, 1, 2)
-        ColorPicker.Size = UDim2.new(1, 0, 0, 100)
-        ColorPicker.Visible = false
-        ColorPicker.Parent = ColorFrame
-        
-        local open = false
-        
-        ColorButton.MouseButton1Click:Connect(function()
-            open = not open
-            ColorPicker.Visible = open
-        end)
+        CreateStroke(ColorButton)
         
         table.insert(Window.Elements, ColorFrame)
         return ColorFrame
