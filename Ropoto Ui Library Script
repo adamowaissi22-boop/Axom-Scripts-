@@ -40,6 +40,13 @@ local function CreateStroke(frame)
     return stroke
 end
 
+local function CreateCorner(frame, radius)
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = radius or UDim.new(0, 6)
+    corner.Parent = frame
+    return corner
+end
+
 local function Tween(obj, props, duration, style)
     local tweenInfo = TweenInfo.new(duration or 0.2, style or Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
     local tween = TweenService:Create(obj, tweenInfo, props)
@@ -56,7 +63,7 @@ function Ropoto:CreateWindow(name)
     
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "RopotoUI"
-    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
     ScreenGui.Parent = game:GetService("CoreGui")
     
     local MainFrame = Instance.new("Frame")
@@ -65,17 +72,22 @@ function Ropoto:CreateWindow(name)
     MainFrame.BorderSizePixel = 0
     MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
     MainFrame.Size = UDim2.new(0, 500, 0, 550)
+    MainFrame.ZIndex = 1
     MainFrame.Parent = ScreenGui
     
     CreateShadow(MainFrame)
     CreateStroke(MainFrame)
+    CreateCorner(MainFrame)
     
     local TopBar = Instance.new("Frame")
     TopBar.Name = "TopBar"
     TopBar.BackgroundColor3 = Theme.Dark
     TopBar.BorderSizePixel = 0
     TopBar.Size = UDim2.new(1, 0, 0, 40)
+    TopBar.ZIndex = 2
     TopBar.Parent = MainFrame
+    
+    CreateCorner(TopBar, UDim.new(0, 6))
     
     local Title = Instance.new("TextLabel")
     Title.Name = "Title"
@@ -87,6 +99,7 @@ function Ropoto:CreateWindow(name)
     Title.TextColor3 = Theme.Text
     Title.TextSize = 16
     Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.ZIndex = 3
     Title.Parent = TopBar
     
     local CreditsButton = Instance.new("TextButton")
@@ -98,6 +111,7 @@ function Ropoto:CreateWindow(name)
     CreditsButton.Text = "ℹ"
     CreditsButton.TextColor3 = Theme.Text
     CreditsButton.TextSize = 18
+    CreditsButton.ZIndex = 3
     CreditsButton.Parent = TopBar
     
     local CloseButton = Instance.new("TextButton")
@@ -109,6 +123,7 @@ function Ropoto:CreateWindow(name)
     CloseButton.Text = "×"
     CloseButton.TextColor3 = Theme.Text
     CloseButton.TextSize = 20
+    CloseButton.ZIndex = 3
     CloseButton.Parent = TopBar
     
     local CreditsFrame = Instance.new("Frame")
@@ -123,6 +138,7 @@ function Ropoto:CreateWindow(name)
     
     CreateShadow(CreditsFrame)
     CreateStroke(CreditsFrame)
+    CreateCorner(CreditsFrame)
     
     local CreditsTopBar = Instance.new("Frame")
     CreditsTopBar.Name = "CreditsTopBar"
@@ -192,6 +208,7 @@ function Ropoto:CreateWindow(name)
     YTButton.Parent = CreditsContent
     
     CreateStroke(YTButton)
+    CreateCorner(YTButton)
     
     local SectionsContainer = Instance.new("ScrollingFrame")
     SectionsContainer.Name = "SectionsContainer"
@@ -202,6 +219,7 @@ function Ropoto:CreateWindow(name)
     SectionsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     SectionsContainer.ScrollBarThickness = 3
     SectionsContainer.ScrollBarImageColor3 = Theme.Primary
+    SectionsContainer.ZIndex = 2
     SectionsContainer.Parent = MainFrame
     
     local SectionsList = Instance.new("UIListLayout")
@@ -225,6 +243,7 @@ function Ropoto:CreateWindow(name)
     ContentContainer.ScrollBarThickness = 4
     ContentContainer.ScrollBarImageColor3 = Theme.Primary
     ContentContainer.ScrollBarImageTransparency = 0.7
+    ContentContainer.ZIndex = 2
     ContentContainer.Parent = MainFrame
     
     local ContentList = Instance.new("UIListLayout")
@@ -348,15 +367,18 @@ function Ropoto:CreateWindow(name)
         SectionButton.TextColor3 = Theme.Text
         SectionButton.TextSize = 12
         SectionButton.TextWrapped = true
+        SectionButton.ZIndex = 3
         SectionButton.Parent = SectionsContainer
         
         CreateStroke(SectionButton)
+        CreateCorner(SectionButton)
         
         local SectionFrame = Instance.new("Frame")
         SectionFrame.Name = name .. "Frame"
         SectionFrame.BackgroundTransparency = 1
         SectionFrame.Size = UDim2.new(1, 0, 1, 0)
         SectionFrame.Visible = false
+        SectionFrame.ZIndex = 2
         SectionFrame.Parent = ContentContainer
         
         local SectionUIList = Instance.new("UIListLayout")
@@ -393,9 +415,11 @@ function Ropoto:CreateWindow(name)
             ButtonFrame.BackgroundColor3 = Theme.Secondary
             ButtonFrame.BorderSizePixel = 0
             ButtonFrame.Size = UDim2.new(1, 0, 0, 35)
+            ButtonFrame.ZIndex = 3
             ButtonFrame.Parent = SectionFrame
             
             CreateStroke(ButtonFrame)
+            CreateCorner(ButtonFrame)
             
             local Button = Instance.new("TextButton")
             Button.Name = "Button"
@@ -405,6 +429,7 @@ function Ropoto:CreateWindow(name)
             Button.Text = string.upper(name)
             Button.TextColor3 = Theme.Text
             Button.TextSize = 13
+            Button.ZIndex = 4
             Button.Parent = ButtonFrame
             
             Button.MouseButton1Click:Connect(function()
@@ -436,9 +461,11 @@ function Ropoto:CreateWindow(name)
             ToggleFrame.BackgroundColor3 = Theme.Secondary
             ToggleFrame.BorderSizePixel = 0
             ToggleFrame.Size = UDim2.new(1, 0, 0, 30)
+            ToggleFrame.ZIndex = 3
             ToggleFrame.Parent = SectionFrame
             
             CreateStroke(ToggleFrame)
+            CreateCorner(ToggleFrame)
             
             local ToggleLabel = Instance.new("TextLabel")
             ToggleLabel.Name = "ToggleLabel"
@@ -450,6 +477,7 @@ function Ropoto:CreateWindow(name)
             ToggleLabel.TextColor3 = Theme.Text
             ToggleLabel.TextSize = 13
             ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ToggleLabel.ZIndex = 4
             ToggleLabel.Parent = ToggleFrame
             
             local ToggleButton = Instance.new("Frame")
@@ -458,9 +486,11 @@ function Ropoto:CreateWindow(name)
             ToggleButton.BorderSizePixel = 0
             ToggleButton.Position = UDim2.new(1, -42, 0.5, -10)
             ToggleButton.Size = UDim2.new(0, 40, 0, 20)
+            ToggleButton.ZIndex = 4
             ToggleButton.Parent = ToggleFrame
             
             CreateStroke(ToggleButton)
+            CreateCorner(ToggleButton, UDim.new(0, 10))
             
             local ToggleInner = Instance.new("Frame")
             ToggleInner.Name = "ToggleInner"
@@ -468,7 +498,10 @@ function Ropoto:CreateWindow(name)
             ToggleInner.BorderSizePixel = 0
             ToggleInner.Position = UDim2.new(0, 2, 0.5, -8)
             ToggleInner.Size = UDim2.new(0, 16, 0, 16)
+            ToggleInner.ZIndex = 5
             ToggleInner.Parent = ToggleButton
+            
+            CreateCorner(ToggleInner, UDim.new(0, 8))
             
             local state = default or false
             
@@ -505,9 +538,11 @@ function Ropoto:CreateWindow(name)
             BoxFrame.BackgroundColor3 = Theme.Secondary
             BoxFrame.BorderSizePixel = 0
             BoxFrame.Size = UDim2.new(1, 0, 0, 30)
+            BoxFrame.ZIndex = 3
             BoxFrame.Parent = SectionFrame
             
             CreateStroke(BoxFrame)
+            CreateCorner(BoxFrame)
             
             local BoxLabel = Instance.new("TextLabel")
             BoxLabel.Name = "BoxLabel"
@@ -519,6 +554,7 @@ function Ropoto:CreateWindow(name)
             BoxLabel.TextColor3 = Theme.Text
             BoxLabel.TextSize = 13
             BoxLabel.TextXAlignment = Enum.TextXAlignment.Left
+            BoxLabel.ZIndex = 4
             BoxLabel.Parent = BoxFrame
             
             local TextBox = Instance.new("TextBox")
@@ -533,9 +569,11 @@ function Ropoto:CreateWindow(name)
             TextBox.Text = ""
             TextBox.TextColor3 = Theme.Text
             TextBox.TextSize = 13
+            TextBox.ZIndex = 4
             TextBox.Parent = BoxFrame
             
             CreateStroke(TextBox)
+            CreateCorner(TextBox)
             
             TextBox.FocusLost:Connect(function(enterPressed)
                 if callback then
@@ -553,9 +591,11 @@ function Ropoto:CreateWindow(name)
             SliderFrame.BackgroundColor3 = Theme.Secondary
             SliderFrame.BorderSizePixel = 0
             SliderFrame.Size = UDim2.new(1, 0, 0, 50)
+            SliderFrame.ZIndex = 3
             SliderFrame.Parent = SectionFrame
             
             CreateStroke(SliderFrame)
+            CreateCorner(SliderFrame)
             
             local SliderLabel = Instance.new("TextLabel")
             SliderLabel.Name = "SliderLabel"
@@ -567,6 +607,7 @@ function Ropoto:CreateWindow(name)
             SliderLabel.TextColor3 = Theme.Text
             SliderLabel.TextSize = 13
             SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
+            SliderLabel.ZIndex = 4
             SliderLabel.Parent = SliderFrame
             
             local SliderValue = Instance.new("TextLabel")
@@ -579,6 +620,7 @@ function Ropoto:CreateWindow(name)
             SliderValue.TextColor3 = Theme.Primary
             SliderValue.TextSize = 13
             SliderValue.TextXAlignment = Enum.TextXAlignment.Right
+            SliderValue.ZIndex = 4
             SliderValue.Parent = SliderFrame
             
             local SliderTrack = Instance.new("Frame")
@@ -587,16 +629,21 @@ function Ropoto:CreateWindow(name)
             SliderTrack.BorderSizePixel = 0
             SliderTrack.Position = UDim2.new(0, 12, 0, 30)
             SliderTrack.Size = UDim2.new(1, -24, 0, 6)
+            SliderTrack.ZIndex = 4
             SliderTrack.Parent = SliderFrame
             
             CreateStroke(SliderTrack)
+            CreateCorner(SliderTrack, UDim.new(0, 3))
             
             local SliderFill = Instance.new("Frame")
             SliderFill.Name = "SliderFill"
             SliderFill.BackgroundColor3 = Theme.Primary
             SliderFill.BorderSizePixel = 0
             SliderFill.Size = UDim2.new(0, 0, 1, 0)
+            SliderFill.ZIndex = 5
             SliderFill.Parent = SliderTrack
+            
+            CreateCorner(SliderFill, UDim.new(0, 3))
             
             local SliderButton = Instance.new("TextButton")
             SliderButton.Name = "SliderButton"
@@ -605,7 +652,10 @@ function Ropoto:CreateWindow(name)
             SliderButton.Position = UDim2.new(0, -6, 0, -4)
             SliderButton.Size = UDim2.new(0, 14, 0, 14)
             SliderButton.Text = ""
+            SliderButton.ZIndex = 6
             SliderButton.Parent = SliderFill
+            
+            CreateCorner(SliderButton, UDim.new(0, 7))
             
             local value = math.clamp(default or min, min, max)
             local sliding = false
@@ -659,9 +709,11 @@ function Ropoto:CreateWindow(name)
             DropdownFrame.BackgroundColor3 = Theme.Secondary
             DropdownFrame.BorderSizePixel = 0
             DropdownFrame.Size = UDim2.new(1, 0, 0, 30)
+            DropdownFrame.ZIndex = 3
             DropdownFrame.Parent = SectionFrame
             
             CreateStroke(DropdownFrame)
+            CreateCorner(DropdownFrame)
             
             local DropdownLabel = Instance.new("TextLabel")
             DropdownLabel.Name = "DropdownLabel"
@@ -673,6 +725,7 @@ function Ropoto:CreateWindow(name)
             DropdownLabel.TextColor3 = Theme.Text
             DropdownLabel.TextSize = 13
             DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+            DropdownLabel.ZIndex = 4
             DropdownLabel.Parent = DropdownFrame
             
             local DropdownButton = Instance.new("TextButton")
@@ -685,10 +738,11 @@ function Ropoto:CreateWindow(name)
             DropdownButton.Text = "Select..."
             DropdownButton.TextColor3 = Theme.Text
             DropdownButton.TextSize = 12
-            DropdownButton.ZIndex = 2
+            DropdownButton.ZIndex = 4
             DropdownButton.Parent = DropdownFrame
             
             CreateStroke(DropdownButton)
+            CreateCorner(DropdownButton)
             
             local DropdownList = Instance.new("ScrollingFrame")
             DropdownList.Name = "DropdownList"
@@ -700,10 +754,11 @@ function Ropoto:CreateWindow(name)
             DropdownList.ScrollBarThickness = 4
             DropdownList.ScrollBarImageColor3 = Theme.Primary
             DropdownList.Visible = false
-            DropdownList.ZIndex = 10
-            DropdownList.Parent = DropdownFrame
+            DropdownList.ZIndex = 50
+            DropdownList.Parent = ScreenGui
             
             CreateStroke(DropdownList)
+            CreateCorner(DropdownList)
             
             local ListLayout = Instance.new("UIListLayout")
             ListLayout.Padding = UDim.new(0, 5)
@@ -725,10 +780,11 @@ function Ropoto:CreateWindow(name)
                     OptionButton.Text = option
                     OptionButton.TextColor3 = Theme.Text
                     OptionButton.TextSize = 12
-                    OptionButton.ZIndex = 11
+                    OptionButton.ZIndex = 51
                     OptionButton.Parent = DropdownList
                     
                     CreateStroke(OptionButton)
+                    CreateCorner(OptionButton)
                     
                     OptionButton.MouseButton1Click:Connect(function()
                         DropdownButton.Text = option
@@ -755,6 +811,10 @@ function Ropoto:CreateWindow(name)
                 open = not open
                 if open then
                     updateList()
+                    local buttonPos = DropdownButton.AbsolutePosition
+                    local buttonSize = DropdownButton.AbsoluteSize
+                    DropdownList.Position = UDim2.new(0, buttonPos.X, 0, buttonPos.Y + buttonSize.Y + 5)
+                    DropdownList.Size = UDim2.new(0, buttonSize.X, 0, 120)
                     DropdownList.Visible = true
                 else
                     DropdownList.Visible = false
@@ -771,9 +831,11 @@ function Ropoto:CreateWindow(name)
             PlayerFrame.BackgroundColor3 = Theme.Secondary
             PlayerFrame.BorderSizePixel = 0
             PlayerFrame.Size = UDim2.new(1, 0, 0, 30)
+            PlayerFrame.ZIndex = 3
             PlayerFrame.Parent = SectionFrame
             
             CreateStroke(PlayerFrame)
+            CreateCorner(PlayerFrame)
             
             local PlayerLabel = Instance.new("TextLabel")
             PlayerLabel.Name = "PlayerLabel"
@@ -785,6 +847,7 @@ function Ropoto:CreateWindow(name)
             PlayerLabel.TextColor3 = Theme.Text
             PlayerLabel.TextSize = 13
             PlayerLabel.TextXAlignment = Enum.TextXAlignment.Left
+            PlayerLabel.ZIndex = 4
             PlayerLabel.Parent = PlayerFrame
             
             local PlayerButton = Instance.new("TextButton")
@@ -797,25 +860,27 @@ function Ropoto:CreateWindow(name)
             PlayerButton.Text = "Select..."
             PlayerButton.TextColor3 = Theme.Text
             PlayerButton.TextSize = 12
-            PlayerButton.ZIndex = 2
+            PlayerButton.ZIndex = 4
             PlayerButton.Parent = PlayerFrame
             
             CreateStroke(PlayerButton)
+            CreateCorner(PlayerButton)
             
             local PlayerList = Instance.new("ScrollingFrame")
             PlayerList.Name = "PlayerList"
             PlayerList.BackgroundColor3 = Theme.Background
             PlayerList.BorderSizePixel = 0
-            PlayerList.Position = UDim2.new(0, 0, 1, 5)
-            PlayerList.Size = UDim2.new(1, 0, 0, 120)
+            PlayerList.Position = UDim2.new(0, 0, 0, 0)
+            PlayerList.Size = UDim2.new(0, 0, 0, 120)
             PlayerList.CanvasSize = UDim2.new(0, 0, 0, 0)
             PlayerList.ScrollBarThickness = 4
             PlayerList.ScrollBarImageColor3 = Theme.Primary
             PlayerList.Visible = false
-            PlayerList.ZIndex = 10
-            PlayerList.Parent = PlayerFrame
+            PlayerList.ZIndex = 50
+            PlayerList.Parent = ScreenGui
             
             CreateStroke(PlayerList)
+            CreateCorner(PlayerList)
             
             local ListLayout = Instance.new("UIListLayout")
             ListLayout.Padding = UDim.new(0, 5)
@@ -838,10 +903,11 @@ function Ropoto:CreateWindow(name)
                     PlayerOption.Text = player.Name
                     PlayerOption.TextColor3 = Theme.Text
                     PlayerOption.TextSize = 12
-                    PlayerOption.ZIndex = 11
+                    PlayerOption.ZIndex = 51
                     PlayerOption.Parent = PlayerList
                     
                     CreateStroke(PlayerOption)
+                    CreateCorner(PlayerOption)
                     
                     PlayerOption.MouseButton1Click:Connect(function()
                         PlayerButton.Text = player.Name
@@ -868,6 +934,10 @@ function Ropoto:CreateWindow(name)
                 open = not open
                 if open then
                     updatePlayerList()
+                    local buttonPos = PlayerButton.AbsolutePosition
+                    local buttonSize = PlayerButton.AbsoluteSize
+                    PlayerList.Position = UDim2.new(0, buttonPos.X, 0, buttonPos.Y + buttonSize.Y + 5)
+                    PlayerList.Size = UDim2.new(0, buttonSize.X, 0, 120)
                     PlayerList.Visible = true
                 else
                     PlayerList.Visible = false
@@ -889,9 +959,11 @@ function Ropoto:CreateWindow(name)
             ColorFrame.BackgroundColor3 = Theme.Secondary
             ColorFrame.BorderSizePixel = 0
             ColorFrame.Size = UDim2.new(1, 0, 0, 30)
+            ColorFrame.ZIndex = 3
             ColorFrame.Parent = SectionFrame
             
             CreateStroke(ColorFrame)
+            CreateCorner(ColorFrame)
             
             local ColorLabel = Instance.new("TextLabel")
             ColorLabel.Name = "ColorLabel"
@@ -903,6 +975,7 @@ function Ropoto:CreateWindow(name)
             ColorLabel.TextColor3 = Theme.Text
             ColorLabel.TextSize = 13
             ColorLabel.TextXAlignment = Enum.TextXAlignment.Left
+            ColorLabel.ZIndex = 4
             ColorLabel.Parent = ColorFrame
             
             local ColorButton = Instance.new("TextButton")
@@ -912,25 +985,27 @@ function Ropoto:CreateWindow(name)
             ColorButton.Position = UDim2.new(1, -42, 0.5, -10)
             ColorButton.Size = UDim2.new(0, 30, 0, 20)
             ColorButton.Text = ""
-            ColorButton.ZIndex = 2
+            ColorButton.ZIndex = 4
             ColorButton.Parent = ColorFrame
             
             CreateStroke(ColorButton)
+            CreateCorner(ColorButton)
             
             local ColorPicker = Instance.new("ScrollingFrame")
             ColorPicker.Name = "ColorPicker"
             ColorPicker.BackgroundColor3 = Theme.Background
             ColorPicker.BorderSizePixel = 0
-            ColorPicker.Position = UDim2.new(0, 0, 1, 5)
-            ColorPicker.Size = UDim2.new(1, 0, 0, 120)
+            ColorPicker.Position = UDim2.new(0, 0, 0, 0)
+            ColorPicker.Size = UDim2.new(0, 0, 0, 120)
             ColorPicker.CanvasSize = UDim2.new(0, 0, 0, 0)
             ColorPicker.ScrollBarThickness = 4
             ColorPicker.ScrollBarImageColor3 = Theme.Primary
             ColorPicker.Visible = false
-            ColorPicker.ZIndex = 10
-            ColorPicker.Parent = ColorFrame
+            ColorPicker.ZIndex = 50
+            ColorPicker.Parent = ScreenGui
             
             CreateStroke(ColorPicker)
+            CreateCorner(ColorPicker)
             
             local ColorGrid = Instance.new("UIGridLayout")
             ColorGrid.CellPadding = UDim2.new(0, 5, 0, 5)
@@ -969,10 +1044,11 @@ function Ropoto:CreateWindow(name)
                     ColorOption.BorderSizePixel = 0
                     ColorOption.Size = UDim2.new(0, 25, 0, 25)
                     ColorOption.Text = ""
-                    ColorOption.ZIndex = 11
+                    ColorOption.ZIndex = 51
                     ColorOption.Parent = ColorPicker
                     
                     CreateStroke(ColorOption)
+                    CreateCorner(ColorOption)
                     
                     ColorOption.MouseButton1Click:Connect(function()
                         ColorButton.BackgroundColor3 = color
@@ -984,13 +1060,17 @@ function Ropoto:CreateWindow(name)
                     end)
                 end
                 
-                ColorPicker.CanvasSize = UDim2.new(0, math.ceil(#colors / 4) * 30, 0, 0)
+                ColorPicker.CanvasSize = UDim2.new(0, 150, 0, math.ceil(#colors / 4) * 30)
             end
             
             ColorButton.MouseButton1Click:Connect(function()
                 open = not open
                 if open then
                     updateColorPicker()
+                    local buttonPos = ColorButton.AbsolutePosition
+                    local buttonSize = ColorButton.AbsoluteSize
+                    ColorPicker.Position = UDim2.new(0, buttonPos.X, 0, buttonPos.Y + buttonSize.Y + 5)
+                    ColorPicker.Size = UDim2.new(0, 150, 0, 120)
                     ColorPicker.Visible = true
                 else
                     ColorPicker.Visible = false
@@ -1010,10 +1090,12 @@ function Ropoto:CreateWindow(name)
             Notification.BorderSizePixel = 0
             Notification.Position = UDim2.new(1, 10, 1, -120)
             Notification.Size = UDim2.new(0, 300, 0, 100)
+            Notification.ZIndex = 100
             Notification.Parent = ScreenGui
             
             CreateShadow(Notification)
             CreateStroke(Notification)
+            CreateCorner(Notification)
             
             local NotifTitle = Instance.new("TextLabel")
             NotifTitle.Name = "NotifTitle"
@@ -1025,6 +1107,7 @@ function Ropoto:CreateWindow(name)
             NotifTitle.TextColor3 = Theme.Primary
             NotifTitle.TextSize = 14
             NotifTitle.TextXAlignment = Enum.TextXAlignment.Left
+            NotifTitle.ZIndex = 101
             NotifTitle.Parent = Notification
             
             local NotifMessage = Instance.new("TextLabel")
@@ -1039,6 +1122,7 @@ function Ropoto:CreateWindow(name)
             NotifMessage.TextWrapped = true
             NotifMessage.TextXAlignment = Enum.TextXAlignment.Left
             NotifMessage.TextYAlignment = Enum.TextYAlignment.Top
+            NotifMessage.ZIndex = 101
             NotifMessage.Parent = Notification
             
             Notification.Position = UDim2.new(1, 310, 1, -120)
