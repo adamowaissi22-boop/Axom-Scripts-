@@ -118,7 +118,7 @@ function Ropoto:CreateWindow(name)
     CreditsFrame.Position = UDim2.new(0.5, -125, 0.5, -75)
     CreditsFrame.Size = UDim2.new(0, 250, 0, 150)
     CreditsFrame.Visible = false
-    CreditsFrame.ZIndex = 10
+    CreditsFrame.ZIndex = 100
     CreditsFrame.Parent = ScreenGui
     
     CreateShadow(CreditsFrame)
@@ -129,7 +129,7 @@ function Ropoto:CreateWindow(name)
     CreditsTopBar.BackgroundColor3 = Theme.Dark
     CreditsTopBar.BorderSizePixel = 0
     CreditsTopBar.Size = UDim2.new(1, 0, 0, 30)
-    CreditsTopBar.ZIndex = 11
+    CreditsTopBar.ZIndex = 101
     CreditsTopBar.Parent = CreditsFrame
     
     local CreditsTitle = Instance.new("TextLabel")
@@ -142,7 +142,7 @@ function Ropoto:CreateWindow(name)
     CreditsTitle.TextSize = 14
     CreditsTitle.TextXAlignment = Enum.TextXAlignment.Left
     CreditsTitle.Position = UDim2.new(0, 10, 0, 0)
-    CreditsTitle.ZIndex = 12
+    CreditsTitle.ZIndex = 102
     CreditsTitle.Parent = CreditsTopBar
     
     local CreditsClose = Instance.new("TextButton")
@@ -154,7 +154,7 @@ function Ropoto:CreateWindow(name)
     CreditsClose.Text = "×"
     CreditsClose.TextColor3 = Theme.Text
     CreditsClose.TextSize = 16
-    CreditsClose.ZIndex = 12
+    CreditsClose.ZIndex = 102
     CreditsClose.Parent = CreditsTopBar
     
     local CreditsContent = Instance.new("Frame")
@@ -162,7 +162,7 @@ function Ropoto:CreateWindow(name)
     CreditsContent.BackgroundTransparency = 1
     CreditsContent.Position = UDim2.new(0, 0, 0, 30)
     CreditsContent.Size = UDim2.new(1, 0, 1, -30)
-    CreditsContent.ZIndex = 11
+    CreditsContent.ZIndex = 101
     CreditsContent.Parent = CreditsFrame
     
     local MadeBy = Instance.new("TextLabel")
@@ -175,7 +175,7 @@ function Ropoto:CreateWindow(name)
     MadeBy.TextColor3 = Theme.Text
     MadeBy.TextSize = 13
     MadeBy.TextYAlignment = Enum.TextYAlignment.Top
-    MadeBy.ZIndex = 12
+    MadeBy.ZIndex = 102
     MadeBy.Parent = CreditsContent
     
     local YTButton = Instance.new("TextButton")
@@ -188,7 +188,7 @@ function Ropoto:CreateWindow(name)
     YTButton.Text = "YouTube"
     YTButton.TextColor3 = Theme.Text
     YTButton.TextSize = 13
-    YTButton.ZIndex = 12
+    YTButton.ZIndex = 102
     YTButton.Parent = CreditsContent
     
     CreateStroke(YTButton)
@@ -198,7 +198,7 @@ function Ropoto:CreateWindow(name)
     SectionsContainer.BackgroundTransparency = 1
     SectionsContainer.BorderSizePixel = 0
     SectionsContainer.Position = UDim2.new(0, 0, 0, 40)
-    SectionsContainer.Size = UDim2.new(0, 80, 1, -40)
+    SectionsContainer.Size = UDim2.new(1, 0, 0, 60)
     SectionsContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     SectionsContainer.ScrollBarThickness = 3
     SectionsContainer.ScrollBarImageColor3 = Theme.Primary
@@ -206,19 +206,21 @@ function Ropoto:CreateWindow(name)
     
     local SectionsList = Instance.new("UIListLayout")
     SectionsList.Padding = UDim.new(0, 8)
+    SectionsList.FillDirection = Enum.FillDirection.Horizontal
     SectionsList.Parent = SectionsContainer
     
     local SectionsPadding = Instance.new("UIPadding")
     SectionsPadding.PaddingTop = UDim.new(0, 10)
     SectionsPadding.PaddingLeft = UDim.new(0, 10)
+    SectionsPadding.PaddingRight = UDim.new(0, 10)
     SectionsPadding.Parent = SectionsContainer
-   
+    
     local ContentContainer = Instance.new("ScrollingFrame")
     ContentContainer.Name = "ContentContainer"
     ContentContainer.BackgroundTransparency = 1
     ContentContainer.BorderSizePixel = 0
-    ContentContainer.Position = UDim2.new(0, 80, 0, 40)
-    ContentContainer.Size = UDim2.new(1, -80, 1, -40)
+    ContentContainer.Position = UDim2.new(0, 0, 0, 100)
+    ContentContainer.Size = UDim2.new(1, 0, 1, -100)
     ContentContainer.CanvasSize = UDim2.new(0, 0, 0, 0)
     ContentContainer.ScrollBarThickness = 4
     ContentContainer.ScrollBarImageColor3 = Theme.Primary
@@ -235,7 +237,7 @@ function Ropoto:CreateWindow(name)
     ContentPadding.PaddingTop = UDim.new(0, 10)
     ContentPadding.PaddingBottom = UDim.new(0, 10)
     ContentPadding.Parent = ContentContainer
-
+    
     local dragging = false
     local dragInput, dragStart, startPos
 
@@ -301,7 +303,6 @@ function Ropoto:CreateWindow(name)
         Tween(YTButton, {BackgroundColor3 = Theme.Primary}, 0.2)
     end)
 
-    -- Button hover effects
     CreditsButton.MouseEnter:Connect(function()
         Tween(CreditsButton, {TextColor3 = Theme.Primary}, 0.2)
     end)
@@ -329,7 +330,7 @@ function Ropoto:CreateWindow(name)
     end)
 
     SectionsList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        SectionsContainer.CanvasSize = UDim2.new(0, 0, 0, SectionsList.AbsoluteContentSize.Y + 20)
+        SectionsContainer.CanvasSize = UDim2.new(0, SectionsList.AbsoluteContentSize.X + 20, 0, 0)
     end)
 
     function Window:MakeSection(name)
@@ -341,15 +342,16 @@ function Ropoto:CreateWindow(name)
         SectionButton.Name = name .. "Button"
         SectionButton.BackgroundColor3 = Theme.Secondary
         SectionButton.BorderSizePixel = 0
-        SectionButton.Size = UDim2.new(0, 60, 0, 60)
+        SectionButton.Size = UDim2.new(0, 80, 0, 35)
         SectionButton.Font = Enum.Font.GothamSemibold
-        SectionButton.Text = string.sub(name, 1, 3)
+        SectionButton.Text = name
         SectionButton.TextColor3 = Theme.Text
         SectionButton.TextSize = 12
+        SectionButton.TextWrapped = true
         SectionButton.Parent = SectionsContainer
         
         CreateStroke(SectionButton)
-       
+        
         local SectionFrame = Instance.new("Frame")
         SectionFrame.Name = name .. "Frame"
         SectionFrame.BackgroundTransparency = 1
@@ -379,7 +381,6 @@ function Ropoto:CreateWindow(name)
         
         SectionButton.MouseButton1Click:Connect(activateSection)
         
-        -- Activate first section by default
         if #Window.Sections == 0 then
             activateSection()
         end
@@ -684,6 +685,7 @@ function Ropoto:CreateWindow(name)
             DropdownButton.Text = "Select..."
             DropdownButton.TextColor3 = Theme.Text
             DropdownButton.TextSize = 12
+            DropdownButton.ZIndex = 2
             DropdownButton.Parent = DropdownFrame
             
             CreateStroke(DropdownButton)
@@ -698,6 +700,7 @@ function Ropoto:CreateWindow(name)
             DropdownList.ScrollBarThickness = 4
             DropdownList.ScrollBarImageColor3 = Theme.Primary
             DropdownList.Visible = false
+            DropdownList.ZIndex = 10
             DropdownList.Parent = DropdownFrame
             
             CreateStroke(DropdownList)
@@ -722,6 +725,7 @@ function Ropoto:CreateWindow(name)
                     OptionButton.Text = option
                     OptionButton.TextColor3 = Theme.Text
                     OptionButton.TextSize = 12
+                    OptionButton.ZIndex = 11
                     OptionButton.Parent = DropdownList
                     
                     CreateStroke(OptionButton)
@@ -793,6 +797,7 @@ function Ropoto:CreateWindow(name)
             PlayerButton.Text = "Select..."
             PlayerButton.TextColor3 = Theme.Text
             PlayerButton.TextSize = 12
+            PlayerButton.ZIndex = 2
             PlayerButton.Parent = PlayerFrame
             
             CreateStroke(PlayerButton)
@@ -807,6 +812,7 @@ function Ropoto:CreateWindow(name)
             PlayerList.ScrollBarThickness = 4
             PlayerList.ScrollBarImageColor3 = Theme.Primary
             PlayerList.Visible = false
+            PlayerList.ZIndex = 10
             PlayerList.Parent = PlayerFrame
             
             CreateStroke(PlayerList)
@@ -832,6 +838,7 @@ function Ropoto:CreateWindow(name)
                     PlayerOption.Text = player.Name
                     PlayerOption.TextColor3 = Theme.Text
                     PlayerOption.TextSize = 12
+                    PlayerOption.ZIndex = 11
                     PlayerOption.Parent = PlayerList
                     
                     CreateStroke(PlayerOption)
@@ -905,6 +912,7 @@ function Ropoto:CreateWindow(name)
             ColorButton.Position = UDim2.new(1, -42, 0.5, -10)
             ColorButton.Size = UDim2.new(0, 30, 0, 20)
             ColorButton.Text = ""
+            ColorButton.ZIndex = 2
             ColorButton.Parent = ColorFrame
             
             CreateStroke(ColorButton)
@@ -919,6 +927,7 @@ function Ropoto:CreateWindow(name)
             ColorPicker.ScrollBarThickness = 4
             ColorPicker.ScrollBarImageColor3 = Theme.Primary
             ColorPicker.Visible = false
+            ColorPicker.ZIndex = 10
             ColorPicker.Parent = ColorFrame
             
             CreateStroke(ColorPicker)
@@ -932,18 +941,22 @@ function Ropoto:CreateWindow(name)
             local open = false
             
             local colors = {
-                Color3.fromRGB(255, 0, 0),     -- Red
-                Color3.fromRGB(0, 255, 0),     -- Green
-                Color3.fromRGB(0, 0, 255),     -- Blue
-                Color3.fromRGB(255, 255, 0),   -- Yellow
-                Color3.fromRGB(255, 0, 255),   -- Magenta
-                Color3.fromRGB(0, 255, 255),   -- Cyan
-                Color3.fromRGB(255, 165, 0),   -- Orange
-                Color3.fromRGB(128, 0, 128),   -- Purple
-                Color3.fromRGB(255, 192, 203), -- Pink
-                Color3.fromRGB(165, 42, 42),   -- Brown
-                Color3.fromRGB(255, 255, 255), -- White
-                Color3.fromRGB(0, 0, 0)        -- Black
+                Color3.fromRGB(255, 0, 0),
+                Color3.fromRGB(0, 255, 0),
+                Color3.fromRGB(0, 0, 255),
+                Color3.fromRGB(255, 255, 0),
+                Color3.fromRGB(255, 0, 255),
+                Color3.fromRGB(0, 255, 255),
+                Color3.fromRGB(255, 165, 0),
+                Color3.fromRGB(128, 0, 128),
+                Color3.fromRGB(255, 192, 203),
+                Color3.fromRGB(165, 42, 42),
+                Color3.fromRGB(255, 255, 255),
+                Color3.fromRGB(0, 0, 0),
+                Color3.fromRGB(128, 128, 128),
+                Color3.fromRGB(192, 192, 192),
+                Color3.fromRGB(255, 215, 0),
+                Color3.fromRGB(0, 128, 0)
             }
             
             local function updateColorPicker()
@@ -956,6 +969,7 @@ function Ropoto:CreateWindow(name)
                     ColorOption.BorderSizePixel = 0
                     ColorOption.Size = UDim2.new(0, 25, 0, 25)
                     ColorOption.Text = ""
+                    ColorOption.ZIndex = 11
                     ColorOption.Parent = ColorPicker
                     
                     CreateStroke(ColorOption)
@@ -970,7 +984,7 @@ function Ropoto:CreateWindow(name)
                     end)
                 end
                 
-                ColorPicker.CanvasSize = UDim2.new(0, 0, 0, math.ceil(#colors / 4) * 30)
+                ColorPicker.CanvasSize = UDim2.new(0, math.ceil(#colors / 4) * 30, 0, 0)
             end
             
             ColorButton.MouseButton1Click:Connect(function()
