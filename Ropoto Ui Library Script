@@ -66,13 +66,63 @@ function Ropoto:CreateWindow(name)
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
     ScreenGui.Parent = game:GetService("CoreGui")
     
+    local LoadingFrame = Instance.new("Frame")
+    LoadingFrame.Name = "LoadingFrame"
+    LoadingFrame.BackgroundColor3 = Theme.Background
+    LoadingFrame.BorderSizePixel = 0
+    LoadingFrame.Position = UDim2.new(0.5, -100, 0.5, -50)
+    LoadingFrame.Size = UDim2.new(0, 200, 0, 100)
+    LoadingFrame.ZIndex = 100
+    LoadingFrame.Parent = ScreenGui
+    
+    CreateShadow(LoadingFrame)
+    CreateStroke(LoadingFrame)
+    CreateCorner(LoadingFrame)
+    
+    local LoadingTitle = Instance.new("TextLabel")
+    LoadingTitle.Name = "LoadingTitle"
+    LoadingTitle.BackgroundTransparency = 1
+    LoadingTitle.Position = UDim2.new(0, 0, 0, 15)
+    LoadingTitle.Size = UDim2.new(1, 0, 0, 25)
+    LoadingTitle.Font = Enum.Font.GothamSemibold
+    LoadingTitle.Text = "Ropoto UI"
+    LoadingTitle.TextColor3 = Theme.Primary
+    LoadingTitle.TextSize = 18
+    LoadingTitle.ZIndex = 101
+    LoadingTitle.Parent = LoadingFrame
+    
+    local LoadingSubtitle = Instance.new("TextLabel")
+    LoadingSubtitle.Name = "LoadingSubtitle"
+    LoadingSubtitle.BackgroundTransparency = 1
+    LoadingSubtitle.Position = UDim2.new(0, 0, 0, 45)
+    LoadingSubtitle.Size = UDim2.new(1, 0, 0, 20)
+    LoadingSubtitle.Font = Enum.Font.Gotham
+    LoadingSubtitle.Text = "Loading..."
+    LoadingSubtitle.TextColor3 = Theme.Text
+    LoadingSubtitle.TextSize = 14
+    LoadingSubtitle.ZIndex = 101
+    LoadingSubtitle.Parent = LoadingFrame
+    
+    local GameName = Instance.new("TextLabel")
+    GameName.Name = "GameName"
+    GameName.BackgroundTransparency = 1
+    GameName.Position = UDim2.new(0, 0, 0, 70)
+    GameName.Size = UDim2.new(1, 0, 0, 20)
+    GameName.Font = Enum.Font.Gotham
+    GameName.Text = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+    GameName.TextColor3 = Theme.Accent
+    GameName.TextSize = 12
+    GameName.ZIndex = 101
+    GameName.Parent = LoadingFrame
+    
     local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.BackgroundColor3 = Theme.Background
     MainFrame.BorderSizePixel = 0
     MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-    MainFrame.Size = UDim2.new(0, 500, 0, 550)
+    MainFrame.Size = UDim2.new(0, 0, 0, 0)
     MainFrame.ZIndex = 1
+    MainFrame.Visible = false
     MainFrame.Parent = ScreenGui
     
     CreateShadow(MainFrame)
@@ -256,6 +306,16 @@ function Ropoto:CreateWindow(name)
     ContentPadding.PaddingTop = UDim.new(0, 10)
     ContentPadding.PaddingBottom = UDim.new(0, 10)
     ContentPadding.Parent = ContentContainer
+    
+    task.delay(2, function()
+        Tween(LoadingFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.5)
+        task.wait(0.5)
+        LoadingFrame.Visible = false
+        
+        MainFrame.Visible = true
+        MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+        Tween(MainFrame, {Size = UDim2.new(0, 500, 0, 550)}, 0.5, Enum.EasingStyle.Back)
+    end)
     
     local dragging = false
     local dragInput, dragStart, startPos
@@ -748,8 +808,8 @@ function Ropoto:CreateWindow(name)
             DropdownList.Name = "DropdownList"
             DropdownList.BackgroundColor3 = Theme.Background
             DropdownList.BorderSizePixel = 0
-            DropdownList.Position = UDim2.new(0, 0, 1, 5)
-            DropdownList.Size = UDim2.new(1, 0, 0, 120)
+            DropdownList.Position = UDim2.new(0, 0, 0, 0)
+            DropdownList.Size = UDim2.new(0, 0, 0, 120)
             DropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
             DropdownList.ScrollBarThickness = 4
             DropdownList.ScrollBarImageColor3 = Theme.Primary
@@ -1015,24 +1075,24 @@ function Ropoto:CreateWindow(name)
             
             local open = false
             
-            local colors = {
-                Color3.fromRGB(255, 0, 0),
-                Color3.fromRGB(0, 255, 0),
-                Color3.fromRGB(0, 0, 255),
-                Color3.fromRGB(255, 255, 0),
-                Color3.fromRGB(255, 0, 255),
-                Color3.fromRGB(0, 255, 255),
-                Color3.fromRGB(255, 165, 0),
-                Color3.fromRGB(128, 0, 128),
-                Color3.fromRGB(255, 192, 203),
-                Color3.fromRGB(165, 42, 42),
-                Color3.fromRGB(255, 255, 255),
-                Color3.fromRGB(0, 0, 0),
-                Color3.fromRGB(128, 128, 128),
-                Color3.fromRGB(192, 192, 192),
-                Color3.fromRGB(255, 215, 0),
-                Color3.fromRGB(0, 128, 0)
-            }
+            local function generateAllColors()
+                local colors = {}
+                for r = 0, 7 do
+                    for g = 0, 7 do
+                        for b = 0, 7 do
+                            local color = Color3.fromRGB(
+                                math.floor(r * 255 / 7),
+                                math.floor(g * 255 / 7), 
+                                math.floor(b * 255 / 7)
+                            )
+                            table.insert(colors, color)
+                        end
+                    end
+                end
+                return colors
+            end
+            
+            local colors = generateAllColors()
             
             local function updateColorPicker()
                 ColorPicker:ClearAllChildren()
@@ -1060,7 +1120,7 @@ function Ropoto:CreateWindow(name)
                     end)
                 end
                 
-                ColorPicker.CanvasSize = UDim2.new(0, 150, 0, math.ceil(#colors / 4) * 30)
+                ColorPicker.CanvasSize = UDim2.new(0, 150, 0, math.ceil(#colors / 6) * 30)
             end
             
             ColorButton.MouseButton1Click:Connect(function()
