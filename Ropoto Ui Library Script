@@ -1,0 +1,893 @@
+local Ropoto = {}
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+local Theme = {
+    Primary = Color3.fromRGB(65, 150, 255),
+    Secondary = Color3.fromRGB(40, 40, 50),
+    Background = Color3.fromRGB(30, 30, 40),
+    Text = Color3.fromRGB(240, 240, 240),
+    Accent = Color3.fromRGB(80, 170, 255),
+    Success = Color3.fromRGB(65, 255, 135),
+    Warning = Color3.fromRGB(255, 185, 65),
+    Error = Color3.fromRGB(255, 85, 85)
+}
+
+local function CreateShadow(frame)
+    local shadow = Instance.new("ImageLabel")
+    shadow.Name = "Shadow"
+    shadow.BackgroundTransparency = 1
+    shadow.Image = "rbxassetid://1316045217"
+    shadow.ImageColor3 = Color3.new(0, 0, 0)
+    shadow.ImageTransparency = 0.8
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(10, 10, 118, 118)
+    shadow.Size = UDim2.new(1, 10, 1, 10)
+    shadow.Position = UDim2.new(0, -5, 0, -5)
+    shadow.Parent = frame
+    return shadow
+end
+
+local function Tween(obj, props, duration, style)
+    local tweenInfo = TweenInfo.new(duration or 0.2, style or Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local tween = TweenService:Create(obj, tweenInfo, props)
+    tween:Play()
+    return tween
+end
+
+function Ropoto:CreateWindow(name)
+    local Window = {}
+    Window.Elements = {}
+    Window.Connections = {}
+    
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "RopotoUI"
+    ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    ScreenGui.Parent = game:GetService("CoreGui")
+    
+    local MainFrame = Instance.new("Frame")
+    MainFrame.Name = "MainFrame"
+    MainFrame.BackgroundColor3 = Theme.Background
+    MainFrame.BorderSizePixel = 0
+    MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
+    MainFrame.Size = UDim2.new(0, 400, 0, 450)
+    MainFrame.Parent = ScreenGui
+    
+    CreateShadow(MainFrame)
+    
+    local TopBar = Instance.new("Frame")
+    TopBar.Name = "TopBar"
+    TopBar.BackgroundColor3 = Theme.Secondary
+    TopBar.BorderSizePixel = 0
+    TopBar.Size = UDim2.new(1, 0, 0, 35)
+    TopBar.Parent = MainFrame
+    
+    local Title = Instance.new("TextLabel")
+    Title.Name = "Title"
+    Title.BackgroundTransparency = 1
+    Title.Position = UDim2.new(0, 15, 0, 0)
+    Title.Size = UDim2.new(0, 200, 1, 0)
+    Title.Font = Enum.Font.GothamSemibold
+    Title.Text = name or "Ropoto UI"
+    Title.TextColor3 = Theme.Text
+    Title.TextSize = 14
+    Title.TextXAlignment = Enum.TextXAlignment.Left
+    Title.Parent = TopBar
+    
+    local CreditsButton = Instance.new("TextButton")
+    CreditsButton.Name = "CreditsButton"
+    CreditsButton.BackgroundTransparency = 1
+    CreditsButton.Position = UDim2.new(1, -70, 0, 0)
+    CreditsButton.Size = UDim2.new(0, 35, 1, 0)
+    CreditsButton.Font = Enum.Font.GothamBold
+    CreditsButton.Text = "ℹ"
+    CreditsButton.TextColor3 = Theme.Text
+    CreditsButton.TextSize = 16
+    CreditsButton.Parent = TopBar
+    
+    local CloseButton = Instance.new("TextButton")
+    CloseButton.Name = "CloseButton"
+    CloseButton.BackgroundTransparency = 1
+    CloseButton.Position = UDim2.new(1, -35, 0, 0)
+    CloseButton.Size = UDim2.new(0, 35, 1, 0)
+    CloseButton.Font = Enum.Font.GothamBold
+    CloseButton.Text = "×"
+    CloseButton.TextColor3 = Theme.Text
+    CloseButton.TextSize = 18
+    CloseButton.Parent = TopBar
+    
+    local CreditsFrame = Instance.new("Frame")
+    CreditsFrame.Name = "CreditsFrame"
+    CreditsFrame.BackgroundColor3 = Theme.Background
+    CreditsFrame.BorderSizePixel = 0
+    CreditsFrame.Position = UDim2.new(0.5, -100, 0.5, -75)
+    CreditsFrame.Size = UDim2.new(0, 200, 0, 150)
+    CreditsFrame.Visible = false
+    CreditsFrame.ZIndex = 10
+    CreditsFrame.Parent = ScreenGui
+    
+    CreateShadow(CreditsFrame)
+    
+    local CreditsTopBar = Instance.new("Frame")
+    CreditsTopBar.Name = "CreditsTopBar"
+    CreditsTopBar.BackgroundColor3 = Theme.Secondary
+    CreditsTopBar.BorderSizePixel = 0
+    CreditsTopBar.Size = UDim2.new(1, 0, 0, 25)
+    CreditsTopBar.ZIndex = 11
+    CreditsTopBar.Parent = CreditsFrame
+    
+    local CreditsTitle = Instance.new("TextLabel")
+    CreditsTitle.Name = "CreditsTitle"
+    CreditsTitle.BackgroundTransparency = 1
+    CreditsTitle.Size = UDim2.new(1, 0, 1, 0)
+    CreditsTitle.Font = Enum.Font.GothamSemibold
+    CreditsTitle.Text = "Credits"
+    CreditsTitle.TextColor3 = Theme.Text
+    CreditsTitle.TextSize = 12
+    CreditsTitle.ZIndex = 12
+    CreditsTitle.Parent = CreditsTopBar
+    
+    local CreditsClose = Instance.new("TextButton")
+    CreditsClose.Name = "CreditsClose"
+    CreditsClose.BackgroundTransparency = 1
+    CreditsClose.Position = UDim2.new(1, -25, 0, 0)
+    CreditsClose.Size = UDim2.new(0, 25, 1, 0)
+    CreditsClose.Font = Enum.Font.GothamBold
+    CreditsClose.Text = "×"
+    CreditsClose.TextColor3 = Theme.Text
+    CreditsClose.TextSize = 14
+    CreditsClose.ZIndex = 12
+    CreditsClose.Parent = CreditsTopBar
+    
+    local CreditsContent = Instance.new("Frame")
+    CreditsContent.Name = "CreditsContent"
+    CreditsContent.BackgroundTransparency = 1
+    CreditsContent.Position = UDim2.new(0, 0, 0, 25)
+    CreditsContent.Size = UDim2.new(1, 0, 1, -25)
+    CreditsContent.ZIndex = 11
+    CreditsContent.Parent = CreditsFrame
+    
+    local MadeBy = Instance.new("TextLabel")
+    MadeBy.Name = "MadeBy"
+    MadeBy.BackgroundTransparency = 1
+    MadeBy.Position = UDim2.new(0, 10, 0, 20)
+    MadeBy.Size = UDim2.new(1, -20, 0, 40)
+    MadeBy.Font = Enum.Font.Gotham
+    MadeBy.Text = "Made By Axom\nreal name : Adam Owaissi"
+    MadeBy.TextColor3 = Theme.Text
+    MadeBy.TextSize = 12
+    MadeBy.TextYAlignment = Enum.TextYAlignment.Top
+    MadeBy.ZIndex = 12
+    MadeBy.Parent = CreditsContent
+    
+    local YTButton = Instance.new("TextButton")
+    YTButton.Name = "YTButton"
+    YTButton.BackgroundColor3 = Theme.Primary
+    YTButton.BorderSizePixel = 0
+    YTButton.Position = UDim2.new(0.5, -40, 1, -40)
+    YTButton.Size = UDim2.new(0, 80, 0, 25)
+    YTButton.Font = Enum.Font.Gotham
+    YTButton.Text = "YouTube"
+    YTButton.TextColor3 = Theme.Text
+    YTButton.TextSize = 12
+    YTButton.ZIndex = 12
+    YTButton.Parent = CreditsContent
+    
+    local Container = Instance.new("ScrollingFrame")
+    Container.Name = "Container"
+    Container.BackgroundTransparency = 1
+    Container.BorderSizePixel = 0
+    Container.Position = UDim2.new(0, 0, 0, 35)
+    Container.Size = UDim2.new(1, 0, 1, -35)
+    Container.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Container.ScrollBarThickness = 3
+    Container.ScrollBarImageColor3 = Theme.Primary
+    Container.Parent = MainFrame
+    
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Padding = UDim.new(0, 5)
+    UIListLayout.Parent = Container
+    
+    local dragging = false
+    local dragInput, dragStart, startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+
+    TopBar.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = MainFrame.Position
+            
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
+        end
+    end)
+
+    TopBar.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
+            dragInput = input
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging then
+            update(input)
+        end
+    end)
+
+    CreditsButton.MouseButton1Click:Connect(function()
+        CreditsFrame.Visible = true
+        CreditsFrame.Size = UDim2.new(0, 0, 0, 0)
+        Tween(CreditsFrame, {Size = UDim2.new(0, 200, 0, 150)}, 0.3)
+    end)
+
+    CreditsClose.MouseButton1Click:Connect(function()
+        Tween(CreditsFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+        wait(0.3)
+        CreditsFrame.Visible = false
+    end)
+
+    YTButton.MouseButton1Click:Connect(function()
+        setclipboard("https://youtube.com/@axos0022")
+        Tween(YTButton, {BackgroundColor3 = Theme.Success}, 0.2)
+        YTButton.Text = "Copied!"
+        wait(1)
+        YTButton.Text = "YouTube"
+        Tween(YTButton, {BackgroundColor3 = Theme.Primary}, 0.2)
+    end)
+
+    CloseButton.MouseButton1Click:Connect(function()
+        Tween(MainFrame, {Size = UDim2.new(0, 0, 0, 0)}, 0.3)
+        wait(0.3)
+        ScreenGui:Destroy()
+    end)
+
+    CreditsButton.MouseEnter:Connect(function()
+        Tween(CreditsButton, {TextColor3 = Theme.Primary}, 0.2)
+    end)
+
+    CreditsButton.MouseLeave:Connect(function()
+        Tween(CreditsButton, {TextColor3 = Theme.Text}, 0.2)
+    end)
+
+    CloseButton.MouseEnter:Connect(function()
+        Tween(CloseButton, {TextColor3 = Theme.Error}, 0.2)
+    end)
+
+    CloseButton.MouseLeave:Connect(function()
+        Tween(CloseButton, {TextColor3 = Theme.Text}, 0.2)
+    end)
+
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        Container.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
+    end)
+
+    function Window:MakeSection(name)
+        local Section = {}
+        
+        local SectionFrame = Instance.new("Frame")
+        SectionFrame.Name = "SectionFrame"
+        SectionFrame.BackgroundColor3 = Theme.Secondary
+        SectionFrame.BorderSizePixel = 0
+        SectionFrame.Size = UDim2.new(1, -20, 0, 30)
+        SectionFrame.Parent = Container
+        
+        local SectionTitle = Instance.new("TextLabel")
+        SectionTitle.Name = "SectionTitle"
+        SectionTitle.BackgroundTransparency = 1
+        SectionTitle.Position = UDim2.new(0, 10, 0, 0)
+        SectionTitle.Size = UDim2.new(1, -20, 1, 0)
+        SectionTitle.Font = Enum.Font.GothamSemibold
+        SectionTitle.Text = name
+        SectionTitle.TextColor3 = Theme.Primary
+        SectionTitle.TextSize = 12
+        SectionTitle.TextXAlignment = Enum.TextXAlignment.Left
+        SectionTitle.Parent = SectionFrame
+        
+        local SectionContainer = Instance.new("Frame")
+        SectionContainer.Name = "SectionContainer"
+        SectionContainer.BackgroundTransparency = 1
+        SectionContainer.Position = UDim2.new(0, 0, 1, 0)
+        SectionContainer.Size = UDim2.new(1, 0, 0, 0)
+        SectionContainer.ClipsDescendants = true
+        SectionContainer.Parent = SectionFrame
+        
+        local SectionUIList = Instance.new("UIListLayout")
+        SectionUIList.Padding = UDim.new(0, 5)
+        SectionUIList.Parent = SectionContainer
+        
+        local expanded = false
+        
+        SectionFrame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                expanded = not expanded
+                if expanded then
+                    SectionContainer.Size = UDim2.new(1, 0, 0, SectionUIList.AbsoluteContentSize.Y)
+                    Tween(SectionTitle, {TextColor3 = Theme.Accent}, 0.2)
+                else
+                    SectionContainer.Size = UDim2.new(1, 0, 0, 0)
+                    Tween(SectionTitle, {TextColor3 = Theme.Primary}, 0.2)
+                end
+            end
+        end)
+        
+        SectionUIList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            if expanded then
+                SectionContainer.Size = UDim2.new(1, 0, 0, SectionUIList.AbsoluteContentSize.Y)
+            end
+        end)
+        
+        function Section:AddElement(element)
+            element.Parent = SectionContainer
+        end
+        
+        table.insert(Window.Elements, Section)
+        return Section
+    end
+
+    function Window:MakeButton(name, callback)
+        local ButtonFrame = Instance.new("Frame")
+        ButtonFrame.Name = "ButtonFrame"
+        ButtonFrame.BackgroundColor3 = Theme.Secondary
+        ButtonFrame.BorderSizePixel = 0
+        ButtonFrame.Size = UDim2.new(1, -20, 0, 30)
+        ButtonFrame.Parent = Container
+        
+        local Button = Instance.new("TextButton")
+        Button.Name = "Button"
+        Button.BackgroundTransparency = 1
+        Button.Size = UDim2.new(1, 0, 1, 0)
+        Button.Font = Enum.Font.Gotham
+        Button.Text = name
+        Button.TextColor3 = Theme.Text
+        Button.TextSize = 12
+        Button.Parent = ButtonFrame
+        
+        local ButtonStroke = Instance.new("UIStroke")
+        ButtonStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        ButtonStroke.Color = Theme.Primary
+        ButtonStroke.Thickness = 1
+        ButtonStroke.Parent = ButtonFrame
+        
+        Button.MouseButton1Click:Connect(function()
+            Tween(ButtonFrame, {BackgroundColor3 = Theme.Primary}, 0.1)
+            Tween(Button, {TextColor3 = Theme.Background}, 0.1)
+            if callback then
+                callback()
+            end
+            wait(0.1)
+            Tween(ButtonFrame, {BackgroundColor3 = Theme.Secondary}, 0.2)
+            Tween(Button, {TextColor3 = Theme.Text}, 0.2)
+        end)
+        
+        Button.MouseEnter:Connect(function()
+            Tween(ButtonFrame, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, 0.2)
+        end)
+        
+        Button.MouseLeave:Connect(function()
+            Tween(ButtonFrame, {BackgroundColor3 = Theme.Secondary}, 0.2)
+        end)
+        
+        table.insert(Window.Elements, ButtonFrame)
+        return ButtonFrame
+    end
+
+    function Window:MakeToggle(name, default, callback)
+        local ToggleFrame = Instance.new("Frame")
+        ToggleFrame.Name = "ToggleFrame"
+        ToggleFrame.BackgroundColor3 = Theme.Secondary
+        ToggleFrame.BorderSizePixel = 0
+        ToggleFrame.Size = UDim2.new(1, -20, 0, 25)
+        ToggleFrame.Parent = Container
+        
+        local ToggleLabel = Instance.new("TextLabel")
+        ToggleLabel.Name = "ToggleLabel"
+        ToggleLabel.BackgroundTransparency = 1
+        ToggleLabel.Position = UDim2.new(0, 10, 0, 0)
+        ToggleLabel.Size = UDim2.new(0, 200, 1, 0)
+        ToggleLabel.Font = Enum.Font.Gotham
+        ToggleLabel.Text = name
+        ToggleLabel.TextColor3 = Theme.Text
+        ToggleLabel.TextSize = 12
+        ToggleLabel.TextXAlignment = Enum.TextXAlignment.Left
+        ToggleLabel.Parent = ToggleFrame
+        
+        local ToggleButton = Instance.new("Frame")
+        ToggleButton.Name = "ToggleButton"
+        ToggleButton.BackgroundColor3 = Theme.Background
+        ToggleButton.BorderSizePixel = 0
+        ToggleButton.Position = UDim2.new(1, -35, 0.5, -8)
+        ToggleButton.Size = UDim2.new(0, 35, 0, 16)
+        ToggleButton.Parent = ToggleFrame
+        
+        local ToggleInner = Instance.new("Frame")
+        ToggleInner.Name = "ToggleInner"
+        ToggleInner.BackgroundColor3 = Theme.Text
+        ToggleInner.BorderSizePixel = 0
+        ToggleInner.Position = UDim2.new(0, 2, 0.5, -6)
+        ToggleInner.Size = UDim2.new(0, 12, 0, 12)
+        ToggleInner.Parent = ToggleButton
+        
+        local state = default or false
+        
+        local function updateToggle()
+            if state then
+                Tween(ToggleButton, {BackgroundColor3 = Theme.Primary}, 0.2)
+                Tween(ToggleInner, {Position = UDim2.new(1, -14, 0.5, -6)}, 0.2)
+            else
+                Tween(ToggleButton, {BackgroundColor3 = Theme.Background}, 0.2)
+                Tween(ToggleInner, {Position = UDim2.new(0, 2, 0.5, -6)}, 0.2)
+            end
+        end
+        
+        ToggleButton.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                state = not state
+                updateToggle()
+                if callback then
+                    callback(state)
+                end
+            end
+        end)
+        
+        updateToggle()
+        
+        table.insert(Window.Elements, ToggleFrame)
+        return ToggleFrame
+    end
+
+    function Window:MakeBox(name, placeholder, callback)
+        local BoxFrame = Instance.new("Frame")
+        BoxFrame.Name = "BoxFrame"
+        BoxFrame.BackgroundColor3 = Theme.Secondary
+        BoxFrame.BorderSizePixel = 0
+        BoxFrame.Size = UDim2.new(1, -20, 0, 25)
+        BoxFrame.Parent = Container
+        
+        local BoxLabel = Instance.new("TextLabel")
+        BoxLabel.Name = "BoxLabel"
+        BoxLabel.BackgroundTransparency = 1
+        BoxLabel.Position = UDim2.new(0, 10, 0, 0)
+        BoxLabel.Size = UDim2.new(0, 100, 1, 0)
+        BoxLabel.Font = Enum.Font.Gotham
+        BoxLabel.Text = name
+        BoxLabel.TextColor3 = Theme.Text
+        BoxLabel.TextSize = 12
+        BoxLabel.TextXAlignment = Enum.TextXAlignment.Left
+        BoxLabel.Parent = BoxFrame
+        
+        local TextBox = Instance.new("TextBox")
+        TextBox.Name = "TextBox"
+        TextBox.BackgroundColor3 = Theme.Background
+        TextBox.BorderSizePixel = 0
+        TextBox.Position = UDim2.new(0, 120, 0, 2)
+        TextBox.Size = UDim2.new(1, -130, 1, -4)
+        TextBox.Font = Enum.Font.Gotham
+        TextBox.PlaceholderText = placeholder or ""
+        TextBox.Text = ""
+        TextBox.TextColor3 = Theme.Text
+        TextBox.TextSize = 12
+        TextBox.Parent = BoxFrame
+        
+        TextBox.FocusLost:Connect(function()
+            if callback then
+                callback(TextBox.Text)
+            end
+        end)
+        
+        table.insert(Window.Elements, BoxFrame)
+        return BoxFrame
+    end
+
+    function Window:MakeSlider(name, min, max, default, callback)
+        local SliderFrame = Instance.new("Frame")
+        SliderFrame.Name = "SliderFrame"
+        SliderFrame.BackgroundColor3 = Theme.Secondary
+        SliderFrame.BorderSizePixel = 0
+        SliderFrame.Size = UDim2.new(1, -20, 0, 40)
+        SliderFrame.Parent = Container
+        
+        local SliderLabel = Instance.new("TextLabel")
+        SliderLabel.Name = "SliderLabel"
+        SliderLabel.BackgroundTransparency = 1
+        SliderLabel.Position = UDim2.new(0, 10, 0, 0)
+        SliderLabel.Size = UDim2.new(1, -20, 0, 15)
+        SliderLabel.Font = Enum.Font.Gotham
+        SliderLabel.Text = name
+        SliderLabel.TextColor3 = Theme.Text
+        SliderLabel.TextSize = 12
+        SliderLabel.TextXAlignment = Enum.TextXAlignment.Left
+        SliderLabel.Parent = SliderFrame
+        
+        local SliderValue = Instance.new("TextLabel")
+        SliderValue.Name = "SliderValue"
+        SliderValue.BackgroundTransparency = 1
+        SliderValue.Position = UDim2.new(1, -60, 0, 0)
+        SliderValue.Size = UDim2.new(0, 50, 0, 15)
+        SliderValue.Font = Enum.Font.Gotham
+        SliderValue.Text = tostring(default or min)
+        SliderValue.TextColor3 = Theme.Text
+        SliderValue.TextSize = 12
+        SliderValue.TextXAlignment = Enum.TextXAlignment.Right
+        SliderValue.Parent = SliderFrame
+        
+        local SliderTrack = Instance.new("Frame")
+        SliderTrack.Name = "SliderTrack"
+        SliderTrack.BackgroundColor3 = Theme.Background
+        SliderTrack.BorderSizePixel = 0
+        SliderTrack.Position = UDim2.new(0, 10, 0, 25)
+        SliderTrack.Size = UDim2.new(1, -20, 0, 5)
+        SliderTrack.Parent = SliderFrame
+        
+        local SliderFill = Instance.new("Frame")
+        SliderFill.Name = "SliderFill"
+        SliderFill.BackgroundColor3 = Theme.Primary
+        SliderFill.BorderSizePixel = 0
+        SliderFill.Size = UDim2.new(0, 0, 1, 0)
+        SliderFill.Parent = SliderTrack
+        
+        local SliderButton = Instance.new("TextButton")
+        SliderButton.Name = "SliderButton"
+        SliderButton.BackgroundColor3 = Theme.Text
+        SliderButton.BorderSizePixel = 0
+        SliderButton.Position = UDim2.new(0, -5, 0, -3)
+        SliderButton.Size = UDim2.new(0, 11, 0, 11)
+        SliderButton.Text = ""
+        SliderButton.Parent = SliderFill
+        
+        local value = math.clamp(default or min, min, max)
+        local sliding = false
+        
+        local function updateSlider(newValue)
+            value = math.clamp(newValue, min, max)
+            local percent = (value - min) / (max - min)
+            SliderFill.Size = UDim2.new(percent, 0, 1, 0)
+            SliderValue.Text = tostring(math.floor(value))
+            if callback then
+                callback(value)
+            end
+        end
+        
+        SliderButton.MouseButton1Down:Connect(function()
+            sliding = true
+        end)
+        
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                sliding = false
+            end
+        end)
+        
+        UserInputService.InputChanged:Connect(function(input)
+            if sliding and input.UserInputType == Enum.UserInputType.MouseMovement then
+                local mousePos = UserInputService:GetMouseLocation()
+                local trackPos = SliderTrack.AbsolutePosition
+                local trackSize = SliderTrack.AbsoluteSize
+                local relativeX = (mousePos.X - trackPos.X) / trackSize.X
+                relativeX = math.clamp(relativeX, 0, 1)
+                local newValue = min + (max - min) * relativeX
+                updateSlider(newValue)
+            end
+        end)
+        
+        updateSlider(value)
+        
+        table.insert(Window.Elements, SliderFrame)
+        return SliderFrame
+    end
+
+    function Window:MakeDropdown(name, options, callback)
+        local DropdownFrame = Instance.new("Frame")
+        DropdownFrame.Name = "DropdownFrame"
+        DropdownFrame.BackgroundColor3 = Theme.Secondary
+        DropdownFrame.BorderSizePixel = 0
+        DropdownFrame.Size = UDim2.new(1, -20, 0, 25)
+        DropdownFrame.Parent = Container
+        
+        local DropdownLabel = Instance.new("TextLabel")
+        DropdownLabel.Name = "DropdownLabel"
+        DropdownLabel.BackgroundTransparency = 1
+        DropdownLabel.Position = UDim2.new(0, 10, 0, 0)
+        DropdownLabel.Size = UDim2.new(0, 150, 1, 0)
+        DropdownLabel.Font = Enum.Font.Gotham
+        DropdownLabel.Text = name
+        DropdownLabel.TextColor3 = Theme.Text
+        DropdownLabel.TextSize = 12
+        DropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
+        DropdownLabel.Parent = DropdownFrame
+        
+        local DropdownButton = Instance.new("TextButton")
+        DropdownButton.Name = "DropdownButton"
+        DropdownButton.BackgroundColor3 = Theme.Background
+        DropdownButton.BorderSizePixel = 0
+        DropdownButton.Position = UDim2.new(1, -100, 0, 2)
+        DropdownButton.Size = UDim2.new(0, 90, 1, -4)
+        DropdownButton.Font = Enum.Font.Gotham
+        DropdownButton.Text = "Select..."
+        DropdownButton.TextColor3 = Theme.Text
+        DropdownButton.TextSize = 12
+        DropdownButton.Parent = DropdownFrame
+        
+        local DropdownList = Instance.new("ScrollingFrame")
+        DropdownList.Name = "DropdownList"
+        DropdownList.BackgroundColor3 = Theme.Background
+        DropdownList.BorderSizePixel = 0
+        DropdownList.Position = UDim2.new(0, 0, 1, 2)
+        DropdownList.Size = UDim2.new(1, 0, 0, 100)
+        DropdownList.CanvasSize = UDim2.new(0, 0, 0, 0)
+        DropdownList.ScrollBarThickness = 3
+        DropdownList.ScrollBarImageColor3 = Theme.Primary
+        DropdownList.Visible = false
+        DropdownList.Parent = DropdownFrame
+        
+        local ListLayout = Instance.new("UIListLayout")
+        ListLayout.Parent = DropdownList
+        
+        local open = false
+        
+        local function updateList()
+            DropdownList:ClearAllChildren()
+            
+            for i, option in pairs(options) do
+                local OptionButton = Instance.new("TextButton")
+                OptionButton.Name = "OptionButton"
+                OptionButton.BackgroundColor3 = Theme.Secondary
+                OptionButton.BorderSizePixel = 0
+                OptionButton.Size = UDim2.new(1, 0, 0, 20)
+                OptionButton.Font = Enum.Font.Gotham
+                OptionButton.Text = option
+                OptionButton.TextColor3 = Theme.Text
+                OptionButton.TextSize = 12
+                OptionButton.Parent = DropdownList
+                
+                OptionButton.MouseButton1Click:Connect(function()
+                    DropdownButton.Text = option
+                    open = false
+                    DropdownList.Visible = false
+                    if callback then
+                        callback(option)
+                    end
+                end)
+                
+                OptionButton.MouseEnter:Connect(function()
+                    Tween(OptionButton, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, 0.2)
+                end)
+                
+                OptionButton.MouseLeave:Connect(function()
+                    Tween(OptionButton, {BackgroundColor3 = Theme.Secondary}, 0.2)
+                end)
+            end
+            
+            DropdownList.CanvasSize = UDim2.new(0, 0, 0, #options * 20)
+        end
+        
+        DropdownButton.MouseButton1Click:Connect(function()
+            open = not open
+            if open then
+                updateList()
+                DropdownList.Visible = true
+            else
+                DropdownList.Visible = false
+            end
+        end)
+        
+        table.insert(Window.Elements, DropdownFrame)
+        return DropdownFrame
+    end
+
+    function Window:MakePlayerSelector(callback)
+        local PlayerFrame = Instance.new("Frame")
+        PlayerFrame.Name = "PlayerFrame"
+        PlayerFrame.BackgroundColor3 = Theme.Secondary
+        PlayerFrame.BorderSizePixel = 0
+        PlayerFrame.Size = UDim2.new(1, -20, 0, 25)
+        PlayerFrame.Parent = Container
+        
+        local PlayerLabel = Instance.new("TextLabel")
+        PlayerLabel.Name = "PlayerLabel"
+        PlayerLabel.BackgroundTransparency = 1
+        PlayerLabel.Position = UDim2.new(0, 10, 0, 0)
+        PlayerLabel.Size = UDim2.new(0, 100, 1, 0)
+        PlayerLabel.Font = Enum.Font.Gotham
+        PlayerLabel.Text = "Select Player"
+        PlayerLabel.TextColor3 = Theme.Text
+        PlayerLabel.TextSize = 12
+        PlayerLabel.TextXAlignment = Enum.TextXAlignment.Left
+        PlayerLabel.Parent = PlayerFrame
+        
+        local PlayerButton = Instance.new("TextButton")
+        PlayerButton.Name = "PlayerButton"
+        PlayerButton.BackgroundColor3 = Theme.Background
+        PlayerButton.BorderSizePixel = 0
+        PlayerButton.Position = UDim2.new(1, -100, 0, 2)
+        PlayerButton.Size = UDim2.new(0, 90, 1, -4)
+        PlayerButton.Font = Enum.Font.Gotham
+        PlayerButton.Text = "Select..."
+        PlayerButton.TextColor3 = Theme.Text
+        PlayerButton.TextSize = 12
+        PlayerButton.Parent = PlayerFrame
+        
+        local PlayerList = Instance.new("ScrollingFrame")
+        PlayerList.Name = "PlayerList"
+        PlayerList.BackgroundColor3 = Theme.Background
+        PlayerList.BorderSizePixel = 0
+        PlayerList.Position = UDim2.new(0, 0, 1, 2)
+        PlayerList.Size = UDim2.new(1, 0, 0, 100)
+        PlayerList.CanvasSize = UDim2.new(0, 0, 0, 0)
+        PlayerList.ScrollBarThickness = 3
+        PlayerList.ScrollBarImageColor3 = Theme.Primary
+        PlayerList.Visible = false
+        PlayerList.Parent = PlayerFrame
+        
+        local ListLayout = Instance.new("UIListLayout")
+        ListLayout.Parent = PlayerList
+        
+        local open = false
+        
+        local function updatePlayerList()
+            PlayerList:ClearAllChildren()
+            local players = Players:GetPlayers()
+            
+            for i, player in pairs(players) do
+                local PlayerOption = Instance.new("TextButton")
+                PlayerOption.Name = "PlayerOption"
+                PlayerOption.BackgroundColor3 = Theme.Secondary
+                PlayerOption.BorderSizePixel = 0
+                PlayerOption.Size = UDim2.new(1, 0, 0, 20)
+                PlayerOption.Font = Enum.Font.Gotham
+                PlayerOption.Text = player.Name
+                PlayerOption.TextColor3 = Theme.Text
+                PlayerOption.TextSize = 12
+                PlayerOption.Parent = PlayerList
+                
+                PlayerOption.MouseButton1Click:Connect(function()
+                    PlayerButton.Text = player.Name
+                    open = false
+                    PlayerList.Visible = false
+                    if callback then
+                        callback(player)
+                    end
+                end)
+                
+                PlayerOption.MouseEnter:Connect(function()
+                    Tween(PlayerOption, {BackgroundColor3 = Color3.fromRGB(50, 50, 60)}, 0.2)
+                end)
+                
+                PlayerOption.MouseLeave:Connect(function()
+                    Tween(PlayerOption, {BackgroundColor3 = Theme.Secondary}, 0.2)
+                end)
+            end
+            
+            PlayerList.CanvasSize = UDim2.new(0, 0, 0, #players * 20)
+        end
+        
+        PlayerButton.MouseButton1Click:Connect(function()
+            open = not open
+            if open then
+                updatePlayerList()
+                PlayerList.Visible = true
+            else
+                PlayerList.Visible = false
+            end
+        end)
+        
+        Players.PlayerAdded:Connect(updatePlayerList)
+        Players.PlayerRemoving:Connect(updatePlayerList)
+        
+        table.insert(Window.Elements, PlayerFrame)
+        return PlayerFrame
+    end
+
+    function Window:MakeNotification(title, message, duration)
+        duration = duration or 5
+        
+        local Notification = Instance.new("Frame")
+        Notification.Name = "Notification"
+        Notification.BackgroundColor3 = Theme.Secondary
+        Notification.BorderSizePixel = 0
+        Notification.Position = UDim2.new(1, 10, 1, -100)
+        Notification.Size = UDim2.new(0, 250, 0, 80)
+        Notification.Parent = ScreenGui
+        
+        CreateShadow(Notification)
+        
+        local NotifTitle = Instance.new("TextLabel")
+        NotifTitle.Name = "NotifTitle"
+        NotifTitle.BackgroundTransparency = 1
+        NotifTitle.Position = UDim2.new(0, 10, 0, 10)
+        NotifTitle.Size = UDim2.new(1, -20, 0, 20)
+        NotifTitle.Font = Enum.Font.GothamSemibold
+        NotifTitle.Text = title
+        NotifTitle.TextColor3 = Theme.Primary
+        NotifTitle.TextSize = 14
+        NotifTitle.TextXAlignment = Enum.TextXAlignment.Left
+        NotifTitle.Parent = Notification
+        
+        local NotifMessage = Instance.new("TextLabel")
+        NotifMessage.Name = "NotifMessage"
+        NotifMessage.BackgroundTransparency = 1
+        NotifMessage.Position = UDim2.new(0, 10, 0, 35)
+        NotifMessage.Size = UDim2.new(1, -20, 1, -45)
+        NotifMessage.Font = Enum.Font.Gotham
+        NotifMessage.Text = message
+        NotifMessage.TextColor3 = Theme.Text
+        NotifMessage.TextSize = 12
+        NotifMessage.TextWrapped = true
+        NotifMessage.TextXAlignment = Enum.TextXAlignment.Left
+        NotifMessage.TextYAlignment = Enum.TextYAlignment.Top
+        NotifMessage.Parent = Notification
+        
+        Notification.Position = UDim2.new(1, 260, 1, -100)
+        Tween(Notification, {Position = UDim2.new(1, 10, 1, -100)}, 0.3)
+        
+        delay(duration, function()
+            Tween(Notification, {Position = UDim2.new(1, 260, 1, -100)}, 0.3)
+            wait(0.3)
+            Notification:Destroy()
+        end)
+        
+        return Notification
+    end
+
+    function Window:MakeColorPicker(name, default, callback)
+        local ColorFrame = Instance.new("Frame")
+        ColorFrame.Name = "ColorFrame"
+        ColorFrame.BackgroundColor3 = Theme.Secondary
+        ColorFrame.BorderSizePixel = 0
+        ColorFrame.Size = UDim2.new(1, -20, 0, 25)
+        ColorFrame.Parent = Container
+        
+        local ColorLabel = Instance.new("TextLabel")
+        ColorLabel.Name = "ColorLabel"
+        ColorLabel.BackgroundTransparency = 1
+        ColorLabel.Position = UDim2.new(0, 10, 0, 0)
+        ColorLabel.Size = UDim2.new(0, 150, 1, 0)
+        ColorLabel.Font = Enum.Font.Gotham
+        ColorLabel.Text = name
+        ColorLabel.TextColor3 = Theme.Text
+        ColorLabel.TextSize = 12
+        ColorLabel.TextXAlignment = Enum.TextXAlignment.Left
+        ColorLabel.Parent = ColorFrame
+        
+        local ColorButton = Instance.new("TextButton")
+        ColorButton.Name = "ColorButton"
+        ColorButton.BackgroundColor3 = default or Theme.Primary
+        ColorButton.BorderSizePixel = 0
+        ColorButton.Position = UDim2.new(1, -35, 0.5, -8)
+        ColorButton.Size = UDim2.new(0, 25, 0, 16)
+        ColorButton.Text = ""
+        ColorButton.Parent = ColorFrame
+        
+        local ColorPicker = Instance.new("Frame")
+        ColorPicker.Name = "ColorPicker"
+        ColorPicker.BackgroundColor3 = Theme.Background
+        ColorPicker.BorderSizePixel = 0
+        ColorPicker.Position = UDim2.new(0, 0, 1, 2)
+        ColorPicker.Size = UDim2.new(1, 0, 0, 100)
+        ColorPicker.Visible = false
+        ColorPicker.Parent = ColorFrame
+        
+        local open = false
+        
+        ColorButton.MouseButton1Click:Connect(function()
+            open = not open
+            ColorPicker.Visible = open
+        end)
+        
+        table.insert(Window.Elements, ColorFrame)
+        return ColorFrame
+    end
+
+    return Window
+end
+
+return Ropoto
