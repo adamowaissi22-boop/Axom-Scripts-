@@ -2093,7 +2093,7 @@ function thisTab:CreateBox(args)
 
 	end)
 
-	window:CreateNotification({Title = "Apoto UI Example",Description = "Interface Successfully loaded.", Duration = 3})
+	window:CreateNotification({Title = "Ui By Axom",Description = " Real name : Adam Owaissi.", Duration = 3})
 	return window
 end
 
