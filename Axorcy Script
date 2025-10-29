@@ -294,6 +294,15 @@ function StopAnim()
     end
 end
 
+function GetPlayerByName(name)
+    for _, player in pairs(Players:GetPlayers()) do
+        if string.lower(player.Name) == string.lower(name) or string.lower(player.DisplayName) == string.lower(name) then
+            return player
+        end
+    end
+    return nil
+end
+
 local noclipEnabled = false
 PlayerTab:CreateButton({
     Text = "Fly",
@@ -397,10 +406,21 @@ ToolsTab:CreateButton({
 })
 
 local selectedPlayer = nil
-TrollTab:CreatePlayerSelector({
-    Text = "Select Player",
-    Callback = function(player)
-        selectedPlayer = player
+local targetBox = TrollTab:CreateBox({
+    Text = "Target Player",
+    Placeholder = "Enter username",
+    Default = "",
+    Callback = function(value)
+        if value and value ~= "" then
+            local player = GetPlayerByName(value)
+            if player then
+                selectedPlayer = player
+            else
+                selectedPlayer = nil
+            end
+        else
+            selectedPlayer = nil
+        end
     end
 })
 
@@ -498,6 +518,8 @@ TrollTab:CreateButton({
                 end
                 if person then
                     selectedPlayer = person
+                    -- Update the target box with the selected player's name
+                    targetBox:Set(person.Name)
                 end
             end
         end
