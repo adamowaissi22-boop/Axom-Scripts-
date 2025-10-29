@@ -124,6 +124,28 @@ function Apoto:CreateWindow(ConfigArgs)
 		return Color3.fromHSV(hue,Sat,Value)
 	end
 
+	local function updateTabContentsSize()
+		local totalHeight = 0
+		for _, child in pairs(TabContentsFrame:GetChildren()) do
+			if child:IsA("Frame") or child:IsA("TextLabel") then
+				totalHeight = totalHeight + child.Size.Y.Offset + UIListLayout_2.Padding.Offset
+			end
+		end
+		totalHeight = totalHeight + 10
+		TabContentsFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+	end
+
+	local function updateTabsScrollingSize()
+		local totalHeight = 0
+		for _, child in pairs(TabsScrollingFrame:GetChildren()) do
+			if child:IsA("Frame") then
+				totalHeight = totalHeight + child.Size.Y.Offset + UIListLayout.Padding.Offset
+			end
+		end
+		totalHeight = totalHeight + 10
+		TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+	end
+
 	ConfigArgs = ConfigArgs or {}
 	ConfigArgs.Name = ConfigArgs.Name or "Apoto UI Menu"
 	ConfigArgs.Icon = ConfigArgs.Icon or "rbxassetid://18820555586"
@@ -208,6 +230,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	TabsScrollingFrame.BorderSizePixel = 0
 	TabsScrollingFrame.Size = UDim2.new(0, 243, 0, 262)
 	TabsScrollingFrame.ScrollBarImageTransparency = 1
+	TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
 	UIListLayout.Parent = TabsScrollingFrame
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
@@ -253,6 +276,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	TabContentsFrame.BorderSizePixel = 0
 	TabContentsFrame.Position = UDim2.new(0, 0, 0.100000001, 0)
 	TabContentsFrame.Size = UDim2.new(0, 448, 0, 279)
+	TabContentsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
 	UIListLayout_2.Parent = TabContentsFrame
 	UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
@@ -370,6 +394,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	ScrollingFrame555.ScrollBarThickness = 4
 	ScrollingFrame555.Position = UDim2.new(0.0527426153, 0, 0.119354837, 0)
 	ScrollingFrame555.Size = UDim2.new(0, 214, 0, 265)
+	ScrollingFrame555.CanvasSize = UDim2.new(0, 0, 0, 0)
 
 	local UILIST5 = Instance.new("UIListLayout")
 	UILIST5.Parent = ScrollingFrame555
@@ -658,6 +683,8 @@ function Apoto:CreateWindow(ConfigArgs)
 
 		UICorner_2.Parent = SelectionImage
 
+		updateTabsScrollingSize()
+
 		local thisTab = {
 			Name = tabName,
 			Contents = Apoto.contents.Tabs[tabName]
@@ -683,6 +710,7 @@ function Apoto:CreateWindow(ConfigArgs)
 			Label.TextSize = 21
 			Label.TextWrapped = true
 			Label.TextXAlignment = Enum.TextXAlignment.Left
+			updateTabContentsSize()
 		end
 		function thisTab:CreateParagraph(text)
 			table.insert(self.Contents.Objects, {
@@ -705,6 +733,7 @@ function Apoto:CreateWindow(ConfigArgs)
 			Paragraph.TextWrapped = true
 			Paragraph.AutomaticSize = Enum.AutomaticSize.Y
 			Paragraph.TextXAlignment = Enum.TextXAlignment.Left
+			updateTabContentsSize()
 		end
 		function thisTab:CreateSlider(args)
 			local Minimum = args.Minimum
@@ -868,6 +897,7 @@ function Apoto:CreateWindow(ConfigArgs)
 				Callback(value)
 				CurrentValueText.Text = value
 			end
+			updateTabContentsSize()
 			return slider
 		end
 		function thisTab:CreateButton(args)
@@ -929,6 +959,7 @@ function Apoto:CreateWindow(ConfigArgs)
 			addConnection(ImageButton.MouseButton1Click,function() 
 				args.Callback()
 			end)
+			updateTabContentsSize()
 		end
 		function thisTab:CreateToggle(args)
 			args.Callback = args.Callback or function() end
@@ -1041,6 +1072,7 @@ function Apoto:CreateWindow(ConfigArgs)
 					end
 				end
 			end
+			updateTabContentsSize()
 			return toggle
 
 		end
@@ -1154,6 +1186,7 @@ function Apoto:CreateWindow(ConfigArgs)
 				ScrollingFrame.Position = UDim2.new(0, 0, 0.110701106, 0)
 				ScrollingFrame.Size = UDim2.new(0, 236, 0, 213)
 				ScrollingFrame.ScrollBarThickness = 4
+				ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
 				TitleText.Name = "TitleText"
 				TitleText.Parent = PlayerDropdownMenu
@@ -1179,8 +1212,8 @@ function Apoto:CreateWindow(ConfigArgs)
 				UIListLayout.Padding = UDim.new(0, 7)
 
 				SideBar.ClipsDescendants = true
-				local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(0.1,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
-                 introTween:Play()
+				local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(.4,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
+				introTween:Play()
 
 				local isPlayerSelected = false
 				for i,v in pairs(playerIcons) do
@@ -1252,7 +1285,7 @@ function Apoto:CreateWindow(ConfigArgs)
 						end
 					end)
 				end
-			
+				
 				local totalHeight = (#playerIcons * 47) + ((#playerIcons - 1) * 7)
 				ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 
@@ -1260,11 +1293,12 @@ function Apoto:CreateWindow(ConfigArgs)
 			addConnection(ImageButton.MouseButton1Click,function()
 				popupMenu()
 			end)
+			updateTabContentsSize()
 		end
 		function thisTab:CreateDropdown(args)
 			args.Text = args.Text or "Dropdown"
 			args.Options = args.Options or {"Option 1", "Option 2", "Option 3"}
-			args.Default = args.Default or "Option 1"	args.Callback = args.Callback or function() end
+			args.Default = args.Default or "Option 1" 	args.Callback = args.Callback or function() end
 
 	local Dropdown = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
@@ -1358,6 +1392,7 @@ function Apoto:CreateWindow(ConfigArgs)
 		ScrollingFrame.Position = UDim2.new(0, 0, 0.110701106, 0)
 		ScrollingFrame.Size = UDim2.new(0, 236, 0, 213)
 		ScrollingFrame.ScrollBarThickness = 4
+		ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 
 		TitleText.Name = "TitleText"
 		TitleText.Parent = PlayerDropdownMenu
@@ -1440,7 +1475,6 @@ function Apoto:CreateWindow(ConfigArgs)
 			end)
 		end
 		
-		-- FIX: Update CanvasSize to allow scrolling to all options
 		local totalHeight = (#args.Options * 47) + ((#args.Options - 1) * 7)
 		ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 	end
@@ -1448,6 +1482,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	addConnection(ImageButton.MouseButton1Click, function()
 		popupMenu()
 	end)
+	updateTabContentsSize()
 end
 function thisTab:CreateColorPicker(args)
 	args.Text = args.Text or "Color Picker"
@@ -1738,6 +1773,7 @@ function thisTab:CreateColorPicker(args)
 	addConnection(ImageButton.MouseButton1Click, function()
 		popupMenu()
 	end)
+	updateTabContentsSize()
 end
 function thisTab:CreateBind(args)
 	args.Text = args.Text or "Keybind"
@@ -1839,6 +1875,7 @@ function thisTab:CreateBind(args)
 			args.CallBack(false)
 		end
 	end)
+	updateTabContentsSize()
 end
 function thisTab:CreateBox(args)
 	args.Text = args.Text or "Text Box"
@@ -1877,7 +1914,7 @@ function thisTab:CreateBox(args)
 	TextLabel.Name = "TextLabel"
 	TextLabel.Parent = TextBox
 	TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			TextLabel.BackgroundTransparency = 1.000
+      			TextLabel.BackgroundTransparency = 1.000
 			TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			TextLabel.BorderSizePixel = 0
 			TextLabel.Position = UDim2.new(0.0283687934, 0, 0, 0)
@@ -1920,7 +1957,6 @@ function thisTab:CreateBox(args)
 			UIStroke.Color = setHueAndSaturation(ConfigArgs.AccentColor3, 0.5, 0.8)
 			UIStroke.Thickness = 1.5
 
-			-- Focus effects
 			TextBoxInput.Focused:Connect(function()
 				game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 					Thickness = 2.5,
@@ -1948,6 +1984,7 @@ function thisTab:CreateBox(args)
 				return TextBoxInput.Text
 			end
 			
+			updateTabContentsSize()
 			return box
 		end
 		return thisTab
