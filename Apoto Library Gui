@@ -148,6 +148,15 @@ function Apoto:CreateWindow(ConfigArgs)
 		TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 	end
 
+	local function isMouseOverFrame(mouse, frame)
+		local framePos = frame.AbsolutePosition
+		local frameSize = frame.AbsoluteSize
+		local mousePos = Vector2.new(mouse.X, mouse.Y)
+		
+		return mousePos.X >= framePos.X and mousePos.X <= framePos.X + frameSize.X and
+			   mousePos.Y >= framePos.Y and mousePos.Y <= framePos.Y + frameSize.Y
+	end
+
 	local function closeCurrentDropdown()
 		if currentDropdown then
 			local outroTween = game:GetService("TweenService"):Create(currentDropdown, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.0032258064, 0)})
@@ -1228,11 +1237,21 @@ function Apoto:CreateWindow(ConfigArgs)
 				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 				UIListLayout.Padding = UDim.new(0, 7)
 
-				SideBar.ClipsDescendants = true
 				local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(.4,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
 				introTween:Play()
 
 				currentDropdown = PlayerDropdownMenu
+
+				local dropdownCloseConnection
+				dropdownCloseConnection = game:GetService("UserInputService").InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+						local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+						if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
+							closeCurrentDropdown()
+							dropdownCloseConnection:Disconnect()
+						end
+					end
+				end)
 
 				local isPlayerSelected = false
 				for i,v in pairs(playerIcons) do
@@ -1304,6 +1323,7 @@ function Apoto:CreateWindow(ConfigArgs)
 								if currentDropdown == PlayerDropdownMenu then
 									currentDropdown = nil
 								end
+								dropdownCloseConnection:Disconnect()
 							end)
 						end
 					end)
@@ -1442,11 +1462,21 @@ function Apoto:CreateWindow(ConfigArgs)
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		UIListLayout.Padding = UDim.new(0, 7)
 
-		SideBar.ClipsDescendants = true
 		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu, TweenInfo.new(.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, -0.0032258064, 0)})
 		introTween:Play()
 
 		currentDropdown = PlayerDropdownMenu
+
+		local dropdownCloseConnection
+		dropdownCloseConnection = game:GetService("UserInputService").InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+				if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
+					closeCurrentDropdown()
+					dropdownCloseConnection:Disconnect()
+				end
+			end
+		end)
 
 		local isItemSelected = false
 		for i, v in ipairs(args.Options) do
@@ -1501,6 +1531,7 @@ function Apoto:CreateWindow(ConfigArgs)
 						if currentDropdown == PlayerDropdownMenu then
 							currentDropdown = nil
 						end
+						dropdownCloseConnection:Disconnect()
 					end)
 				end
 			end)
@@ -1729,7 +1760,6 @@ function thisTab:CreateColorPicker(args)
 		Continue.Image = "rbxassetid://3926307971"
 		Continue.ImageRectOffset = Vector2.new(764, 244)
 		Continue.ImageRectSize = Vector2.new(36, 36)
-		SideBar.ClipsDescendants = true
 
 		assignClickAnimation(Continue,false)
 
@@ -1737,6 +1767,17 @@ function thisTab:CreateColorPicker(args)
 		introTween:Play()
 
 		currentDropdown = PlayerDropdownMenu
+
+		local dropdownCloseConnection
+		dropdownCloseConnection = game:GetService("UserInputService").InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+				if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
+					closeCurrentDropdown()
+					dropdownCloseConnection:Disconnect()
+				end
+			end
+		end)
 
 		local isColorSelected = false
 
@@ -1805,6 +1846,7 @@ function thisTab:CreateColorPicker(args)
 				if currentDropdown == PlayerDropdownMenu then
 					currentDropdown = nil
 				end
+				dropdownCloseConnection:Disconnect()
 			end)
 		end)
 	end
@@ -2132,7 +2174,7 @@ function thisTab:CreateBox(args)
 
 	end)
 
-	window:CreateNotification({Title = "Apoto UI Made By Axom",Description = "Real Name : Adam Owaissi, thanks for using.", Duration = 3})
+	window:CreateNotification({Title = "Apoto UI Example",Description = "Interface Successfully loaded.", Duration = 3})
 	return window
 end
 
