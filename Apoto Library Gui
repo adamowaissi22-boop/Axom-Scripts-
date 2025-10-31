@@ -1250,7 +1250,7 @@ function Apoto:CreateWindow(ConfigArgs)
 		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 		UIListLayout.Padding = UDim.new(0, 7)
 
-		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(.4,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
+		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(.1,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
 		introTween:Play()
 
 		currentDropdown = PlayerDropdownMenu
