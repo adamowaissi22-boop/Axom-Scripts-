@@ -406,8 +406,13 @@ function Ropoto:CreateWindow(name)
 
     local function updateContentSize()
         if Window.CurrentSection and Window.CurrentSection.ContentFrame then
-            local contentSize = Window.CurrentSection.ContentFrame.AbsoluteSize.Y
-            ContentContainer.CanvasSize = UDim2.new(0, 0, 0, contentSize + 20)
+            local totalHeight = 0
+            for _, element in pairs(Window.CurrentSection.ContentFrame:GetChildren()) do
+                if element:IsA("Frame") then
+                    totalHeight = totalHeight + element.Size.Y.Offset + ContentList.Padding.Offset
+                end
+            end
+            ContentContainer.CanvasSize = UDim2.new(0, 0, 0, totalHeight + 50)
         end
     end
 
@@ -441,7 +446,8 @@ function Ropoto:CreateWindow(name)
         local SectionFrame = Instance.new("Frame")
         SectionFrame.Name = name .. "Frame"
         SectionFrame.BackgroundTransparency = 1
-        SectionFrame.Size = UDim2.new(1, 0, 1, 0)
+        SectionFrame.Size = UDim2.new(1, 0, 0, 0)
+        SectionFrame.AutomaticSize = Enum.AutomaticSize.Y
         SectionFrame.Visible = false
         SectionFrame.ZIndex = 2
         SectionFrame.Parent = ContentContainer
