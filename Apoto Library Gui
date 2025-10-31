@@ -1339,9 +1339,10 @@ function Apoto:CreateWindow(ConfigArgs)
 			updateTabContentsSize()
 		end
 		function thisTab:CreateDropdown(args)
-			args.Text = args.Text or "Dropdown"
-			args.Options = args.Options or {"Option 1", "Option 2", "Option 3"}
-			args.Default = args.Default or "Option 1" 	args.Callback = args.Callback or function() end
+	args.Text = args.Text or "Dropdown"
+	args.Options = args.Options or {"Option 1", "Option 2", "Option 3"}
+	args.Default = args.Default or "Option 1" 	
+	args.Callback = args.Callback or function() end
 
 	local Dropdown = Instance.new("Frame")
 	local UICorner = Instance.new("UICorner")
@@ -1412,7 +1413,9 @@ function Apoto:CreateWindow(ConfigArgs)
 	assignClickAnimation(ImageButton)
 
 	local function popupMenu()
-		closeCurrentDropdown()
+		if currentDropdown then
+			return
+		end
 		
 		local PlayerDropdownMenu = Instance.new("Frame")
 		local ScrollingFrame = Instance.new("ScrollingFrame")
@@ -1473,7 +1476,9 @@ function Apoto:CreateWindow(ConfigArgs)
 				local mouse = game:GetService("Players").LocalPlayer:GetMouse()
 				if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
 					closeCurrentDropdown()
-					dropdownCloseConnection:Disconnect()
+					if dropdownCloseConnection then
+						dropdownCloseConnection:Disconnect()
+					end
 				end
 			end
 		end)
@@ -1531,7 +1536,9 @@ function Apoto:CreateWindow(ConfigArgs)
 						if currentDropdown == PlayerDropdownMenu then
 							currentDropdown = nil
 						end
-						dropdownCloseConnection:Disconnect()
+						if dropdownCloseConnection then
+							dropdownCloseConnection:Disconnect()
+						end
 					end)
 				end
 			end)
@@ -1546,6 +1553,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	end)
 	updateTabContentsSize()
 end
+
 function thisTab:CreateColorPicker(args)
 	args.Text = args.Text or "Color Picker"
 	args.Default = args.Default or Color3.new(1, 1, 1)
@@ -2123,7 +2131,7 @@ function thisTab:CreateBox(args)
 		animframe.Position = UDim2.new(0.845360816, 0, 0.298668027, 0)
 		animframe.Size = UDim2.new(0, 14, 0, 14)
 
-		UICorner_2.Parent = animframe
+		UICorner_2.Parent = animframe 
 
 		ImageButton.Parent = Frame
 		ImageButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
