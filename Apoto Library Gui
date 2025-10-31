@@ -31,6 +31,8 @@ function Apoto:CreateWindow(ConfigArgs)
 	local minimizeAnim = true
 	local instantClose = false
 	
+	local currentDropdown = nil
+	
 	local function getPlayersAndIcons()
 		local players = Players:GetPlayers()
 		local playerIcons = {}
@@ -144,6 +146,19 @@ function Apoto:CreateWindow(ConfigArgs)
 		end
 		totalHeight = totalHeight + 10
 		TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+	end
+
+	local function closeCurrentDropdown()
+		if currentDropdown then
+			local outroTween = game:GetService("TweenService"):Create(currentDropdown, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.0032258064, 0)})
+			outroTween:Play()
+			outroTween.Completed:Connect(function()
+				if currentDropdown and currentDropdown.Parent then
+					currentDropdown:Destroy()
+				end
+			end)
+			currentDropdown = nil
+		end
 	end
 
 	ConfigArgs = ConfigArgs or {}
@@ -1162,6 +1177,8 @@ function Apoto:CreateWindow(ConfigArgs)
 			TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 			local function popupMenu()	
+				closeCurrentDropdown()
+				
 				local playerIcons = getPlayersAndIcons()
 				local PlayerDropdownMenu = Instance.new("Frame")
 				local ScrollingFrame = Instance.new("ScrollingFrame")
@@ -1214,6 +1231,8 @@ function Apoto:CreateWindow(ConfigArgs)
 				SideBar.ClipsDescendants = true
 				local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(.4,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
 				introTween:Play()
+
+				currentDropdown = PlayerDropdownMenu
 
 				local isPlayerSelected = false
 				for i,v in pairs(playerIcons) do
@@ -1280,8 +1299,12 @@ function Apoto:CreateWindow(ConfigArgs)
 							TextLabel.Text = Name
 							ImageLabel.Image = Icon
 							args.Callback(game:GetService("Players"):FindFirstChild(Name))
-							outroTween.Completed:Wait()
-							PlayerDropdownMenu:Destroy()
+							outroTween.Completed:Connect(function()
+								PlayerDropdownMenu:Destroy()
+								if currentDropdown == PlayerDropdownMenu then
+									currentDropdown = nil
+								end
+							end)
 						end
 					end)
 				end
@@ -1369,6 +1392,8 @@ function Apoto:CreateWindow(ConfigArgs)
 	assignClickAnimation(ImageButton)
 
 	local function popupMenu()
+		closeCurrentDropdown()
+		
 		local PlayerDropdownMenu = Instance.new("Frame")
 		local ScrollingFrame = Instance.new("ScrollingFrame")
 		local UIPadding = Instance.new("UIPadding")
@@ -1421,6 +1446,8 @@ function Apoto:CreateWindow(ConfigArgs)
 		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu, TweenInfo.new(.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, -0.0032258064, 0)})
 		introTween:Play()
 
+		currentDropdown = PlayerDropdownMenu
+
 		local isItemSelected = false
 		for i, v in ipairs(args.Options) do
 			local Selection = Instance.new("Frame")
@@ -1469,8 +1496,12 @@ function Apoto:CreateWindow(ConfigArgs)
 					outroTween:Play()
 					args.Callback(v)
 					TextLabel.Text = v
-					outroTween.Completed:Wait()
-					PlayerDropdownMenu:Destroy()
+					outroTween.Completed:Connect(function()
+						PlayerDropdownMenu:Destroy()
+						if currentDropdown == PlayerDropdownMenu then
+							currentDropdown = nil
+						end
+					end)
 				end
 			end)
 		end
@@ -1545,6 +1576,8 @@ function thisTab:CreateColorPicker(args)
 	assignClickAnimation(ImageButton)
 
 	local function popupMenu()
+		closeCurrentDropdown()
+		
 		local PlayerDropdownMenu = Instance.new("Frame")
 		local TitleText = Instance.new("TextLabel")
 		local Frame = Instance.new("Frame")
@@ -1703,6 +1736,8 @@ function thisTab:CreateColorPicker(args)
 		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu, TweenInfo.new(.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, -0.0032258064, 0)})
 		introTween:Play()
 
+		currentDropdown = PlayerDropdownMenu
+
 		local isColorSelected = false
 
 		local pickingColor = false
@@ -1765,8 +1800,12 @@ function thisTab:CreateColorPicker(args)
 		addConnection(Continue.MouseButton1Click,function() 
 			local outroTween = game:GetService("TweenService"):Create(PlayerDropdownMenu, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.0032258064, 0)})
 			outroTween:Play()
-			outroTween.Completed:Wait()
-			PlayerDropdownMenu:Destroy()
+			outroTween.Completed:Connect(function()
+				PlayerDropdownMenu:Destroy()
+				if currentDropdown == PlayerDropdownMenu then
+					currentDropdown = nil
+				end
+			end)
 		end)
 	end
 
@@ -2093,7 +2132,7 @@ function thisTab:CreateBox(args)
 
 	end)
 
-	window:CreateNotification({Title = "Ui By Axom",Description = " Real name : Adam Owaissi.", Duration = 3})
+	window:CreateNotification({Title = "Apoto UI Example",Description = "Interface Successfully loaded.", Duration = 3})
 	return window
 end
 
