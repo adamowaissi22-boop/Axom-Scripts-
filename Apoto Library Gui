@@ -1135,7 +1135,7 @@ function Apoto:CreateWindow(ConfigArgs)
 	SliderText.Position = UDim2.new(0.0283687934, 0, 0, 0)
 	SliderText.Size = UDim2.new(0, 218, 0, 63)
 	SliderText.FontFace = defaultFont
-	SliderText.Text = "Player Selector"
+	SliderText.Text = args.Text
 	SliderText.TextColor3 = Color3.fromRGB(193, 193, 193)
 	SliderText.TextSize = 21.000
 	SliderText.TextWrapped = true
@@ -1186,8 +1186,19 @@ function Apoto:CreateWindow(ConfigArgs)
 	TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 	local function popupMenu()	
-		if currentDropdown then
-			return
+		local currentPlayerDropdown = currentDropdown
+		
+		if currentPlayerDropdown and currentPlayerDropdown.Name == "PlayerDropdownMenu" then
+			local outroTween = game:GetService("TweenService"):Create(currentPlayerDropdown, TweenInfo.new(.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.0032258064, 0)})
+			outroTween:Play()
+			outroTween.Completed:Connect(function()
+				if currentPlayerDropdown and currentPlayerDropdown.Parent then
+					currentPlayerDropdown:Destroy()
+				end
+				if currentDropdown == currentPlayerDropdown then
+					currentDropdown = nil
+				end
+			end)
 		end
 		
 		local playerIcons = getPlayersAndIcons()
@@ -1248,7 +1259,7 @@ function Apoto:CreateWindow(ConfigArgs)
 		dropdownCloseConnection = game:GetService("UserInputService").InputBegan:Connect(function(input)
 			if input.UserInputType == Enum.UserInputType.MouseButton1 then
 				local mouse = game:GetService("Players").LocalPlayer:GetMouse()
-				if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
+				if currentDropdown == PlayerDropdownMenu and not isMouseOverFrame(mouse, currentDropdown) then
 					closeCurrentDropdown()
 					if dropdownCloseConnection then
 						dropdownCloseConnection:Disconnect()
@@ -1337,8 +1348,8 @@ function Apoto:CreateWindow(ConfigArgs)
 		
 		local totalHeight = (#playerIcons * 47) + ((#playerIcons - 1) * 7)
 		ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-
 	end
+	
 	addConnection(ImageButton.MouseButton1Click,function()
 		popupMenu()
 	end)
