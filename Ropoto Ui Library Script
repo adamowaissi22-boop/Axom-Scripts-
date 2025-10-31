@@ -404,9 +404,14 @@ function Ropoto:CreateWindow(name)
         ScreenGui:Destroy()
     end)
 
-    ContentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        ContentContainer.CanvasSize = UDim2.new(0, 0, 0, ContentList.AbsoluteContentSize.Y + 20)
-    end)
+    local function updateContentSize()
+        if Window.CurrentSection and Window.CurrentSection.ContentFrame then
+            local contentSize = Window.CurrentSection.ContentFrame.AbsoluteSize.Y
+            ContentContainer.CanvasSize = UDim2.new(0, 0, 0, contentSize + 20)
+        end
+    end
+
+    ContentList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateContentSize)
 
     SectionsList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         SectionsContainer.CanvasSize = UDim2.new(0, SectionsList.AbsoluteContentSize.X + 20, 0, 0)
@@ -445,6 +450,12 @@ function Ropoto:CreateWindow(name)
         SectionUIList.Padding = UDim.new(0, 8)
         SectionUIList.Parent = SectionFrame
         
+        SectionUIList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            if SectionFrame.Visible then
+                updateContentSize()
+            end
+        end)
+        
         Section.ContentFrame = SectionFrame
         Section.Button = SectionButton
         
@@ -459,6 +470,8 @@ function Ropoto:CreateWindow(name)
             SectionFrame.Visible = true
             Tween(SectionButton, {BackgroundColor3 = Theme.Primary}, 0.2)
             Tween(SectionButton, {TextColor3 = Theme.Background}, 0.2)
+            
+            updateContentSize()
         end
         
         SectionButton.MouseButton1Click:Connect(activateSection)
