@@ -759,6 +759,63 @@ function Apoto:CreateWindow(ConfigArgs)
 			Paragraph.TextXAlignment = Enum.TextXAlignment.Left
 			updateTabContentsSize()
 		end
+
+function thisTab:CreateImage(args)
+	args.Image = args.Image or "rbxassetid://18820555586"
+	args.Size = args.Size or UDim2.new(0, 423, 0, 150)
+	
+	table.insert(self.Contents.Objects, {
+		ObjectType = 'Image',
+		Image = args.Image,
+		Size = args.Size
+	})
+	
+	local ImageFrame = Instance.new("Frame")
+	local UICorner = Instance.new("UICorner")
+	local ImageLabel = Instance.new("ImageLabel")
+	local UICorner_2 = Instance.new("UICorner")
+
+	ImageFrame.Name = tabName.."_Image"
+	ImageFrame.Parent = TabContentsFrame
+	ImageFrame.BackgroundColor3 = Color3.fromRGB(17, 18, 22)
+	ImageFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ImageFrame.BorderSizePixel = 0
+	ImageFrame.Size = args.Size
+	ImageFrame.Visible = false
+
+	UICorner.CornerRadius = UDim.new(0, 6)
+	UICorner.Parent = ImageFrame
+
+	ImageLabel.Name = "ImageLabel"
+	ImageLabel.Parent = ImageFrame
+	ImageLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	ImageLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ImageLabel.BackgroundTransparency = 1.000
+	ImageLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ImageLabel.BorderSizePixel = 0
+	ImageLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+	ImageLabel.Size = UDim2.new(0.95, 0, 0.95, 0)
+	ImageLabel.Image = args.Image
+	ImageLabel.ScaleType = Enum.ScaleType.Fit
+
+	UICorner_2.CornerRadius = UDim.new(0, 4)
+	UICorner_2.Parent = ImageLabel
+
+	updateTabContentsSize()
+	
+	local image = {}
+	function image:Set(newImage)
+		ImageLabel.Image = newImage
+	end
+	
+	function image:SetSize(newSize)
+		ImageFrame.Size = newSize
+		updateTabContentsSize()
+	end
+	
+	return image
+end
+
 		function thisTab:CreateSlider(args)
 			local Minimum = args.Minimum
 			local Maximum = args.Maximum
