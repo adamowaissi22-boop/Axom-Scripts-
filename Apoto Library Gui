@@ -714,11 +714,160 @@ function Apoto:CreateWindow(ConfigArgs)
 			Contents = Apoto.contents.Tabs[tabName]
 		}
 
-		function thisTab:CreateLabel(text)
-			table.insert(self.Contents.Objects, {
-				ObjectType = 'Label',
-				Text = text
-			})
+		function thisTab:CreateLabel(args)
+	args.Text = args.Text or "Label"
+	args.TextSize = args.TextSize or 18
+	args.TextColor = args.TextColor or Color3.fromRGB(193, 193, 193)
+	
+	table.insert(self.Contents.Objects, {
+		ObjectType = 'Label',
+		Text = args.Text,
+		TextSize = args.TextSize,
+		TextColor = args.TextColor
+	})
+	
+	local LabelCard = Instance.new("Frame")
+	local UICorner = Instance.new("UICorner")
+	local TextLabel = Instance.new("TextLabel")
+	local OptionsButton = Instance.new("ImageButton")
+	
+	LabelCard.Name = tabName.."_LabelCard"
+	LabelCard.Parent = TabContentsFrame
+	LabelCard.BackgroundColor3 = Color3.fromRGB(17, 18, 22)
+	LabelCard.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	LabelCard.BorderSizePixel = 0
+	LabelCard.Size = UDim2.new(0, 423, 0, 45)
+	LabelCard.Visible = false
+	
+	UICorner.CornerRadius = UDim.new(0, 6)
+	UICorner.Parent = LabelCard
+	
+	TextLabel.Name = "TextLabel"
+	TextLabel.Parent = LabelCard
+	TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	TextLabel.BackgroundTransparency = 1.000
+	TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	TextLabel.BorderSizePixel = 0
+	TextLabel.Position = UDim2.new(0.0283687934, 0, 0, 0)
+	TextLabel.Size = UDim2.new(0.85, 0, 1, 0)
+	TextLabel.FontFace = Font.new('rbxasset://fonts/families/TitilliumWeb.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+	TextLabel.Text = args.Text
+	TextLabel.TextColor3 = args.TextColor
+	TextLabel.TextSize = args.TextSize
+	TextLabel.TextWrapped = true
+	TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+	
+	OptionsButton.Name = "OptionsButton"
+	OptionsButton.Parent = LabelCard
+	OptionsButton.AnchorPoint = Vector2.new(0.5, 0.5)
+	OptionsButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	OptionsButton.BackgroundTransparency = 1.000
+	OptionsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	OptionsButton.BorderSizePixel = 0
+	OptionsButton.Position = UDim2.new(0.95, 0, 0.5, 0)
+	OptionsButton.Size = UDim2.new(0, 25, 0, 25)
+	OptionsButton.Image = "rbxassetid://3926307971"
+	OptionsButton.ImageRectOffset = Vector2.new(324, 964)
+	OptionsButton.ImageRectSize = Vector2.new(36, 36)
+	
+	local function showCopyMenu()
+		if currentDropdown then
+			return
+		end
+		
+		local CopyMenu = Instance.new("Frame")
+		local UICorner = Instance.new("UICorner")
+		local CopyButton = Instance.new("ImageButton")
+		local CopyText = Instance.new("TextLabel")
+		
+		CopyMenu.Name = "CopyMenu"
+		CopyMenu.Parent = SideBar
+		CopyMenu.BackgroundColor3 = Color3.fromRGB(9, 10, 12)
+		CopyMenu.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		CopyMenu.BorderSizePixel = 0
+		CopyMenu.Position = UDim2.new(-1.1, 0, -0.0032258064, 0)
+		CopyMenu.Size = UDim2.new(0, 200, 0, 40)
+		
+		UICorner.CornerRadius = UDim.new(0, 6)
+		UICorner.Parent = CopyMenu
+		
+		CopyButton.Name = "CopyButton"
+		CopyButton.Parent = CopyMenu
+		CopyButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		CopyButton.BackgroundTransparency = 1.000
+		CopyButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		CopyButton.BorderSizePixel = 0
+		CopyButton.Position = UDim2.new(0.05, 0, 0.1, 0)
+		CopyButton.Size = UDim2.new(0, 30, 0, 30)
+		CopyButton.Image = "rbxassetid://3926305904"
+		CopyButton.ImageRectOffset = Vector2.new(964, 324)
+		CopyButton.ImageRectSize = Vector2.new(36, 36)
+		
+		CopyText.Name = "CopyText"
+		CopyText.Parent = CopyMenu
+		CopyText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		CopyText.BackgroundTransparency = 1.000
+		CopyText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		CopyText.BorderSizePixel = 0
+		CopyText.Position = UDim2.new(0.25, 0, 0, 0)
+		CopyText.Size = UDim2.new(0, 140, 0, 40)
+		CopyText.FontFace = defaultFont
+		CopyText.Text = "Copy Text"
+		CopyText.TextColor3 = Color3.fromRGB(255, 255, 255)
+		CopyText.TextSize = 18.000
+		CopyText.TextXAlignment = Enum.TextXAlignment.Left
+		
+		local introTween = game:GetService("TweenService"):Create(CopyMenu, TweenInfo.new(.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, -0.0032258064, 0)})
+		introTween:Play()
+		
+		currentDropdown = CopyMenu
+		
+		local dropdownCloseConnection
+		dropdownCloseConnection = game:GetService("UserInputService").InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton1 then
+				local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+				if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
+					closeCurrentDropdown()
+					if dropdownCloseConnection then
+						dropdownCloseConnection:Disconnect()
+					end
+				end
+			end
+		end)
+		
+		assignClickAnimation(CopyButton)
+		addConnection(CopyButton.MouseButton1Click, function()
+			local textToCopy = args.Text
+			if setclipboard then
+				setclipboard(textToCopy)
+				window:CreateNotification({
+					Title = "Text Copied",
+					Description = "Text has been copied to clipboard",
+					Duration = 2
+				})
+			end
+			
+			local outroTween = game:GetService("TweenService"):Create(CopyMenu, TweenInfo.new(.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.0032258064, 0)})
+			outroTween:Play()
+			outroTween.Completed:Connect(function()
+				CopyMenu:Destroy()
+				if currentDropdown == CopyMenu then
+					currentDropdown = nil
+				end
+				if dropdownCloseConnection then
+					dropdownCloseConnection:Disconnect()
+				end
+			end)
+		end)
+	end
+	
+	assignClickAnimation(OptionsButton)
+	addConnection(OptionsButton.MouseButton1Click, function()
+		showCopyMenu()
+	end)
+	
+	updateTabContentsSize()
+end
 			local Label = Instance.new("TextLabel")
 			Label.Name = tabName.."_Label"
 			Label.Visible = false
