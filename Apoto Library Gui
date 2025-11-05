@@ -714,7 +714,39 @@ function Apoto:CreateWindow(ConfigArgs)
 			Contents = Apoto.contents.Tabs[tabName]
 		}
 
-		function thisTab:CreateLabel(args)
+		function thisTab:CreateText(args)
+	args.Text = args.Text or "Text"
+	args.TextSize = args.TextSize or 18
+	args.TextColor = args.TextColor or Color3.fromRGB(193, 193, 193)
+	
+	table.insert(self.Contents.Objects, {
+		ObjectType = 'Text',
+		Text = args.Text,
+		TextSize = args.TextSize,
+		TextColor = args.TextColor
+	})
+	
+	local TextLabel = Instance.new("TextLabel")
+	TextLabel.Name = tabName.."_Text"
+	TextLabel.Visible = false
+	TextLabel.Parent = TabContentsFrame
+	TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	TextLabel.BackgroundTransparency = 1.000
+	TextLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	TextLabel.BorderSizePixel = 0
+	TextLabel.Size = UDim2.new(0, 423, 0, 22)
+	TextLabel.FontFace = Font.new('rbxasset://fonts/families/TitilliumWeb.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+	TextLabel.Text = args.Text
+	TextLabel.TextColor3 = args.TextColor
+	TextLabel.TextSize = args.TextSize
+	TextLabel.TextWrapped = true
+	TextLabel.AutomaticSize = Enum.AutomaticSize.Y
+	TextLabel.TextXAlignment = Enum.TextXAlignment.Left
+	
+	updateTabContentsSize()
+end
+
+function thisTab:CreateLabel(args)
 	args.Text = args.Text or "Label"
 	args.TextSize = args.TextSize or 18
 	args.TextColor = args.TextColor or Color3.fromRGB(193, 193, 193)
@@ -868,46 +900,6 @@ function Apoto:CreateWindow(ConfigArgs)
 	
 	updateTabContentsSize()
 end
-			local Label = Instance.new("TextLabel")
-			Label.Name = tabName.."_Label"
-			Label.Visible = false
-			Label.Parent = TabContentsFrame
-			Label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			Label.BackgroundTransparency = 1.000
-			Label.BorderColor3 = Color3.fromRGB(0, 0, 0)
-			Label.BorderSizePixel = 0
-			Label.Size = UDim2.new(0, 423, 0, 22)
-			Label.FontFace = Font.new('rbxasset://fonts/families/TitilliumWeb.json', Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-			Label.Text = text
-			Label.TextColor3 = Color3.fromRGB(193, 193, 193)
-			Label.TextSize = 21
-			Label.TextWrapped = true
-			Label.TextXAlignment = Enum.TextXAlignment.Left
-			updateTabContentsSize()
-		end
-		function thisTab:CreateParagraph(text)
-			table.insert(self.Contents.Objects, {
-				ObjectType = 'Paragraph',
-				Text = text
-			})
-			local Paragraph = Instance.new("TextLabel")
-			Paragraph.Visible = false
-			Paragraph.Name = tabName.."_Paragraph"
-			Paragraph.Parent = TabContentsFrame
-			Paragraph.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			Paragraph.BackgroundTransparency = 1.000
-			Paragraph.BorderColor3 = Color3.fromRGB(0, 0, 0)
-			Paragraph.BorderSizePixel = 0
-			Paragraph.Size = UDim2.new(0, 423, 0, 22)
-			Paragraph.FontFace = Font.new('rbxasset://fonts/families/TitilliumWeb.json', Enum.FontWeight.Regular, Enum.FontStyle.Normal)
-			Paragraph.Text = text
-			Paragraph.TextColor3 = Color3.fromRGB(193, 193, 193)
-			Paragraph.TextSize = 18
-			Paragraph.TextWrapped = true
-			Paragraph.AutomaticSize = Enum.AutomaticSize.Y
-			Paragraph.TextXAlignment = Enum.TextXAlignment.Left
-			updateTabContentsSize()
-		end
 
 function thisTab:CreateImage(args)
 	args.Image = args.Image or "rbxassetid://18820555586"
