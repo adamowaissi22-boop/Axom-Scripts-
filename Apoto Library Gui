@@ -969,7 +969,7 @@ function thisTab:CreateImage(args)
 	return image
 end
 
- 		function thisTab:CreateVideo(args)
+function thisTab:CreateVideo(args)
 	args.Video = args.Video or "rbxassetid://0"
 	args.Size = args.Size or UDim2.new(0, 423, 0, 250)
 
@@ -985,12 +985,7 @@ end
 	local UICorner_2 = Instance.new("UICorner")
 	local ControlsFrame = Instance.new("Frame")
 	local PlayPauseButton = Instance.new("ImageButton")
-	local TimeSlider = Instance.new("Frame")
-	local UICorner_3 = Instance.new("UICorner")
-	local ProgressFrame = Instance.new("Frame")
-	local UICorner_4 = Instance.new("UICorner")
-	local SliderButton = Instance.new("ImageButton")
-	local TimeText = Instance.new("TextLabel")
+	local ReplayButton = Instance.new("ImageButton")
 	local LoopToggle = Instance.new("ImageButton")
 	local LoopIcon = Instance.new("ImageLabel")
 	local UIStroke = Instance.new("UIStroke")
@@ -1040,45 +1035,17 @@ end
 	PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
 	PlayPauseButton.ImageRectSize = Vector2.new(36, 36)
 
-	TimeSlider.Name = "TimeSlider"
-	TimeSlider.Parent = ControlsFrame
-	TimeSlider.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-	TimeSlider.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	TimeSlider.BorderSizePixel = 0
-	TimeSlider.Position = UDim2.new(0.12, 0, 0.45, 0)
-	TimeSlider.Size = UDim2.new(0.6, 0, 0.1, 0)
-
-	UICorner_3.Parent = TimeSlider
-
-	ProgressFrame.Name = "ProgressFrame"
-	ProgressFrame.Parent = TimeSlider
-	ProgressFrame.BackgroundColor3 = ConfigArgs.AccentColor3
-	ProgressFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	ProgressFrame.BorderSizePixel = 0
-	ProgressFrame.Size = UDim2.new(0, 0, 1, 0)
-
-	UICorner_4.Parent = ProgressFrame
-
-	SliderButton.Name = "SliderButton"
-	SliderButton.Parent = TimeSlider
-	SliderButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	SliderButton.BackgroundTransparency = 1.000
-	SliderButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	SliderButton.BorderSizePixel = 0
-	SliderButton.Size = UDim2.new(1, 0, 1, 0)
-
-	TimeText.Name = "TimeText"
-	TimeText.Parent = ControlsFrame
-	TimeText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	TimeText.BackgroundTransparency = 1.000
-	TimeText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	TimeText.BorderSizePixel = 0
-	TimeText.Position = UDim2.new(0.75, 0, 0.2, 0)
-	TimeText.Size = UDim2.new(0.2, 0, 0.6, 0)
-	TimeText.FontFace = defaultFont
-	TimeText.Text = "0:00 / 0:00"
-	TimeText.TextColor3 = Color3.fromRGB(200, 200, 200)
-	TimeText.TextSize = 12.000
+	ReplayButton.Name = "ReplayButton"
+	ReplayButton.Parent = ControlsFrame
+	ReplayButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	ReplayButton.BackgroundTransparency = 1.000
+	ReplayButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	ReplayButton.BorderSizePixel = 0
+	ReplayButton.Position = UDim2.new(0.15, 0, 0.2, 0)
+	ReplayButton.Size = UDim2.new(0, 20, 0, 20)
+	ReplayButton.Image = "rbxassetid://3926307971"
+	ReplayButton.ImageRectOffset = Vector2.new(964, 84)
+	ReplayButton.ImageRectSize = Vector2.new(36, 36)
 
 	LoopToggle.Name = "LoopToggle"
 	LoopToggle.Parent = ControlsFrame
@@ -1086,7 +1053,7 @@ end
 	LoopToggle.BackgroundTransparency = 1.000
 	LoopToggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LoopToggle.BorderSizePixel = 0
-	LoopToggle.Position = UDim2.new(0.95, -25, 0.2, 0)
+	LoopToggle.Position = UDim2.new(0.28, 0, 0.2, 0)
 	LoopToggle.Size = UDim2.new(0, 20, 0, 20)
 
 	LoopIcon.Name = "LoopIcon"
@@ -1108,27 +1075,7 @@ end
 	UIStroke.Color = ConfigArgs.AccentColor3
 
 	local isPlaying = false
-	local isDragging = false
 	local loopEnabled = false
-
-	local function formatTime(seconds)
-		local minutes = math.floor(seconds / 60)
-		local secs = math.floor(seconds % 60)
-		return string.format("%d:%02d", minutes, secs)
-	end
-
-	local function updateProgress()
-		if VideoLabel.IsLoaded and VideoLabel.TimeLength > 0 then
-			local current = VideoLabel.TimePosition
-			local total = VideoLabel.TimeLength
-			local progress = current / total
-			
-			ProgressFrame.Size = UDim2.new(progress, 0, 1, 0)
-			TimeText.Text = formatTime(current) .. " / " .. formatTime(total)
-		else
-			TimeText.Text = "0:00 / 0:00"
-		end
-	end
 
 	local function togglePlayPause()
 		isPlaying = not isPlaying
@@ -1143,6 +1090,13 @@ end
 
 	addConnection(PlayPauseButton.MouseButton1Click, togglePlayPause)
 
+	addConnection(ReplayButton.MouseButton1Click, function()
+		VideoLabel:Stop()
+		VideoLabel:Play()
+		isPlaying = true
+		PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
+	end)
+
 	addConnection(LoopToggle.MouseButton1Click, function()
 		loopEnabled = not loopEnabled
 		VideoLabel.Looped = loopEnabled
@@ -1155,45 +1109,7 @@ end
 		end
 	end)
 
-	addConnection(SliderButton.MouseButton1Down, function()
-		isDragging = true
-		VideoLabel:Pause()
-		local wasPlaying = isPlaying
-		isPlaying = false
-		
-		local mouse = game:GetService("Players").LocalPlayer:GetMouse()
-		local x = math.clamp((mouse.X - TimeSlider.AbsolutePosition.X) / TimeSlider.AbsoluteSize.X, 0, 1)
-		ProgressFrame.Size = UDim2.new(x, 0, 1, 0)
-		if VideoLabel.IsLoaded and VideoLabel.TimeLength > 0 then
-			VideoLabel.TimePosition = x * VideoLabel.TimeLength
-			TimeText.Text = formatTime(VideoLabel.TimePosition) .. " / " .. formatTime(VideoLabel.TimeLength)
-		end
-	end)
-
-	addConnection(game:GetService("UserInputService").InputEnded, function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 and isDragging then
-			isDragging = false
-			if VideoLabel.IsLoaded then
-				VideoLabel:Play()
-				isPlaying = true
-				PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
-			end
-		end
-	end)
-
 	addConnection(game:GetService("RunService").RenderStepped, function()
-		if isDragging then
-			local mouse = game:GetService("Players").LocalPlayer:GetMouse()
-			local x = math.clamp((mouse.X - TimeSlider.AbsolutePosition.X) / TimeSlider.AbsoluteSize.X, 0, 1)
-			ProgressFrame.Size = UDim2.new(x, 0, 1, 0)
-			if VideoLabel.IsLoaded and VideoLabel.TimeLength > 0 then
-				VideoLabel.TimePosition = x * VideoLabel.TimeLength
-				TimeText.Text = formatTime(VideoLabel.TimePosition) .. " / " .. formatTime(VideoLabel.TimeLength)
-			end
-		else
-			updateProgress()
-		end
-		
 		if VideoLabel.IsLoaded and VideoLabel.TimePosition >= VideoLabel.TimeLength and VideoLabel.TimeLength > 0 then
 			if not loopEnabled then
 				isPlaying = false
