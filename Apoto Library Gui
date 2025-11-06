@@ -969,7 +969,8 @@ function thisTab:CreateImage(args)
 	return image
 end
 
-function thisTab:CreateVideo(args)
+
+	function thisTab:CreateVideo(args)
 	args.Video = args.Video or "rbxassetid://0"
 	args.Size = args.Size or UDim2.new(0, 423, 0, 250)
 
@@ -984,11 +985,9 @@ function thisTab:CreateVideo(args)
 	local VideoLabel = Instance.new("VideoFrame")
 	local UICorner_2 = Instance.new("UICorner")
 	local ControlsFrame = Instance.new("Frame")
-	local PlayPauseButton = Instance.new("ImageButton")
-	local ReplayButton = Instance.new("ImageButton")
-	local LoopToggle = Instance.new("ImageButton")
-	local LoopIcon = Instance.new("ImageLabel")
-	local UIStroke = Instance.new("UIStroke")
+	local PlayPauseButton = Instance.new("TextButton")
+	local ReplayButton = Instance.new("TextButton")
+	local LoopToggle = Instance.new("TextButton")
 
 	VideoFrame.Name = tabName.."_Video"
 	VideoFrame.Parent = TabContentsFrame
@@ -1025,54 +1024,39 @@ function thisTab:CreateVideo(args)
 
 	PlayPauseButton.Name = "PlayPauseButton"
 	PlayPauseButton.Parent = ControlsFrame
-	PlayPauseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	PlayPauseButton.BackgroundTransparency = 1.000
+	PlayPauseButton.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 	PlayPauseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	PlayPauseButton.BorderSizePixel = 0
 	PlayPauseButton.Position = UDim2.new(0.02, 0, 0.2, 0)
-	PlayPauseButton.Size = UDim2.new(0, 20, 0, 20)
-	PlayPauseButton.Image = "rbxassetid://3926307971"
-	PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
-	PlayPauseButton.ImageRectSize = Vector2.new(36, 36)
+	PlayPauseButton.Size = UDim2.new(0, 30, 0, 20)
+	PlayPauseButton.Font = Enum.Font.SourceSansBold
+	PlayPauseButton.Text = "▶"
+	PlayPauseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	PlayPauseButton.TextSize = 14
 
 	ReplayButton.Name = "ReplayButton"
 	ReplayButton.Parent = ControlsFrame
-	ReplayButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	ReplayButton.BackgroundTransparency = 1.000
+	ReplayButton.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 	ReplayButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ReplayButton.BorderSizePixel = 0
 	ReplayButton.Position = UDim2.new(0.15, 0, 0.2, 0)
-	ReplayButton.Size = UDim2.new(0, 20, 0, 20)
-	ReplayButton.Image = "rbxassetid://3926307971"
-	ReplayButton.ImageRectOffset = Vector2.new(964, 84)
-	ReplayButton.ImageRectSize = Vector2.new(36, 36)
+	ReplayButton.Size = UDim2.new(0, 30, 0, 20)
+	ReplayButton.Font = Enum.Font.SourceSansBold
+	ReplayButton.Text = "↺"
+	ReplayButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	ReplayButton.TextSize = 14
 
 	LoopToggle.Name = "LoopToggle"
 	LoopToggle.Parent = ControlsFrame
-	LoopToggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	LoopToggle.BackgroundTransparency = 1.000
+	LoopToggle.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 	LoopToggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LoopToggle.BorderSizePixel = 0
 	LoopToggle.Position = UDim2.new(0.28, 0, 0.2, 0)
-	LoopToggle.Size = UDim2.new(0, 20, 0, 20)
-
-	LoopIcon.Name = "LoopIcon"
-	LoopIcon.Parent = LoopToggle
-	LoopIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-	LoopIcon.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	LoopIcon.BackgroundTransparency = 1.000
-	LoopIcon.BorderColor3 = Color3.fromRGB(0, 0, 0)
-	LoopIcon.BorderSizePixel = 0
-	LoopIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
-	LoopIcon.Size = UDim2.new(1, 0, 1, 0)
-	LoopIcon.Image = "rbxassetid://3926307971"
-	LoopIcon.ImageRectOffset = Vector2.new(964, 324)
-	LoopIcon.ImageRectSize = Vector2.new(36, 36)
-	LoopIcon.ImageColor3 = Color3.fromRGB(150, 150, 150)
-
-	UIStroke.Parent = LoopIcon
-	UIStroke.Thickness = 0
-	UIStroke.Color = ConfigArgs.AccentColor3
+	LoopToggle.Size = UDim2.new(0, 30, 0, 20)
+	LoopToggle.Font = Enum.Font.SourceSansBold
+	LoopToggle.Text = "🔄"
+	LoopToggle.TextColor3 = Color3.fromRGB(150, 150, 150)
+	LoopToggle.TextSize = 14
 
 	local isPlaying = false
 	local loopEnabled = false
@@ -1081,31 +1065,29 @@ function thisTab:CreateVideo(args)
 		isPlaying = not isPlaying
 		if isPlaying then
 			VideoLabel:Play()
-			PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
+			PlayPauseButton.Text = "⏸"
 		else
 			VideoLabel:Pause()
-			PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
+			PlayPauseButton.Text = "▶"
 		end
 	end
 
 	addConnection(PlayPauseButton.MouseButton1Click, togglePlayPause)
 
 	addConnection(ReplayButton.MouseButton1Click, function()
-		VideoLabel:Stop()
+		VideoLabel.TimePosition = 0
 		VideoLabel:Play()
 		isPlaying = true
-		PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
+		PlayPauseButton.Text = "⏸"
 	end)
 
 	addConnection(LoopToggle.MouseButton1Click, function()
 		loopEnabled = not loopEnabled
 		VideoLabel.Looped = loopEnabled
 		if loopEnabled then
-			UIStroke.Thickness = 2
-			LoopIcon.ImageColor3 = ConfigArgs.AccentColor3
+			LoopToggle.TextColor3 = ConfigArgs.AccentColor3
 		else
-			UIStroke.Thickness = 0
-			LoopIcon.ImageColor3 = Color3.fromRGB(150, 150, 150)
+			LoopToggle.TextColor3 = Color3.fromRGB(150, 150, 150)
 		end
 	end)
 
@@ -1115,7 +1097,7 @@ function thisTab:CreateVideo(args)
 				isPlaying = false
 				VideoLabel:Pause()
 				VideoLabel.TimePosition = 0
-				PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
+				PlayPauseButton.Text = "▶"
 			end
 		end
 	end)
@@ -1126,25 +1108,25 @@ function thisTab:CreateVideo(args)
 	function video:Set(newVideo)
 		VideoLabel.Video = newVideo
 		isPlaying = false
-		PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
+		PlayPauseButton.Text = "▶"
 	end
 	
 	function video:Play()
 		VideoLabel:Play()
 		isPlaying = true
-		PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
+		PlayPauseButton.Text = "⏸"
 	end
 	
 	function video:Pause()
 		VideoLabel:Pause()
 		isPlaying = false
-		PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
+		PlayPauseButton.Text = "▶"
 	end
 	
 	function video:Stop()
 		VideoLabel:Stop()
 		isPlaying = false
-		PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
+		PlayPauseButton.Text = "▶"
 	end
 	
 	function video:SetSize(newSize)
@@ -1156,17 +1138,14 @@ function thisTab:CreateVideo(args)
 		loopEnabled = loop
 		VideoLabel.Looped = loopEnabled
 		if loopEnabled then
-			UIStroke.Thickness = 2
-			LoopIcon.ImageColor3 = ConfigArgs.AccentColor3
+			LoopToggle.TextColor3 = ConfigArgs.AccentColor3
 		else
-			UIStroke.Thickness = 0
-			LoopIcon.ImageColor3 = Color3.fromRGB(150, 150, 150)
+			LoopToggle.TextColor3 = Color3.fromRGB(150, 150, 150)
 		end
 	end
 	
 	return video
 end
-
 		function thisTab:CreateSlider(args)
 			local Minimum = args.Minimum
 			local Maximum = args.Maximum
