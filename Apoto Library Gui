@@ -465,6 +465,184 @@ function Apoto:CreateWindow(ConfigArgs)
 
 	local window = {}
 
+function Apoto:CreateWindow(ConfigArgs)
+    
+
+    local window = {}
+    
+    function window:CreatePaid(args)
+        args.GamepassId = args.GamepassId or 0
+        args.ScriptName = args.ScriptName or "This Script"
+        
+        local Players = game:GetService("Players")
+        local LocalPlayer = Players.LocalPlayer
+        local MarketplaceService = game:GetService("MarketplaceService")
+        
+        local function checkGamepassOwnership()
+            local success, ownsGamepass = pcall(function()
+                return MarketplaceService:UserOwnsGamePassAsync(LocalPlayer.UserId, args.GamepassId)
+            end)
+            if success then
+                return ownsGamepass
+            else
+                return false
+            end
+        end
+        
+        if checkGamepassOwnership() then
+            return true
+        end
+        
+        local GamepassUI = Instance.new("ScreenGui")
+        local MainFrame = Instance.new("Frame")
+        local UICorner = Instance.new("UICorner")
+        local LockIcon = Instance.new("ImageLabel")
+        local Title = Instance.new("TextLabel")
+        local Description = Instance.new("TextLabel")
+        local BuyButton = Instance.new("ImageButton")
+        local BuyText = Instance.new("TextLabel")
+        local UICorner_2 = Instance.new("UICorner")
+        local WarningText = Instance.new("TextLabel")
+        local UIStroke = Instance.new("UIStroke")
+        
+        GamepassUI.Name = "GamepassVerification"
+        GamepassUI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        GamepassUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+        GamepassUI.ResetOnSpawn = false
+        
+        MainFrame.Name = "MainFrame"
+        MainFrame.Parent = GamepassUI
+        MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+        MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+        MainFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        MainFrame.BorderSizePixel = 0
+        MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        MainFrame.Size = UDim2.new(0, 400, 0, 250)
+        
+        UICorner.CornerRadius = UDim.new(0, 8)
+        UICorner.Parent = MainFrame
+        
+        UIStroke.Parent = MainFrame
+        UIStroke.Color = Color3.fromRGB(60, 60, 80)
+        UIStroke.Thickness = 2
+        
+        LockIcon.Name = "LockIcon"
+        LockIcon.Parent = MainFrame
+        LockIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+        LockIcon.BackgroundTransparency = 1.000
+        LockIcon.Position = UDim2.new(0.5, 0, 0.25, 0)
+        LockIcon.Size = UDim2.new(0, 60, 0, 60)
+        LockIcon.Image = "rbxassetid://3926307971"
+        LockIcon.ImageRectOffset = Vector2.new(524, 724)
+        LockIcon.ImageRectSize = Vector2.new(36, 36)
+        LockIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
+        
+        Title.Name = "Title"
+        Title.Parent = MainFrame
+        Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Title.BackgroundTransparency = 1.000
+        Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Title.BorderSizePixel = 0
+        Title.Position = UDim2.new(0.1, 0, 0.45, 0)
+        Title.Size = UDim2.new(0.8, 0, 0, 30)
+        Title.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        Title.Text = "Buy Gamepass To Unlock " .. args.ScriptName .. " 🔐"
+        Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Title.TextSize = 20.000
+        
+        Description.Name = "Description"
+        Description.Parent = MainFrame
+        Description.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Description.BackgroundTransparency = 1.000
+        Description.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Description.BorderSizePixel = 0
+        Description.Position = UDim2.new(0.1, 0, 0.55, 0)
+        Description.Size = UDim2.new(0.8, 0, 0, 40)
+        Description.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+        Description.Text = "This script requires purchasing the gamepass to access all features."
+        Description.TextColor3 = Color3.fromRGB(200, 200, 200)
+        Description.TextSize = 16.000
+        Description.TextWrapped = true
+        
+        BuyButton.Name = "BuyButton"
+        BuyButton.Parent = MainFrame
+        BuyButton.BackgroundColor3 = Color3.fromRGB(30, 136, 229)
+        BuyButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        BuyButton.BorderSizePixel = 0
+        BuyButton.Position = UDim2.new(0.25, 0, 0.75, 0)
+        BuyButton.Size = UDim2.new(0.5, 0, 0, 40)
+        
+        UICorner_2.CornerRadius = UDim.new(0, 6)
+        UICorner_2.Parent = BuyButton
+        
+        BuyText.Name = "BuyText"
+        BuyText.Parent = BuyButton
+        BuyText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        BuyText.BackgroundTransparency = 1.000
+        BuyText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        BuyText.BorderSizePixel = 0
+        BuyText.Size = UDim2.new(1, 0, 1, 0)
+        BuyText.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+        BuyText.Text = "Buy Gamepass"
+        BuyText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        BuyText.TextSize = 18.000
+        
+        WarningText.Name = "WarningText"
+        WarningText.Parent = MainFrame
+        WarningText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        WarningText.BackgroundTransparency = 1.000
+        WarningText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        WarningText.BorderSizePixel = 0
+        WarningText.Position = UDim2.new(0.1, 0, 0.9, 0)
+        WarningText.Size = UDim2.new(0.8, 0, 0, 20)
+        WarningText.FontFace = Font.new("rbxasset://fonts/families/TitilliumWeb.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+        WarningText.Text = "please disable the ~disable robux~ system in your executor to buy gamepass"
+        WarningText.TextColor3 = Color3.fromRGB(255, 100, 100)
+        WarningText.TextSize = 12.000
+        
+        assignClickAnimation(BuyButton)
+        
+        addConnection(BuyButton.MouseButton1Click, function()
+            local success = pcall(function()
+                MarketplaceService:PromptGamePassPurchase(LocalPlayer, args.GamepassId)
+            end)
+            
+            if not success then
+                window:CreateNotification({
+                    Title = "Purchase Error",
+                    Description = "Failed to open gamepass purchase window",
+                    Duration = 3
+                })
+            end
+        end)
+        
+        local function checkOwnershipLoop()
+            while GamepassUI.Parent do
+                if checkGamepassOwnership() then
+                    GamepassUI:Destroy()
+                    window:CreateNotification({
+                        Title = "Gamepass Owned!",
+                        Description = "Thank you for your purchase! Script unlocked.",
+                        Duration = 5
+                    })
+                    return true
+                end
+                wait(5)
+            end
+        end
+        
+        coroutine.wrap(checkOwnershipLoop)()
+        
+        return false
+    end
+
+    function window:CreateNotification(args) 
+    end
+
+    
+    return window
+end
+
 	function window:CreateNotification(args)
 		args.Duration = args.Duration or 3
 		args.Title = args.Title or "Notification"
