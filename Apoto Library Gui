@@ -1135,6 +1135,72 @@ function thisTab:CreateImage(args)
 	return image
 end
 
+function thisTab:CreateVideo(args)
+	args.Video = args.Video or "rbxassetid://0"
+	args.Size = args.Size or UDim2.new(0, 423, 0, 200)
+	
+	table.insert(self.Contents.Objects, {
+		ObjectType = 'Video',
+		Video = args.Video,
+		Size = args.Size
+	})
+	
+	local VideoFrame = Instance.new("Frame")
+	local UICorner = Instance.new("UICorner")
+	local VideoLabel = Instance.new("VideoFrame")
+	local UICorner_2 = Instance.new("UICorner")
+
+	VideoFrame.Name = tabName.."_Video"
+	VideoFrame.Parent = TabContentsFrame
+	VideoFrame.BackgroundColor3 = Color3.fromRGB(17, 18, 22)
+	VideoFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	VideoFrame.BorderSizePixel = 0
+	VideoFrame.Size = args.Size
+	VideoFrame.Visible = false
+
+	UICorner.CornerRadius = UDim.new(0, 6)
+	UICorner.Parent = VideoFrame
+
+	VideoLabel.Name = "VideoLabel"
+	VideoLabel.Parent = VideoFrame
+	VideoLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+	VideoLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	VideoLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	VideoLabel.BorderSizePixel = 0
+	VideoLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+	VideoLabel.Size = UDim2.new(0.95, 0, 0.95, 0)
+	VideoLabel.Video = args.Video
+
+	UICorner_2.CornerRadius = UDim.new(0, 4)
+	UICorner_2.Parent = VideoLabel
+
+	updateTabContentsSize()
+	
+	local video = {}
+	function video:Set(newVideo)
+		VideoLabel.Video = newVideo
+	end
+	
+	function video:Play()
+		VideoLabel:Play()
+	end
+	
+	function video:Pause()
+		VideoLabel:Pause()
+	end
+	
+	function video:Stop()
+		VideoLabel:Stop()
+	end
+	
+	function video:SetSize(newSize)
+		VideoFrame.Size = newSize
+		updateTabContentsSize()
+	end
+	
+	return video
+end
+
 		function thisTab:CreateSlider(args)
 			local Minimum = args.Minimum
 			local Maximum = args.Maximum
