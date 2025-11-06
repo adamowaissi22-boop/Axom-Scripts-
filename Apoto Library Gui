@@ -969,7 +969,7 @@ function thisTab:CreateImage(args)
 	return image
 end
 
-function thisTab:CreateVideo(args)
+ 		function thisTab:CreateVideo(args)
 	args.Video = args.Video or "rbxassetid://0"
 	args.Size = args.Size or UDim2.new(0, 423, 0, 250)
 
@@ -1037,7 +1037,7 @@ function thisTab:CreateVideo(args)
 	PlayPauseButton.Position = UDim2.new(0.02, 0, 0.2, 0)
 	PlayPauseButton.Size = UDim2.new(0, 20, 0, 20)
 	PlayPauseButton.Image = "rbxassetid://3926307971"
-	PlayPauseButton.ImageRectOffset = Vector2.new(764, 244)
+	PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
 	PlayPauseButton.ImageRectSize = Vector2.new(36, 36)
 
 	TimeSlider.Name = "TimeSlider"
@@ -1099,7 +1099,7 @@ function thisTab:CreateVideo(args)
 	LoopIcon.Position = UDim2.new(0.5, 0, 0.5, 0)
 	LoopIcon.Size = UDim2.new(1, 0, 1, 0)
 	LoopIcon.Image = "rbxassetid://3926307971"
-	LoopIcon.ImageRectOffset = Vector2.new(644, 204)
+	LoopIcon.ImageRectOffset = Vector2.new(964, 324)
 	LoopIcon.ImageRectSize = Vector2.new(36, 36)
 	LoopIcon.ImageColor3 = Color3.fromRGB(150, 150, 150)
 
@@ -1134,10 +1134,10 @@ function thisTab:CreateVideo(args)
 		isPlaying = not isPlaying
 		if isPlaying then
 			VideoLabel:Play()
-			PlayPauseButton.ImageRectOffset = Vector2.new(724, 204)
+			PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
 		else
 			VideoLabel:Pause()
-			PlayPauseButton.ImageRectOffset = Vector2.new(764, 244)
+			PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
 		end
 	end
 
@@ -1157,11 +1157,27 @@ function thisTab:CreateVideo(args)
 
 	addConnection(SliderButton.MouseButton1Down, function()
 		isDragging = true
+		VideoLabel:Pause()
+		local wasPlaying = isPlaying
+		isPlaying = false
+		
+		local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+		local x = math.clamp((mouse.X - TimeSlider.AbsolutePosition.X) / TimeSlider.AbsoluteSize.X, 0, 1)
+		ProgressFrame.Size = UDim2.new(x, 0, 1, 0)
+		if VideoLabel.IsLoaded and VideoLabel.TimeLength > 0 then
+			VideoLabel.TimePosition = x * VideoLabel.TimeLength
+			TimeText.Text = formatTime(VideoLabel.TimePosition) .. " / " .. formatTime(VideoLabel.TimeLength)
+		end
 	end)
 
 	addConnection(game:GetService("UserInputService").InputEnded, function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		if input.UserInputType == Enum.UserInputType.MouseButton1 and isDragging then
 			isDragging = false
+			if VideoLabel.IsLoaded then
+				VideoLabel:Play()
+				isPlaying = true
+				PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
+			end
 		end
 	end)
 
@@ -1183,7 +1199,7 @@ function thisTab:CreateVideo(args)
 				isPlaying = false
 				VideoLabel:Pause()
 				VideoLabel.TimePosition = 0
-				PlayPauseButton.ImageRectOffset = Vector2.new(764, 244)
+				PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
 			end
 		end
 	end)
@@ -1194,25 +1210,25 @@ function thisTab:CreateVideo(args)
 	function video:Set(newVideo)
 		VideoLabel.Video = newVideo
 		isPlaying = false
-		PlayPauseButton.ImageRectOffset = Vector2.new(764, 244)
+		PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
 	end
 	
 	function video:Play()
 		VideoLabel:Play()
 		isPlaying = true
-		PlayPauseButton.ImageRectOffset = Vector2.new(724, 204)
+		PlayPauseButton.ImageRectOffset = Vector2.new(724, 44)
 	end
 	
 	function video:Pause()
 		VideoLabel:Pause()
 		isPlaying = false
-		PlayPauseButton.ImageRectOffset = Vector2.new(764, 244)
+		PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
 	end
 	
 	function video:Stop()
 		VideoLabel:Stop()
 		isPlaying = false
-		PlayPauseButton.ImageRectOffset = Vector2.new(764, 244)
+		PlayPauseButton.ImageRectOffset = Vector2.new(764, 84)
 	end
 	
 	function video:SetSize(newSize)
