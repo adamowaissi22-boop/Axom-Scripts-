@@ -465,18 +465,6 @@ function Apoto:CreateWindow(ConfigArgs)
 
 	local window = {}
 
-function Apoto:CreateWindow(ConfigArgs)
-    
-
-    local window = {}
-    
-    function window:CreateNotification(args) 
-    end
-
-    
-    return window
-end
-
 	function window:CreateNotification(args)
 		args.Duration = args.Duration or 3
 		args.Title = args.Title or "Notification"
@@ -969,8 +957,7 @@ function thisTab:CreateImage(args)
 	return image
 end
 
-
-	function thisTab:CreateVideo(args)
+function thisTab:CreateVideo(args)
 	args.Video = args.Video or "rbxassetid://0"
 	args.Size = args.Size or UDim2.new(0, 423, 0, 250)
 
@@ -1146,6 +1133,7 @@ end
 	
 	return video
 end
+
 		function thisTab:CreateSlider(args)
 			local Minimum = args.Minimum
 			local Maximum = args.Maximum
