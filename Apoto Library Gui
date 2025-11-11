@@ -144,15 +144,15 @@ end
 	end
 
 	local function updateTabsScrollingSize()
-		local totalHeight = 0
-		for _, child in pairs(TabsScrollingFrame:GetChildren()) do 
-			if child:IsA("Frame") then
-				totalHeight = totalHeight + child.Size.Y.Offset + UIListLayout.Padding.Offset
-			end
+	local totalHeight = 0
+	for _, child in pairs(TabsScrollingFrame:GetChildren()) do
+		if child:IsA("Frame") then
+			totalHeight = totalHeight + child.Size.Y.Offset + UIListLayout.Padding.Offset
 		end
-		totalHeight = totalHeight + 10
-		TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 	end
+	totalHeight = totalHeight + 10
+	TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+end
 
 	local function isMouseOverFrame(mouse, frame)
 		local framePos = frame.AbsolutePosition
