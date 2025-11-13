@@ -67,6 +67,20 @@ function Ropoto:CreateWindow(config)
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
     ScreenGui.Parent = game:GetService("CoreGui")
     
+    -- Create Notification Container
+    local NotificationTable = Instance.new("Frame")
+    NotificationTable.Name = "NotificationTable"
+    NotificationTable.BackgroundTransparency = 1
+    NotificationTable.Size = UDim2.new(1, 0, 1, 0)
+    NotificationTable.Parent = ScreenGui
+    
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Parent = NotificationTable
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
+    UIListLayout.Padding = UDim.new(0, 15)
+    
     local LoadingFrame = Instance.new("Frame")
     LoadingFrame.Name = "LoadingFrame"
     LoadingFrame.BackgroundColor3 = Theme.Background
@@ -459,6 +473,103 @@ function Ropoto:CreateWindow(config)
     SectionsList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
         SectionsContainer.CanvasSize = UDim2.new(0, SectionsList.AbsoluteContentSize.X + 20, 0, 0)
     end)
+
+    -- Notification function
+    function Window:CreateNotification(args)
+        args.Duration = args.Duration or 3
+        args.Title = args.Title or "Notification"
+        args.Description = args.Description or "UI by Axom. You forgot to put a description."
+
+        local Notification = Instance.new("Frame")
+        local UICorner = Instance.new("UICorner")
+        local UIStroke = Instance.new("UIStroke")
+        local Title = Instance.new("TextLabel")
+        local BodyText = Instance.new("TextLabel")
+        local Frame = Instance.new("Frame")
+        local notifications = Instance.new("ImageButton")
+
+        UIStroke.Parent = Notification
+        UIStroke.Thickness = 1.8
+        UIStroke.Color = Color3.new(.8,.8,.8)
+
+        Notification.Name = "Notification"
+        Notification.Parent = NotificationTable
+        Notification.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
+        Notification.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Notification.BorderSizePixel = 0
+        Notification.BackgroundTransparency = 0.15
+        Notification.ClipsDescendants = true
+        Notification.Position = UDim2.new(0.934865892, 0, 0.991055429, 0)
+        Notification.Size = UDim2.new(0.87356323, 0, 0, 0)
+
+        UICorner.Parent = Notification
+
+        Title.Name = "Title"
+        Title.Parent = Notification
+        Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Title.BackgroundTransparency = 1.000
+        Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Title.BorderSizePixel = 0
+        Title.Position = UDim2.new(0.149122804, 0, 0.0588235296, 0)
+        Title.Size = UDim2.new(0.820175409, 0, 0, 25)
+        Title.Font = Enum.Font.GothamSemibold
+        Title.Text = args.Title
+        Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Title.TextSize = 25.000
+        Title.TextXAlignment = Enum.TextXAlignment.Left
+
+        BodyText.Name = "BodyText"
+        BodyText.Parent = Notification
+        BodyText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        BodyText.BackgroundTransparency = 1.000
+        BodyText.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        BodyText.BorderSizePixel = 0
+        BodyText.Position = UDim2.new(0.026, 0, 0.33, 0)
+        BodyText.Size = UDim2.new(0.94, 0, 0.53, 0)
+        BodyText.Font = Enum.Font.Gotham
+        BodyText.Text = args.Description
+        BodyText.TextColor3 = Color3.fromRGB(191, 191, 191)
+        BodyText.TextSize = 18.000
+        BodyText.TextWrapped = true
+        BodyText.TextXAlignment = Enum.TextXAlignment.Left
+        BodyText.TextYAlignment = Enum.TextYAlignment.Top
+
+        Frame.Parent = Notification
+        Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+        Frame.BorderSizePixel = 0
+        Frame.Position = UDim2.new(0.026, 0, 0.92, 0)
+        Frame.Size = UDim2.new(0.94, 0, 0.03, 0)
+
+        notifications.Name = "notifications"
+        notifications.Parent = Notification
+        notifications.BackgroundTransparency = 1.000
+        notifications.LayoutOrder = 1
+        notifications.Position = UDim2.new(0.02, 0, 0.08, 0)
+        notifications.Size = UDim2.new(0.11, 0, 0.245, 0)
+        notifications.ZIndex = 2
+        notifications.Image = "rbxassetid://3926305904"
+        notifications.ImageRectOffset = Vector2.new(844, 564)
+        notifications.ImageRectSize = Vector2.new(36, 36)
+
+        coroutine.wrap(function()
+            local showTween = game:GetService("TweenService"):Create(Notification, TweenInfo.new(.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = UDim2.new(0.87356323, 0, 0.0912343487, 0)})
+            showTween:Play()
+
+            local thingy = game:GetService("TweenService"):Create(Frame, TweenInfo.new(args.Duration, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0.03, 0)})
+            thingy:Play()
+            wait(args.Duration)
+
+            local hideTween = game:GetService("TweenService"):Create(Notification, TweenInfo.new(.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = UDim2.new(0.87356323, 0, 0, 0)})
+            local hideStrokeTween = game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Thickness = 0})
+            hideTween:Play()
+            hideStrokeTween:Play()
+            hideTween.Completed:Wait()
+            Notification:Destroy()
+        end)()
+        
+        return Notification
+    end
 
     function Window:MakeSection(name)
         local Section = {}
@@ -1196,185 +1307,6 @@ function Ropoto:CreateWindow(config)
             
             table.insert(Section.Elements, ColorFrame)
             return ColorFrame
-        end
-
-        function window:CreateNotification(args)
-		args.Duration = args.Duration or 3
-		args.Title = args.Title or "Notification"
-		args.Description = args.Description or "UI by Axom. You forgot to put a description."
-
-		local Notification = Instance.new("Frame")
-		local UICorner = Instance.new("UICorner")
-		local UIStroke = Instance.new("UIStroke")
-		local Title = Instance.new("TextLabel")
-		local BodyText = Instance.new("TextLabel")
-		local Frame = Instance.new("Frame")
-		local notifications = Instance.new("ImageButton")
-		local UIListLayout = Instance.new("UIListLayout")
-
-		UIStroke.Parent = Notification
-		UIStroke.Thickness = 1.8
-		UIStroke.Color = Color3.new(.8,.8,.8)
-
-		Notification.Name = "Notification"
-		Notification.Parent = NotificationTable
-		Notification.BackgroundColor3 = Color3.fromRGB(15, 15, 25)
-		Notification.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		Notification.BorderSizePixel = 0
-		Notification.BackgroundTransparency = 0.15
-		Notification.ClipsDescendants = true
-		Notification.Position = UDim2.new(0.934865892, 0, 0.991055429, 0)
-		Notification.Size = UDim2.new(0.87356323, 0, 0, 0)
-
-		UICorner.Parent = Notification
-
-		Title.Name = "Title"
-		Title.Parent = Notification
-		Title.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Title.BackgroundTransparency = 1.000
-		Title.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		Title.BorderSizePixel = 0
-		Title.Position = UDim2.new(0.149122804, 0, 0.0588235296, 0)
-		Title.Size = UDim2.new(0.820175409, 0, 0, 25)
-		Title.FontFace = Font.new('rbxasset://fonts/families/TitilliumWeb.json', Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-		Title.Text = args.Title
-		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Title.TextSize = 25.000
-		Title.TextXAlignment = Enum.TextXAlignment.Left
-
-		BodyText.Name = "BodyText"
-		BodyText.Parent = Notification
-		BodyText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		BodyText.BackgroundTransparency = 1.000
-		BodyText.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		BodyText.BorderSizePixel = 0
-		BodyText.Position = UDim2.new(0.026, 0, 0.33, 0)
-		BodyText.Size = UDim2.new(0.94, 0, 0.53, 0)
-		BodyText.FontFace = Font.new('rbxasset://fonts/families/TitilliumWeb.json', Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-		BodyText.Text = args.Description
-		BodyText.TextColor3 = Color3.fromRGB(191, 191, 191)
-		BodyText.TextSize = 18.000
-		BodyText.TextWrapped = true
-		BodyText.TextXAlignment = Enum.TextXAlignment.Left
-		BodyText.TextYAlignment = Enum.TextYAlignment.Top
-
-		Frame.Parent = Notification
-		Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Frame.BorderColor3 = Color3.fromRGB(0, 0, 0)
-		Frame.BorderSizePixel = 0
-		Frame.Position = UDim2.new(0.026, 0, 0.92, 0)
-		Frame.Size = UDim2.new(0.94, 0, 0.03, 0)
-
-		notifications.Name = "notifications"
-		notifications.Parent = Notification
-		notifications.BackgroundTransparency = 1.000
-		notifications.LayoutOrder = 1
-		notifications.Position = UDim2.new(0.02, 0, 0.08, 0)
-		notifications.Size = UDim2.new(0.11, 0, 0.245, 0)
-		notifications.ZIndex = 2
-		notifications.Image = "rbxassetid://3926305904"
-		notifications.ImageRectOffset = Vector2.new(844, 564)
-		notifications.ImageRectSize = Vector2.new(36, 36)
-
-		UIListLayout.Parent = NotificationTable
-		UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-		UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-		UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Bottom
-		UIListLayout.Padding = UDim.new(0, 15)
-
-		coroutine.wrap(function()
-			local showTween = game:GetService("TweenService"):Create(Notification, TweenInfo.new(.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = UDim2.new(0.87356323, 0, 0.0912343487, 0)})
-			showTween:Play()
-
-			local thingy = game:GetService("TweenService"):Create(Frame, TweenInfo.new(args.Duration, Enum.EasingStyle.Sine, Enum.EasingDirection.In), {Size = UDim2.new(0, 0, 0.03, 0)})
-			thingy:Play()
-			wait(args.Duration)
-
-			local hideTween = game:GetService("TweenService"):Create(Notification, TweenInfo.new(.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Size = UDim2.new(0.87356323, 0, 0, 0)})
-			local hideStrokeTween = game:GetService("TweenService"):Create(UIStroke, TweenInfo.new(.7, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Thickness = 0})
-			hideTween:Play()
-			hideStrokeTween:Play()
-			hideTween.Completed:Wait()
-			Notification:Destroy()
-		end)()
-	end
-	
-	SideBar.ClipsDescendants = true
-	MenuFrame.ClipsDescendants = true
-	
-	addConnection(remove.MouseButton1Click,function() 
-		if minimizeAnim then
-			game:GetService("TweenService"):Create(SideBar,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.In),{Size = UDim2.new(0, 237, 0, 0)}):Play()
-			wait(.3)
-			coroutine.wrap(function()
-				GUITitle.Text = ConfigArgs.Name
-				for i = #GUITitle.Text, 0, -1 do
-					GUITitle.Text = string.sub(GUITitle.Text,0,i)
-					task.wait()
-				end
-				GUITitle.Text = "A"
-				task.wait()
-				GUITitle.Text = "Apoto"
-			end)()
-			game:GetService("TweenService"):Create(MenuFrame,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.In),{Size = UDim2.new(0, 450, 0, 0)}):Play()
-			wait(.4)
-			game:GetService("TweenService"):Create(TopBar,TweenInfo.new(1,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{Size = UDim2.new(0, 140, 0, 40)}):Play()
-			game:GetService("TweenService"):Create(close,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{Rotation = -45}):Play()
-			game:GetService("TweenService"):Create(remove,TweenInfo.new(.3,Enum.EasingStyle.Cubic,Enum.EasingDirection.In),{ImageTransparency = 1}):Play()
-			wait(.3)
-			game:GetService("TweenService"):Create(uiCorner44432,TweenInfo.new(.5,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{CornerRadius = UDim.new(0,8)}):Play()
-			minimized = true
-		else
-			uiCorner44432.CornerRadius = UDim.new(0,8)
-			remove.ImageTransparency = 1
-			TopBar.Size = UDim2.new(0,140,0,40)
-			MenuFrame.Size = UDim2.new(0,450,0,0)
-			SideBar.Size = UDim2.new(0,237,0,0)
-			GUITitle.Text = 'Apoto'
-			close.Rotation = -45
-			minimized = true
-		end
-	end)
-
-	addConnection(close.MouseButton1Click,function() 
-		if minimized then
-			game:GetService("TweenService"):Create(uiCorner44432,TweenInfo.new(.5,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{CornerRadius = UDim.new(0,0)}):Play()
-			game:GetService("TweenService"):Create(TopBar,TweenInfo.new(1,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{Size = UDim2.new(0, 687, 0, 40)}):Play()
-			game:GetService("TweenService"):Create(close,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{Rotation = 0}):Play()
-			game:GetService("TweenService"):Create(remove,TweenInfo.new(.3,Enum.EasingStyle.Cubic,Enum.EasingDirection.In),{ImageTransparency = 0}):Play()
-			wait(.4)
-			coroutine.wrap(function()
-				local text = ConfigArgs.Name
-				for i = 1, #text do
-					GUITitle.Text = string.sub(text, 1, i)
-					task.wait()
-				end
-			end)()
-			game:GetService("TweenService"):Create(SideBar,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{Size = UDim2.new(0, 237, 0, 310)}):Play()
-			wait(.2)
-			game:GetService("TweenService"):Create(MenuFrame,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.InOut),{Size = UDim2.new(0, 450, 0, 310)}):Play()
-			minimized = false
-		else
-			closedPos = TopBar.Position
-			closed = true
-			if not instantClose then
-				game:GetService("TweenService"):Create(TopBar,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.In),{Position = closedPos + UDim2.new(0,0,1.1,0)}):Play()
-				window:CreateNotification({Title = "UI Hidden",Duration = 2,Description = "UI will be hidden until RightShift is pressed."})	
-			else
-				TopBar.Position = closedPos + UDim2.new(0,0,1.1,0)
-			end
-		end
-	end)
-
-	addConnection(game:GetService("UserInputService").InputBegan,function(input: InputObject, gameProcessedEvent: boolean) 
-		if input.KeyCode == Enum.KeyCode.RightShift and closed then
-			game:GetService("TweenService"):Create(TopBar,TweenInfo.new(.6,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = closedPos}):Play()
-			wait(.6)
-			closed = false
-		end
-	end)
-            
-            return Notification
         end
 
         return Section
