@@ -54,12 +54,13 @@ local function Tween(obj, props, duration, style)
     return tween
 end
 
-function Ropoto:CreateWindow(name)
+function Ropoto:CreateWindow(config)
     local Window = {}
     Window.Elements = {}
     Window.Connections = {}
     Window.Sections = {}
     Window.CurrentSection = nil
+    Window.Minimized = false
     
     local ScreenGui = Instance.new("ScreenGui")
     ScreenGui.Name = "RopotoUI"
@@ -85,7 +86,7 @@ function Ropoto:CreateWindow(name)
     LoadingTitle.Position = UDim2.new(0, 0, 0, 15)
     LoadingTitle.Size = UDim2.new(1, 0, 0, 25)
     LoadingTitle.Font = Enum.Font.GothamSemibold
-    LoadingTitle.Text = "Ropoto UI"
+    LoadingTitle.Text = config.text or "Ropoto UI"
     LoadingTitle.TextColor3 = Theme.Primary
     LoadingTitle.TextSize = 18
     LoadingTitle.ZIndex = 101
@@ -145,12 +146,24 @@ function Ropoto:CreateWindow(name)
     Title.Position = UDim2.new(0, 15, 0, 0)
     Title.Size = UDim2.new(0, 200, 1, 0)
     Title.Font = Enum.Font.GothamSemibold
-    Title.Text = name or "Ropoto UI"
+    Title.Text = config.text or "Ropoto UI"
     Title.TextColor3 = Theme.Text
     Title.TextSize = 16
     Title.TextXAlignment = Enum.TextXAlignment.Left
     Title.ZIndex = 3
     Title.Parent = TopBar
+    
+    local MinimizeButton = Instance.new("TextButton")
+    MinimizeButton.Name = "MinimizeButton"
+    MinimizeButton.BackgroundTransparency = 1
+    MinimizeButton.Position = UDim2.new(1, -105, 0, 0)
+    MinimizeButton.Size = UDim2.new(0, 35, 1, 0)
+    MinimizeButton.Font = Enum.Font.GothamBold
+    MinimizeButton.Text = "-"
+    MinimizeButton.TextColor3 = Theme.Text
+    MinimizeButton.TextSize = 18
+    MinimizeButton.ZIndex = 3
+    MinimizeButton.Parent = TopBar
     
     local CreditsButton = Instance.new("TextButton")
     CreditsButton.Name = "CreditsButton"
@@ -315,6 +328,31 @@ function Ropoto:CreateWindow(name)
         MainFrame.Visible = true
         MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
         Tween(MainFrame, {Size = UDim2.new(0, 500, 0, 550)}, 0.5, Enum.EasingStyle.Back)
+    end)
+    
+    local function toggleMinimize()
+        Window.Minimized = not Window.Minimized
+        if Window.Minimized then
+            MinimizeButton.Text = "+"
+            SectionsContainer.Visible = false
+            ContentContainer.Visible = false
+            Tween(MainFrame, {Size = UDim2.new(0, 500, 0, 40)}, 0.3)
+        else
+            MinimizeButton.Text = "-"
+            SectionsContainer.Visible = true
+            ContentContainer.Visible = true
+            Tween(MainFrame, {Size = UDim2.new(0, 500, 0, 550)}, 0.3)
+        end
+    end
+    
+    MinimizeButton.MouseButton1Click:Connect(toggleMinimize)
+    
+    MinimizeButton.MouseEnter:Connect(function()
+        Tween(MinimizeButton, {TextColor3 = Theme.Primary}, 0.2)
+    end)
+    
+    MinimizeButton.MouseLeave:Connect(function()
+        Tween(MinimizeButton, {TextColor3 = Theme.Text}, 0.2)
     end)
     
     local dragging = false
@@ -1160,14 +1198,14 @@ function Ropoto:CreateWindow(name)
             return ColorFrame
         end
 
-        function Section:MakeNotification(title, message, duration)
+        function Window:MakeNotification(title, message, duration)
             duration = duration or 5
             
             local Notification = Instance.new("Frame")
             Notification.Name = "Notification"
             Notification.BackgroundColor3 = Theme.Secondary
             Notification.BorderSizePixel = 0
-            Notification.Position = UDim2.new(1, 10, 1, -120)
+            Notification.Position = UDim2.new(1, 310, 1, -120)
             Notification.Size = UDim2.new(0, 300, 0, 100)
             Notification.ZIndex = 100
             Notification.Parent = ScreenGui
@@ -1204,7 +1242,6 @@ function Ropoto:CreateWindow(name)
             NotifMessage.ZIndex = 101
             NotifMessage.Parent = Notification
             
-            Notification.Position = UDim2.new(1, 310, 1, -120)
             Tween(Notification, {Position = UDim2.new(1, 10, 1, -120)}, 0.3)
             
             delay(duration, function()
