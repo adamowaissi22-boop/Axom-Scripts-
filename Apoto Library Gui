@@ -202,7 +202,7 @@ end
 	local SettingsPanel = Instance.new("Frame")
 
 	ApotoUI.Name = "ApotoUI"
-	ApotoUI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	ApotoUI.Parent = game:GetService("CoreGui")
 	ApotoUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	ApotoUI.ResetOnSpawn = false
 
