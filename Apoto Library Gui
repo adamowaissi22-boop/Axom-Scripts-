@@ -99,17 +99,16 @@ function Apoto:CreateWindow(ConfigArgs)
 	end
 
 	local function loadTabContents(tabName)
-	for _, v in pairs(TabContentsFrame:GetChildren()) do
-		if v:IsA("TextLabel") or v:IsA("Frame") then
-			if string.find(v.Name, "Tab_"..tabName) then
-				v.Visible = true
-			else
-				v.Visible = false
-			end			
+		for _, v in pairs(TabContentsFrame:GetChildren()) do
+			if v.ClassName == 'TextLabel' or v.ClassName == 'Frame' then
+				if string.find(v.Name,tabName) then
+					v.Visible = true
+				else
+					v.Visible = false
+				end			
+			end
 		end
 	end
-	updateTabContentsSize()
-end
 
 	local function Color3ToRGB(color)
 		return Color3.new(math.floor(color.R * 255),math.floor(color.G * 255),math.floor(color.B * 255))
@@ -128,31 +127,26 @@ end
 	end
 
 	local function updateTabContentsSize()
-	local totalHeight = 0
-	for _, child in pairs(TabContentsFrame:GetChildren()) do
-		if child:IsA("Frame") or child:IsA("TextLabel") then
-			if child.Visible == true then
+		local totalHeight = 0
+		for _, child in pairs(TabContentsFrame:GetChildren()) do
+			if child:IsA("Frame") or child:IsA("TextLabel") then
 				totalHeight = totalHeight + child.Size.Y.Offset + UIListLayout_2.Padding.Offset
 			end
 		end
-	end
-	totalHeight = totalHeight + 10
-	TabContentsFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-end
 		totalHeight = totalHeight + 10
 		TabContentsFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 	end
 
 	local function updateTabsScrollingSize()
-	local totalHeight = 0
-	for _, child in pairs(TabsScrollingFrame:GetChildren()) do
-		if child:IsA("Frame") then
-			totalHeight = totalHeight + child.Size.Y.Offset + UIListLayout.Padding.Offset
+		local totalHeight = 0
+		for _, child in pairs(TabsScrollingFrame:GetChildren()) do
+			if child:IsA("Frame") then
+				totalHeight = totalHeight + child.Size.Y.Offset + UIListLayout.Padding.Offset
+			end
 		end
+		totalHeight = totalHeight + 10
+		TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
 	end
-	totalHeight = totalHeight + 10
-	TabsScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-end
 
 	local function isMouseOverFrame(mouse, frame)
 		local framePos = frame.AbsolutePosition
@@ -202,7 +196,7 @@ end
 	local SettingsPanel = Instance.new("Frame")
 
 	ApotoUI.Name = "ApotoUI"
-	ApotoUI.Parent = game:GetService("CoreGui")
+	ApotoUI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 	ApotoUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 	ApotoUI.ResetOnSpawn = false
 
