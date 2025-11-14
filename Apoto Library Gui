@@ -2574,11 +2574,6 @@ function thisTab:CreateBox(args)
 		end
 
 	end)
-
-	window:CreateNotification({Title = "Apoto UI Made BY Axom-",Description = "Real Name = Adam Owaissi | thank for using", Duration = 3})
-	return window
-end
-
 local circularMinimizeBtn = Instance.new("ImageButton")
 local uiCorner = Instance.new("UICorner")
 
@@ -2667,5 +2662,11 @@ addConnection(minimizedIcon.MouseButton1Click, function()
 		minimizedIcon.Visible = false
 	end
 end)
+	window:CreateNotification({Title = "Apoto UI Made BY Axom-",Description = "Real Name = Adam Owaissi | thank for using", Duration = 3})
+	return window
+end
+
+
+
 
 return Apoto
