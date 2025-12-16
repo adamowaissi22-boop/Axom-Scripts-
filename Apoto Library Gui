@@ -811,6 +811,7 @@ function thisTab:CreateLabel(args)
 		local UICorner = Instance.new("UICorner")
 		local CopyButton = Instance.new("ImageButton")
 		local CopyText = Instance.new("TextLabel")
+		local CloseButton = Instance.new("ImageButton")
 		
 		CopyMenu.Name = "CopyMenu"
 		CopyMenu.Parent = SideBar
@@ -848,6 +849,18 @@ function thisTab:CreateLabel(args)
 		CopyText.TextColor3 = Color3.fromRGB(255, 255, 255)
 		CopyText.TextSize = 18.000
 		CopyText.TextXAlignment = Enum.TextXAlignment.Left
+		
+		CloseButton.Name = "CloseButton"
+		CloseButton.Parent = CopyMenu
+		CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		CloseButton.BackgroundTransparency = 1.000
+		CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		CloseButton.BorderSizePixel = 0
+		CloseButton.Position = UDim2.new(0.85, 0, 0.1, 0)
+		CloseButton.Size = UDim2.new(0, 30, 0, 30)
+		CloseButton.Image = "rbxassetid://3926305904"
+		CloseButton.ImageRectOffset = Vector2.new(284, 4)
+		CloseButton.ImageRectSize = Vector2.new(24, 24)
 		
 		local introTween = game:GetService("TweenService"):Create(CopyMenu, TweenInfo.new(.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, -0.0032258064, 0)})
 		introTween:Play()
@@ -890,6 +903,14 @@ function thisTab:CreateLabel(args)
 					dropdownCloseConnection:Disconnect()
 				end
 			end)
+		end)
+		
+		assignClickAnimation(CloseButton)
+		addConnection(CloseButton.MouseButton1Click, function()
+			closeCurrentDropdown()
+			if dropdownCloseConnection then
+				dropdownCloseConnection:Disconnect()
+			end
 		end)
 	end
 	
@@ -1582,6 +1603,7 @@ end
 		local UIPadding = Instance.new("UIPadding")
 		local UIListLayout = Instance.new("UIListLayout")
 		local TitleText = Instance.new("TextLabel")
+		local CloseButton = Instance.new("ImageButton")
 
 		PlayerDropdownMenu.Name = "PlayerDropdownMenu"
 		PlayerDropdownMenu.Parent = SideBar
@@ -1617,6 +1639,18 @@ end
 		TitleText.TextSize = 20.000
 		TitleText.TextXAlignment = Enum.TextXAlignment.Left
 
+		CloseButton.Name = "CloseButton"
+		CloseButton.Parent = PlayerDropdownMenu
+		CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		CloseButton.BackgroundTransparency = 1.000
+		CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		CloseButton.BorderSizePixel = 0
+		CloseButton.Position = UDim2.new(0.85, 0, 0.05, 0)
+		CloseButton.Size = UDim2.new(0, 25, 0, 25)
+		CloseButton.Image = "rbxassetid://3926305904"
+		CloseButton.ImageRectOffset = Vector2.new(284, 4)
+		CloseButton.ImageRectSize = Vector2.new(24, 24)
+
 		UIPadding.Parent = ScrollingFrame
 		UIPadding.PaddingLeft = UDim.new(0, 10)
 		UIPadding.PaddingRight = UDim.new(0, 10)
@@ -1640,6 +1674,14 @@ end
 						dropdownCloseConnection:Disconnect()
 					end
 				end
+			end
+		end)
+
+		assignClickAnimation(CloseButton)
+		addConnection(CloseButton.MouseButton1Click, function()
+			closeCurrentDropdown()
+			if dropdownCloseConnection then
+				dropdownCloseConnection:Disconnect()
 			end
 		end)
 
@@ -1815,6 +1857,7 @@ function thisTab:CreateDropdown(args)
 		local UIPadding = Instance.new("UIPadding")
 		local UIListLayout = Instance.new("UIListLayout")
 		local TitleText = Instance.new("TextLabel")
+		local CloseButton = Instance.new("ImageButton")
 
 		PlayerDropdownMenu.Name = "PlayerDropdownMenu"
 		PlayerDropdownMenu.Parent = SideBar
@@ -1850,6 +1893,18 @@ function thisTab:CreateDropdown(args)
 		TitleText.TextSize = 20.000
 		TitleText.TextXAlignment = Enum.TextXAlignment.Left
 
+		CloseButton.Name = "CloseButton"
+		CloseButton.Parent = PlayerDropdownMenu
+		CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		CloseButton.BackgroundTransparency = 1.000
+		CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		CloseButton.BorderSizePixel = 0
+		CloseButton.Position = UDim2.new(0.85, 0, 0.05, 0)
+		CloseButton.Size = UDim2.new(0, 25, 0, 25)
+		CloseButton.Image = "rbxassetid://3926305904"
+		CloseButton.ImageRectOffset = Vector2.new(284, 4)
+		CloseButton.ImageRectSize = Vector2.new(24, 24)
+
 		UIPadding.Parent = ScrollingFrame
 		UIPadding.PaddingLeft = UDim.new(0, 10)
 		UIPadding.PaddingRight = UDim.new(0, 10)
@@ -1873,6 +1928,14 @@ function thisTab:CreateDropdown(args)
 						dropdownCloseConnection:Disconnect()
 					end
 				end
+			end
+		end)
+
+		assignClickAnimation(CloseButton)
+		addConnection(CloseButton.MouseButton1Click, function()
+			closeCurrentDropdown()
+			if dropdownCloseConnection then
+				dropdownCloseConnection:Disconnect()
 			end
 		end)
 
@@ -2023,6 +2086,7 @@ function thisTab:CreateColorPicker(args)
 		local RandomLabel1 = Instance.new("TextLabel")
 		local RandomLabel2 = Instance.new("TextLabel")
 		local HSV_Box = Instance.new("TextLabel")
+		local CloseButton = Instance.new("ImageButton")
 
 		local dH,dS,dV = args.Default:ToHSV()
 		local DefaultRGB = Color3ToRGB(args.Default)
@@ -2150,6 +2214,18 @@ function thisTab:CreateColorPicker(args)
 		TitleText.TextSize = 20.000
 		TitleText.TextXAlignment = Enum.TextXAlignment.Left
 
+		CloseButton.Name = "CloseButton"
+		CloseButton.Parent = PlayerDropdownMenu
+		CloseButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		CloseButton.BackgroundTransparency = 1.000
+		CloseButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		CloseButton.BorderSizePixel = 0
+		CloseButton.Position = UDim2.new(0.85, 0, 0.05, 0)
+		CloseButton.Size = UDim2.new(0, 25, 0, 25)
+		CloseButton.Image = "rbxassetid://3926305904"
+		CloseButton.ImageRectOffset = Vector2.new(284, 4)
+		CloseButton.ImageRectSize = Vector2.new(24, 24)
+
 		local Continue = Instance.new("ImageButton")
 		Continue.Name = "Continue"
 		Continue.Parent = Frame
@@ -2178,6 +2254,12 @@ function thisTab:CreateColorPicker(args)
 					dropdownCloseConnection:Disconnect()
 				end
 			end
+		end)
+
+		assignClickAnimation(CloseButton)
+		addConnection(CloseButton.MouseButton1Click, function()
+			closeCurrentDropdown()
+			dropdownCloseConnection:Disconnect()
 		end)
 
 		local isColorSelected = false
