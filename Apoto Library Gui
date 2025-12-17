@@ -1581,7 +1581,11 @@ end
 	TextLabel.TextWrapped = true
 	TextLabel.TextXAlignment = Enum.TextXAlignment.Left
 
+	local canOpen = true
 	local function popupMenu()	
+		if not canOpen then return end
+		canOpen = false
+		
 		local currentPlayerDropdown = currentDropdown
 		
 		if currentPlayerDropdown and currentPlayerDropdown.Name == "PlayerDropdownMenu" then
@@ -1623,6 +1627,7 @@ end
 		ScrollingFrame.Size = UDim2.new(0, 236, 0, 213)
 		ScrollingFrame.ScrollBarThickness = 4
 		ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+		ScrollingFrame.ScrollingEnabled = true
 
 		TitleText.Name = "TitleText"
 		TitleText.Parent = PlayerDropdownMenu
@@ -1661,6 +1666,9 @@ end
 
 		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu,TweenInfo.new(.1,Enum.EasingStyle.Cubic,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)})
 		introTween:Play()
+		introTween.Completed:Connect(function()
+			canOpen = true
+		end)
 
 		currentDropdown = PlayerDropdownMenu
 
@@ -1847,7 +1855,11 @@ function thisTab:CreateDropdown(args)
 
 	assignClickAnimation(ImageButton)
 
+	local canOpen = true
 	local function popupMenu()
+		if not canOpen then return end
+		canOpen = false
+		
 		if currentDropdown then
 			return
 		end
@@ -1877,6 +1889,7 @@ function thisTab:CreateDropdown(args)
 		ScrollingFrame.Size = UDim2.new(0, 236, 0, 213)
 		ScrollingFrame.ScrollBarThickness = 4
 		ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+		ScrollingFrame.ScrollingEnabled = true
 
 		TitleText.Name = "TitleText"
 		TitleText.Parent = PlayerDropdownMenu
@@ -1915,6 +1928,9 @@ function thisTab:CreateDropdown(args)
 
 		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu, TweenInfo.new(.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, -0.0032258064, 0)})
 		introTween:Play()
+		introTween.Completed:Connect(function()
+			canOpen = true
+		end)
 
 		currentDropdown = PlayerDropdownMenu
 
@@ -2070,7 +2086,11 @@ function thisTab:CreateColorPicker(args)
 
 	assignClickAnimation(ImageButton)
 
+	local canOpen = true
 	local function popupMenu()
+		if not canOpen then return end
+		canOpen = false
+		
 		closeCurrentDropdown()
 		
 		local PlayerDropdownMenu = Instance.new("Frame")
@@ -2242,6 +2262,9 @@ function thisTab:CreateColorPicker(args)
 
 		local introTween = game:GetService("TweenService"):Create(PlayerDropdownMenu, TweenInfo.new(.4, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0, 0, -0.0032258064, 0)})
 		introTween:Play()
+		introTween.Completed:Connect(function()
+			canOpen = true
+		end)
 
 		currentDropdown = PlayerDropdownMenu
 
