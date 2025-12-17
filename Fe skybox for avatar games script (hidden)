@@ -1,0 +1,187 @@
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "ScreenGui"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 300, 0, 400)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(25, 40, 60)
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(0, 150, 255)
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Size = UDim2.new(1, 0, 0, 30)
+TitleBar.BackgroundColor3 = Color3.fromRGB(15, 30, 50)
+TitleBar.BorderSizePixel = 0
+
+local TitleText = Instance.new("TextLabel")
+TitleText.Name = "TitleText"
+TitleText.Size = UDim2.new(1, -30, 1, 0)
+TitleText.Position = UDim2.new(0, 10, 0, 0)
+TitleText.BackgroundTransparency = 1
+TitleText.Text = "Fe Skybox"
+TitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
+TitleText.Font = Enum.Font.SourceSansBold
+TitleText.TextSize = 16
+
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Position = UDim2.new(1, -25, 0, 5)
+CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+CloseButton.Text = "X"
+CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseButton.Font = Enum.Font.SourceSansBold
+CloseButton.TextSize = 14
+
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0, 200, 0, 40)
+ToggleButton.Position = UDim2.new(0.5, -100, 0, 60)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ToggleButton.Text = "Fe Skybox: OFF"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.TextSize = 18
+
+local WarningText = Instance.new("TextLabel")
+WarningText.Name = "WarningText"
+WarningText.Size = UDim2.new(0, 280, 0, 150)
+WarningText.Position = UDim2.new(0, 10, 0, 120)
+WarningText.BackgroundTransparency = 1
+WarningText.Text = "Warning : the game need to have an avatar shop like popmall avatar shop to wear it free (Try one).\n\nyou can try games like :\nChatbox [💬]\nAvatar Catalog\nCatalog Avatar Editor\nBrookhaven\nand other games."
+WarningText.TextColor3 = Color3.fromRGB(255, 255, 255)
+WarningText.Font = Enum.Font.SourceSans
+WarningText.TextSize = 14
+WarningText.TextWrapped = true
+WarningText.TextYAlignment = Enum.TextYAlignment.Top
+
+local CreditText = Instance.new("TextLabel")
+CreditText.Name = "CreditText"
+CreditText.Size = UDim2.new(1, 0, 0, 20)
+CreditText.Position = UDim2.new(0, 0, 1, -25)
+CreditText.BackgroundTransparency = 1
+CreditText.Text = "made by axom"
+CreditText.TextColor3 = Color3.fromRGB(200, 200, 200)
+CreditText.Font = Enum.Font.SourceSans
+CreditText.TextSize = 12
+
+TitleBar.Parent = MainFrame
+TitleText.Parent = TitleBar
+CloseButton.Parent = TitleBar
+ToggleButton.Parent = MainFrame
+WarningText.Parent = MainFrame
+CreditText.Parent = MainFrame
+MainFrame.Parent = ScreenGui
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local currentAnimation = nil
+local isEnabled = false
+
+CloseButton.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+ToggleButton.MouseButton1Click:Connect(function()
+    isEnabled = not isEnabled
+    
+    if isEnabled then
+        ToggleButton.Text = "Fe Skybox: ON"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+        
+        if game.PlaceId == 7822102405 then
+            local args = {
+                "add",
+                100839513065432
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("updateCharacter"):InvokeServer(unpack(args))
+            
+            local character = game.Players.LocalPlayer.Character
+            if character and character:FindFirstChild("Humanoid") then
+                local humanoid = character.Humanoid
+                if currentAnimation then
+                    currentAnimation:Stop()
+                end
+                local animation = Instance.new("Animation")
+                animation.AnimationId = "rbxassetid://101852027997337"
+                currentAnimation = humanoid:LoadAnimation(animation)
+                currentAnimation:Play()
+            end
+        elseif game.PlaceId == 4924922222 or game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name:find("Brookhaven") then
+            game:GetService("ReplicatedStorage").Remotes.ChangeCharacterBody:InvokeServer({
+                [1] = 100839513065432,
+            })
+            
+            local character = game.Players.LocalPlayer.Character
+            if character and character:FindFirstChild("Humanoid") then
+                local humanoid = character.Humanoid
+                if currentAnimation then
+                    currentAnimation:Stop()
+                end
+                local animation = Instance.new("Animation")
+                animation.AnimationId = "rbxassetid://101852027997337"
+                currentAnimation = humanoid:LoadAnimation(animation)
+                currentAnimation:Play()
+            end
+        else
+            local args = {
+                {
+                    Property = "Torso",
+                    AssetId = 100839513065432
+                }
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("BloxbizRemotes"):WaitForChild("CatalogOnApplyToRealHumanoid"):FireServer(unpack(args))
+            
+            local character = game.Players.LocalPlayer.Character
+            if character and character:FindFirstChild("Humanoid") then
+                local humanoid = character.Humanoid
+                if currentAnimation then
+                    currentAnimation:Stop()
+                end
+                local animation = Instance.new("Animation")
+                animation.AnimationId = "rbxassetid://101852027997337"
+                currentAnimation = humanoid:LoadAnimation(animation)
+                currentAnimation:Play()
+            end
+        end
+    else
+        ToggleButton.Text = "Fe Skybox: OFF"
+        ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        
+        if game.PlaceId == 7822102405 then
+            local args = {
+                "refresh"
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("updateCharacter"):InvokeServer(unpack(args))
+            
+            if currentAnimation then
+                currentAnimation:Stop()
+                currentAnimation = nil
+            end
+        elseif game.PlaceId == 4924922222 or game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name:find("Brookhaven") then
+            if currentAnimation then
+                currentAnimation:Stop()
+                currentAnimation = nil
+            end
+        else
+            local args = {
+                {
+                    Property = "Torso",
+                    AssetId = 0
+                }
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("BloxbizRemotes"):WaitForChild("CatalogOnApplyToRealHumanoid"):FireServer(unpack(args))
+            game:GetService("ReplicatedStorage"):WaitForChild("BloxbizRemotes"):WaitForChild("CatalogOnResetOutfit"):FireServer()
+            
+            if currentAnimation then
+                currentAnimation:Stop()
+                currentAnimation = nil
+            end
+        end
+    end
+end)
