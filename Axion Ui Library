@@ -303,17 +303,17 @@ function Utility:Ripple(button, theme, config)
         Name = "Ripple",
         Parent = button,
         BackgroundColor3 = theme.AccentGlow,
-        BackgroundTransparency = 0.6,
+        BackgroundTransparency = 0.8,
         BorderSizePixel = 0,
         Position = UDim2.new(0, Mouse.X - button.AbsolutePosition.X, 0, Mouse.Y - button.AbsolutePosition.Y),
         Size = UDim2.new(0, 0, 0, 0),
         AnchorPoint = Vector2.new(0.5, 0.5),
-        ZIndex = button.ZIndex + 5
+        ZIndex = button.ZIndex + 1
     }, {
         Utility:Create("UICorner", { CornerRadius = UDim.new(1, 0) })
     })
     
-    local size = math.max(button.AbsoluteSize.X, button.AbsoluteSize.Y) * 2.5
+    local size = math.max(button.AbsoluteSize.X, button.AbsoluteSize.Y) * 2
     
     Utility:Tween(ripple, {
         Size = UDim2.new(0, size, 0, size),
@@ -416,7 +416,7 @@ function AxionLibrary:CreateWindow(options)
     local Config = {
         AnimationSpeed = options.AnimationSpeed or 0.25,
         RippleEnabled = options.RippleEnabled ~= false,
-        RippleSpeed = options.RippleSpeed or 0.4,
+        RippleSpeed = options.RippleSpeed or 0.3,
         CornerRadius = options.CornerRadius or 12,
         ElementCornerRadius = options.ElementCornerRadius or 10,
         BlurEnabled = false
@@ -433,7 +433,8 @@ function AxionLibrary:CreateWindow(options)
         ConfigData = {},
         Connections = {},
         ElementRefs = {},
-        CustomFont = customFont
+        CustomFont = customFont,
+        PlayerInfoVisible = true
     }
     
     if configEnabled then
@@ -675,25 +676,6 @@ function AxionLibrary:CreateWindow(options)
         ScreenGui:Destroy()
     end)
     
-    CreateControlButton("Minimize", "-", theme.Warning, function()
-        Window.Minimized = not Window.Minimized
-        if Window.Minimized then
-            Utility:Tween(MainContainer, {Size = UDim2.new(0, 700, 0, 85)}, Config.AnimationSpeed)
-        else
-            Utility:Tween(MainContainer, {Size = UDim2.new(0, 700, 0, 500)}, Config.AnimationSpeed)
-        end
-    end)
-    
-    Utility:MakeDraggable(MainContainer, Header, Config)
-    
-    local ContentArea = Utility:Create("Frame", {
-        Name = "ContentArea",
-        Parent = MainContainer,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 15, 0, 80),
-        Size = UDim2.new(1, -30, 1, -95)
-    })
-    
     local PlayerInfoContainer = Utility:Create("Frame", {
         Name = "PlayerInfo",
         Parent = MainContainer,
@@ -760,6 +742,27 @@ function AxionLibrary:CreateWindow(options)
             AvatarImage.Image = content
         end
     end)
+    
+    CreateControlButton("Minimize", "-", theme.Warning, function()
+        Window.Minimized = not Window.Minimized
+        if Window.Minimized then
+            Utility:Tween(MainContainer, {Size = UDim2.new(0, 700, 0, 85)}, Config.AnimationSpeed)
+            PlayerInfoContainer.Visible = false
+        else
+            Utility:Tween(MainContainer, {Size = UDim2.new(0, 700, 0, 500)}, Config.AnimationSpeed)
+            PlayerInfoContainer.Visible = true
+        end
+    end)
+    
+    Utility:MakeDraggable(MainContainer, Header, Config)
+    
+    local ContentArea = Utility:Create("Frame", {
+        Name = "ContentArea",
+        Parent = MainContainer,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 15, 0, 80),
+        Size = UDim2.new(1, -30, 1, -95)
+    })
     
     local TabContainer = Utility:Create("Frame", {
         Name = "TabContainer",
@@ -853,7 +856,12 @@ function AxionLibrary:CreateWindow(options)
                 BackgroundTransparency = isCurrent and 0 or newTheme.ElementTransparency
             }, dur)
             Utility:Tween(tab.Label, {TextColor3 = isCurrent and newTheme.Text or newTheme.TextDark}, dur)
-            Utility:Tween(tab.Icon, {TextColor3 = isCurrent and newTheme.Text or newTheme.TextDark}, dur)
+            if tab.IconLabel then
+                Utility:Tween(tab.IconLabel, {TextColor3 = isCurrent and newTheme.Text or newTheme.TextDark}, dur)
+            end
+            if tab.IconImage then
+                Utility:Tween(tab.IconImage, {ImageColor3 = isCurrent and newTheme.Text or newTheme.TextDark}, dur)
+            end
             Utility:Tween(tab.Indicator, {BackgroundColor3 = newTheme.Accent}, dur)
             
             local btnStroke = tab.Button:FindFirstChildOfClass("UIStroke")
@@ -891,7 +899,12 @@ function AxionLibrary:CreateWindow(options)
             elseif ref.Type == "Button" then
                 Utility:Tween(ref.Frame, {BackgroundColor3 = newTheme.Element, BackgroundTransparency = newTheme.ElementTransparency}, dur)
                 Utility:Tween(ref.Label, {TextColor3 = newTheme.Text}, dur)
-                Utility:Tween(ref.Icon, {TextColor3 = newTheme.Accent}, dur)
+                if ref.IconLabel then
+                    Utility:Tween(ref.IconLabel, {TextColor3 = newTheme.Accent}, dur)
+                end
+                if ref.IconImage then
+                    Utility:Tween(ref.IconImage, {ImageColor3 = newTheme.Accent}, dur)
+                end
                 local frameStroke = ref.Frame:FindFirstChildOfClass("UIStroke")
                 if frameStroke then Utility:Tween(frameStroke, {Color = newTheme.Border}, dur) end
                 
@@ -902,7 +915,7 @@ function AxionLibrary:CreateWindow(options)
                 Utility:Tween(ref.Arrow, {TextColor3 = newTheme.TextDark}, dur)
                 local frameStroke = ref.Frame:FindFirstChildOfClass("UIStroke")
                 if frameStroke then Utility:Tween(frameStroke, {Color = newTheme.Border}, dur) end
-                for _, opt in pairs(ref.OptionsContainer:GetChildren()) do
+                for _, opt in pairs(ref.ScrollContainer:GetChildren()) do
 				    if opt:IsA("TextButton") then
 				        local dropdownValue = ref.Element.Value
 				        local isSelected = false
@@ -1198,6 +1211,8 @@ function AxionLibrary:CreateWindow(options)
         tabOptions = tabOptions or {}
         local tabName = tabOptions.Name or "Tab"
         local tabIcon = tabOptions.Icon or "📁"
+        local isImageIcon = tabOptions.IconIsImage or false
+        local iconImage = tabOptions.IconImage or ""
         
         local Tab = { Name = tabName, Sections = {} }
         
@@ -1214,17 +1229,33 @@ function AxionLibrary:CreateWindow(options)
             Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency + 0.3, Thickness = 1 })
         })
         
-        local TabIcon = Utility:Create("TextLabel", {
-            Name = "Icon",
-            Parent = TabButton,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 10, 0, 0),
-            Size = UDim2.new(0, 25, 1, 0),
-            Font = currentFont,
-            Text = tabIcon,
-            TextColor3 = theme.TextDark,
-            TextSize = 16
-        })
+        local TabIcon
+        if isImageIcon and iconImage ~= "" then
+            TabIcon = Utility:Create("ImageLabel", {
+                Name = "Icon",
+                Parent = TabButton,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 10, 0.5, 0),
+                Size = UDim2.new(0, 20, 0, 20),
+                AnchorPoint = Vector2.new(0, 0.5),
+                Image = iconImage,
+                ImageColor3 = theme.TextDark
+            })
+            Tab.IconImage = TabIcon
+        else
+            TabIcon = Utility:Create("TextLabel", {
+                Name = "Icon",
+                Parent = TabButton,
+                BackgroundTransparency = 1,
+                Position = UDim2.new(0, 10, 0, 0),
+                Size = UDim2.new(0, 25, 1, 0),
+                Font = currentFont,
+                Text = tabIcon,
+                TextColor3 = theme.TextDark,
+                TextSize = 16
+            })
+            Tab.IconLabel = TabIcon
+        end
         
         local TabLabel = Utility:Create("TextLabel", {
             Name = "Label",
@@ -1277,7 +1308,6 @@ function AxionLibrary:CreateWindow(options)
         
         Tab.Button = TabButton
         Tab.Content = TabContent
-        Tab.Icon = TabIcon
         Tab.Label = TabLabel
         Tab.Indicator = TabIndicator
         
@@ -1299,7 +1329,12 @@ function AxionLibrary:CreateWindow(options)
             if oldTab then
                 Utility:Tween(oldTab.Button, {BackgroundColor3 = theme.Element, BackgroundTransparency = theme.ElementTransparency}, Config.AnimationSpeed)
                 Utility:Tween(oldTab.Label, {TextColor3 = theme.TextDark}, Config.AnimationSpeed)
-                Utility:Tween(oldTab.Icon, {TextColor3 = theme.TextDark}, Config.AnimationSpeed)
+                if oldTab.IconLabel then
+                    Utility:Tween(oldTab.IconLabel, {TextColor3 = theme.TextDark}, Config.AnimationSpeed)
+                end
+                if oldTab.IconImage then
+                    Utility:Tween(oldTab.IconImage, {ImageColor3 = theme.TextDark}, Config.AnimationSpeed)
+                end
                 Utility:Tween(oldTab.Indicator, {BackgroundTransparency = 1}, Config.AnimationSpeed)
                 
                 local slideOutY = goingDown and -60 or 60
@@ -1316,7 +1351,12 @@ function AxionLibrary:CreateWindow(options)
             Window.CurrentTab = Tab
             Utility:Tween(TabButton, {BackgroundColor3 = theme.Accent, BackgroundTransparency = 0}, Config.AnimationSpeed)
             Utility:Tween(TabLabel, {TextColor3 = theme.Text}, Config.AnimationSpeed)
-            Utility:Tween(TabIcon, {TextColor3 = theme.Text}, Config.AnimationSpeed)
+            if Tab.IconLabel then
+                Utility:Tween(Tab.IconLabel, {TextColor3 = theme.Text}, Config.AnimationSpeed)
+            end
+            if Tab.IconImage then
+                Utility:Tween(Tab.IconImage, {ImageColor3 = theme.Text}, Config.AnimationSpeed)
+            end
             Utility:Tween(TabIndicator, {BackgroundTransparency = 0}, Config.AnimationSpeed)
             
             local slideInY = goingDown and 60 or -60
@@ -1325,7 +1365,6 @@ function AxionLibrary:CreateWindow(options)
             TabContent.CanvasPosition = Vector2.new(0, 0)
             
             Utility:Tween(TabContent, {Position = UDim2.new(0, 15, 0, 15)}, Config.AnimationSpeed * 0.8, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-            Utility:Ripple(TabButton, theme, Config)
         end
         
         TabButton.MouseEnter:Connect(function()
@@ -1347,14 +1386,24 @@ function AxionLibrary:CreateWindow(options)
             TabButton.BackgroundColor3 = theme.Accent
             TabButton.BackgroundTransparency = 0
             TabLabel.TextColor3 = theme.Text
-            TabIcon.TextColor3 = theme.Text
+            if Tab.IconLabel then
+                Tab.IconLabel.TextColor3 = theme.Text
+            end
+            if Tab.IconImage then
+                Tab.IconImage.ImageColor3 = theme.Text
+            end
             TabIndicator.BackgroundTransparency = 0
             TabContent.Visible = true
         end
         
         table.insert(Window.Tabs, Tab)
         
-        function Tab:CreateSection(sectionName)
+        function Tab:CreateSection(sectionOptions)
+            local sectionName = sectionOptions.Name or ""
+            local sectionIcon = sectionOptions.Icon or nil
+            local sectionIconIsImage = sectionOptions.IconIsImage or false
+            local sectionIconImage = sectionOptions.IconImage or ""
+            
             local Section = { Name = sectionName }
             
             local SectionFrame = Utility:Create("Frame", {
@@ -1374,17 +1423,73 @@ function AxionLibrary:CreateWindow(options)
                     Size = UDim2.new(1, 0, 0, 28)
                 })
                 
-                Utility:Create("TextLabel", {
+                local HeaderContent = Utility:Create("Frame", {
                     Parent = SectionHeader,
                     BackgroundTransparency = 1,
                     Position = UDim2.new(0, 5, 0, 0),
-                    Size = UDim2.new(1, -10, 1, 0),
-                    Font = currentFont,
-                    Text = sectionName:upper(),
-                    TextColor3 = theme.TextMuted,
-                    TextSize = 11,
-                    TextXAlignment = Enum.TextXAlignment.Left
+                    Size = UDim2.new(1, -10, 1, 0)
                 })
+                
+                if sectionIcon then
+                    if sectionIconIsImage and sectionIconImage ~= "" then
+                        Utility:Create("ImageLabel", {
+                            Parent = HeaderContent,
+                            BackgroundTransparency = 1,
+                            Position = UDim2.new(0, 0, 0.5, 0),
+                            Size = UDim2.new(0, 16, 0, 16),
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            Image = sectionIconImage,
+                            ImageColor3 = theme.TextMuted
+                        })
+                        
+                        Utility:Create("TextLabel", {
+                            Parent = HeaderContent,
+                            BackgroundTransparency = 1,
+                            Position = UDim2.new(0, 22, 0, 0),
+                            Size = UDim2.new(1, -22, 1, 0),
+                            Font = currentFont,
+                            Text = sectionName:upper(),
+                            TextColor3 = theme.TextMuted,
+                            TextSize = 11,
+                            TextXAlignment = Enum.TextXAlignment.Left
+                        })
+                    else
+                        Utility:Create("TextLabel", {
+                            Parent = HeaderContent,
+                            BackgroundTransparency = 1,
+                            Position = UDim2.new(0, 0, 0, 0),
+                            Size = UDim2.new(0, 16, 1, 0),
+                            Font = currentFont,
+                            Text = sectionIcon,
+                            TextColor3 = theme.TextMuted,
+                            TextSize = 12
+                        })
+                        
+                        Utility:Create("TextLabel", {
+                            Parent = HeaderContent,
+                            BackgroundTransparency = 1,
+                            Position = UDim2.new(0, 22, 0, 0),
+                            Size = UDim2.new(1, -22, 1, 0),
+                            Font = currentFont,
+                            Text = sectionName:upper(),
+                            TextColor3 = theme.TextMuted,
+                            TextSize = 11,
+                            TextXAlignment = Enum.TextXAlignment.Left
+                        })
+                    end
+                else
+                    Utility:Create("TextLabel", {
+                        Parent = HeaderContent,
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(0, 0, 0, 0),
+                        Size = UDim2.new(1, 0, 1, 0),
+                        Font = currentFont,
+                        Text = sectionName:upper(),
+                        TextColor3 = theme.TextMuted,
+                        TextSize = 11,
+                        TextXAlignment = Enum.TextXAlignment.Left
+                    })
+                end
                 
                 Utility:Create("Frame", {
                     Name = "Line",
@@ -1402,6 +1507,9 @@ function AxionLibrary:CreateWindow(options)
                 opts = opts or {}
                 local name = opts.Name or "Button"
                 local callback = opts.Callback or function() end
+                local buttonIcon = opts.Icon or nil
+                local buttonIconIsImage = opts.IconIsImage or false
+                local buttonIconImage = opts.IconImage or ""
                 
                 local Frame = Utility:Create("Frame", {
                     Name = name .. "Button",
@@ -1427,17 +1535,48 @@ function AxionLibrary:CreateWindow(options)
                     TextXAlignment = Enum.TextXAlignment.Left
                 })
                 
-                local Icon = Utility:Create("TextLabel", {
-                    Name = "Icon",
-                    Parent = Frame,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -40, 0, 0),
-                    Size = UDim2.new(0, 30, 1, 0),
-                    Font = currentFont,
-                    Text = "→",
-                    TextColor3 = theme.Accent,
-                    TextSize = 16
-                })
+                local Icon
+                if buttonIcon then
+                    if buttonIconIsImage and buttonIconImage ~= "" then
+                        Icon = Utility:Create("ImageLabel", {
+                            Name = "Icon",
+                            Parent = Frame,
+                            BackgroundTransparency = 1,
+                            Position = UDim2.new(1, -40, 0.5, 0),
+                            Size = UDim2.new(0, 24, 0, 24),
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            Image = buttonIconImage,
+                            ImageColor3 = theme.Accent
+                        })
+                        table.insert(Window.ElementRefs, { Type = "Button", Frame = Frame, Label = Label, IconImage = Icon })
+                    else
+                        Icon = Utility:Create("TextLabel", {
+                            Name = "Icon",
+                            Parent = Frame,
+                            BackgroundTransparency = 1,
+                            Position = UDim2.new(1, -40, 0, 0),
+                            Size = UDim2.new(0, 30, 1, 0),
+                            Font = currentFont,
+                            Text = buttonIcon,
+                            TextColor3 = theme.Accent,
+                            TextSize = 16
+                        })
+                        table.insert(Window.ElementRefs, { Type = "Button", Frame = Frame, Label = Label, IconLabel = Icon })
+                    end
+                else
+                    Icon = Utility:Create("TextLabel", {
+                        Name = "Icon",
+                        Parent = Frame,
+                        BackgroundTransparency = 1,
+                        Position = UDim2.new(1, -40, 0, 0),
+                        Size = UDim2.new(0, 30, 1, 0),
+                        Font = currentFont,
+                        Text = "→",
+                        TextColor3 = theme.Accent,
+                        TextSize = 16
+                    })
+                    table.insert(Window.ElementRefs, { Type = "Button", Frame = Frame, Label = Label, IconLabel = Icon })
+                end
                 
                 local ClickArea = Utility:Create("TextButton", {
                     Parent = Frame,
@@ -1447,23 +1586,21 @@ function AxionLibrary:CreateWindow(options)
                     AutoButtonColor = false
                 })
                 
-                table.insert(Window.ElementRefs, { Type = "Button", Frame = Frame, Label = Label, Icon = Icon })
-                
                 ClickArea.MouseEnter:Connect(function()
                     Utility:Tween(Frame, {BackgroundColor3 = theme.ElementHover, BackgroundTransparency = theme.ElementTransparency - 0.1}, Config.AnimationSpeed * 0.5)
-                    Utility:Tween(Icon, {Position = UDim2.new(1, -35, 0, 0)}, Config.AnimationSpeed * 0.5)
+                    if Icon:IsA("TextLabel") then
+                        Utility:Tween(Icon, {Position = UDim2.new(1, -35, 0, 0)}, Config.AnimationSpeed * 0.5)
+                    end
                 end)
                 
                 ClickArea.MouseLeave:Connect(function()
                     Utility:Tween(Frame, {BackgroundColor3 = theme.Element, BackgroundTransparency = theme.ElementTransparency}, Config.AnimationSpeed * 0.5)
-                    Utility:Tween(Icon, {Position = UDim2.new(1, -40, 0, 0)}, Config.AnimationSpeed * 0.5)
+                    if Icon:IsA("TextLabel") then
+                        Utility:Tween(Icon, {Position = UDim2.new(1, -40, 0, 0)}, Config.AnimationSpeed * 0.5)
+                    end
                 end)
                 
                 ClickArea.MouseButton1Click:Connect(function()
-                    Utility:Ripple(ClickArea, theme, Config)
-                    Utility:Tween(Frame, {Size = UDim2.new(1, -4, 0, 40)}, Config.AnimationSpeed * 0.3)
-                    task.wait(Config.AnimationSpeed * 0.3)
-                    Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, 42)}, Config.AnimationSpeed * 0.3)
                     callback()
                 end)
                 
@@ -1567,7 +1704,6 @@ function AxionLibrary:CreateWindow(options)
                 ClickArea.MouseButton1Click:Connect(function()
                     Toggle.Value = not Toggle.Value
                     Update(true)
-                    Utility:Ripple(ClickArea, theme, Config)
                     SaveConfig()
                     callback(Toggle.Value)
                 end)
@@ -1730,7 +1866,6 @@ function AxionLibrary:CreateWindow(options)
                 
                 Input.MouseButton1Click:Connect(function()
                     UpdateSlider({Position = Vector3.new(Mouse.X, Mouse.Y, 0)}, true)
-                    Utility:Ripple(Input, theme, Config)
                 end)
                 
                 function Slider:Set(v, skip)
@@ -1839,25 +1974,30 @@ function AxionLibrary:CreateWindow(options)
                     Rotation = 0
                 })
                 
-                local OptionsContainer = Utility:Create("Frame", {
-                    Name = "Options",
+                local ScrollContainer = Utility:Create("ScrollingFrame", {
+                    Name = "ScrollContainer",
                     Parent = Frame,
                     BackgroundTransparency = 1,
                     Position = UDim2.new(0, 8, 0, 48),
                     Size = UDim2.new(1, -16, 0, 0),
-                    AutomaticSize = Enum.AutomaticSize.Y
+                    ScrollBarThickness = 3,
+                    ScrollBarImageColor3 = theme.Accent,
+                    ScrollBarImageTransparency = 0.5,
+                    CanvasSize = UDim2.new(0, 0, 0, 0),
+                    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                    ClipsDescendants = true
                 }, {
                     Utility:Create("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) })
                 })
                 
-                table.insert(Window.ElementRefs, { Type = "Dropdown", Element = Dropdown, Frame = Frame, Label = Label, Selected = Selected, Arrow = Arrow, OptionsContainer = OptionsContainer })
+                table.insert(Window.ElementRefs, { Type = "Dropdown", Element = Dropdown, Frame = Frame, Label = Label, Selected = Selected, Arrow = Arrow, ScrollContainer = ScrollContainer })
                 
                 local function CreateOption(optName)
                     local isSelected = multiSelect and table.find(Dropdown.Value, optName) or Dropdown.Value == optName
                     
                     local OptBtn = Utility:Create("TextButton", {
                         Name = optName,
-                        Parent = OptionsContainer,
+                        Parent = ScrollContainer,
                         BackgroundColor3 = isSelected and theme.Accent or theme.Container,
                         BackgroundTransparency = isSelected and 0 or theme.ContainerTransparency,
                         Size = UDim2.new(1, 0, 0, 32),
@@ -1888,7 +2028,6 @@ function AxionLibrary:CreateWindow(options)
                     end)
                     
                     OptBtn.MouseButton1Click:Connect(function()
-                        Utility:Ripple(OptBtn, theme, Config)
                         local t = Window.Theme
                         
                         if multiSelect then
@@ -1907,7 +2046,7 @@ function AxionLibrary:CreateWindow(options)
                             Dropdown.Value = optName
                             Selected.Text = optName
                             
-                            for _, opt in pairs(OptionsContainer:GetChildren()) do
+                            for _, opt in pairs(ScrollContainer:GetChildren()) do
                                 if opt:IsA("TextButton") then
                                     local isThis = opt.Name == optName
                                     Utility:Tween(opt, {
@@ -1945,10 +2084,9 @@ function AxionLibrary:CreateWindow(options)
                 
                 Header.MouseButton1Click:Connect(function()
                     Dropdown.Open = not Dropdown.Open
-                    Utility:Ripple(Header, theme, Config)
                     
                     local optCount = #options
-                    local targetH = Dropdown.Open and math.min(42 + 8 + optCount * 36, 250) or 42
+                    local targetH = Dropdown.Open and math.min(42 + 8 + math.min(optCount, 5) * 36, 250) or 42
                     
                     Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, targetH)}, Config.AnimationSpeed)
                     Utility:Tween(Arrow, {Rotation = Dropdown.Open and 180 or 0}, Config.AnimationSpeed)
@@ -1958,7 +2096,7 @@ function AxionLibrary:CreateWindow(options)
                     local t = Window.Theme
                     if multiSelect then
                         Dropdown.Value = type(v) == "table" and v or {v}
-                        for _, opt in pairs(OptionsContainer:GetChildren()) do
+                        for _, opt in pairs(ScrollContainer:GetChildren()) do
                             if opt:IsA("TextButton") then
                                 local isSel = table.find(Dropdown.Value, opt.Name)
                                 opt.BackgroundColor3 = isSel and t.Accent or t.Container
@@ -1968,7 +2106,7 @@ function AxionLibrary:CreateWindow(options)
                         end
                     else
                         Dropdown.Value = v
-                        for _, opt in pairs(OptionsContainer:GetChildren()) do
+                        for _, opt in pairs(ScrollContainer:GetChildren()) do
                             if opt:IsA("TextButton") then
                                 local isThis = opt.Name == v
                                 opt.BackgroundColor3 = isThis and t.Accent or t.Container
@@ -1986,7 +2124,7 @@ function AxionLibrary:CreateWindow(options)
                     options = newOpts
                     Dropdown.Options = newOpts
                     
-                    for _, child in pairs(OptionsContainer:GetChildren()) do
+                    for _, child in pairs(ScrollContainer:GetChildren()) do
                         if child:IsA("TextButton") then child:Destroy() end
                     end
                     
@@ -2002,7 +2140,7 @@ function AxionLibrary:CreateWindow(options)
                     
                     if Dropdown.Open then
                         local optCount = #newOpts
-                        local targetH = math.min(42 + 8 + optCount * 36, 250)
+                        local targetH = math.min(42 + 8 + math.min(optCount, 5) * 36, 250)
                         Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, targetH)}, Config.AnimationSpeed)
                     end
                 end
@@ -2096,40 +2234,45 @@ function AxionLibrary:CreateWindow(options)
                     Rotation = 0
                 })
                 
-                local OptionsContainer = Utility:Create("Frame", {
-                    Name = "Options",
+                local ScrollContainer = Utility:Create("ScrollingFrame", {
+                    Name = "ScrollContainer",
                     Parent = Frame,
                     BackgroundTransparency = 1,
                     Position = UDim2.new(0, 8, 0, 48),
                     Size = UDim2.new(1, -16, 0, 0),
-                    AutomaticSize = Enum.AutomaticSize.Y
+                    ScrollBarThickness = 3,
+                    ScrollBarImageColor3 = theme.Accent,
+                    ScrollBarImageTransparency = 0.5,
+                    CanvasSize = UDim2.new(0, 0, 0, 0),
+                    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+                    ClipsDescendants = true
                 }, {
-                    Utility:Create("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) })
+                    Utility:Create("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6) })
                 })
                 
-                table.insert(Window.ElementRefs, { Type = "PlayerSelector", Element = PlayerSelector, Frame = Frame, Label = Label, Selected = Selected, Arrow = Arrow, OptionsContainer = OptionsContainer })
+                table.insert(Window.ElementRefs, { Type = "PlayerSelector", Element = PlayerSelector, Frame = Frame, Label = Label, Selected = Selected, Arrow = Arrow, ScrollContainer = ScrollContainer })
                 
                 local function CreatePlayerOption(player)
                     local isSelected = PlayerSelector.Value == player
                     
                     local OptFrame = Utility:Create("Frame", {
                         Name = player.Name,
-                        Parent = OptionsContainer,
+                        Parent = ScrollContainer,
                         BackgroundColor3 = isSelected and theme.Accent or theme.Container,
                         BackgroundTransparency = isSelected and 0 or theme.ContainerTransparency,
-                        Size = UDim2.new(1, 0, 0, 36),
+                        Size = UDim2.new(1, 0, 0, 40),
                         ClipsDescendants = true
                     }, {
                         Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) }),
-                        Utility:Create("UIPadding", { PaddingLeft = UDim.new(0, 40) })
+                        Utility:Create("UIPadding", { PaddingLeft = UDim.new(0, 42), PaddingRight = UDim.new(0, 8) })
                     })
                     
                     local PlayerAvatar = Utility:Create("ImageLabel", {
                         Name = "Avatar",
                         Parent = OptFrame,
                         BackgroundColor3 = theme.Accent,
-                        Position = UDim2.new(0, -32, 0.5, 0),
-                        Size = UDim2.new(0, 28, 0, 28),
+                        Position = UDim2.new(0, -34, 0.5, 0),
+                        Size = UDim2.new(0, 30, 0, 30),
                         AnchorPoint = Vector2.new(0, 0.5),
                         Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
                         ScaleType = Enum.ScaleType.Crop
@@ -2151,26 +2294,28 @@ function AxionLibrary:CreateWindow(options)
                         Name = "Name",
                         Parent = OptFrame,
                         BackgroundTransparency = 1,
-                        Position = UDim2.new(0, 0, 0, 0),
-                        Size = UDim2.new(1, 0, 0, 20),
+                        Position = UDim2.new(0, 0, 0, 5),
+                        Size = UDim2.new(1, 0, 0, 18),
                         Font = currentFont,
                         Text = player.DisplayName,
                         TextColor3 = isSelected and theme.Text or theme.TextDark,
                         TextSize = 12,
-                        TextXAlignment = Enum.TextXAlignment.Left
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        TextTruncate = Enum.TextTruncate.AtEnd
                     })
                     
                     local PlayerTag = Utility:Create("TextLabel", {
                         Name = "Tag",
                         Parent = OptFrame,
                         BackgroundTransparency = 1,
-                        Position = UDim2.new(0, 0, 0, 18),
+                        Position = UDim2.new(0, 0, 0, 21),
                         Size = UDim2.new(1, 0, 0, 14),
                         Font = currentFont,
                         Text = "@" .. player.Name,
                         TextColor3 = isSelected and theme.TextMuted or theme.TextMuted,
                         TextSize = 10,
-                        TextXAlignment = Enum.TextXAlignment.Left
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        TextTruncate = Enum.TextTruncate.AtEnd
                     })
                     
                     local OptBtn = Utility:Create("TextButton", {
@@ -2199,17 +2344,15 @@ function AxionLibrary:CreateWindow(options)
                     end)
                     
                     OptBtn.MouseButton1Click:Connect(function()
-                        Utility:Ripple(OptBtn, theme, Config)
                         local t = Window.Theme
                         
                         PlayerSelector.Value = player
                         Selected.Text = player.DisplayName
                         
-                        for _, opt in pairs(OptionsContainer:GetChildren()) do
+                        for _, opt in pairs(ScrollContainer:GetChildren()) do
                             if opt:IsA("Frame") then
                                 local isThisPlayer = opt.Name == player.Name
                                 local optName = opt:FindFirstChild("Name")
-                                local optTag = opt:FindFirstChild("Tag")
                                 
                                 Utility:Tween(opt, {
                                     BackgroundColor3 = isThisPlayer and t.Accent or t.Container,
@@ -2236,14 +2379,19 @@ function AxionLibrary:CreateWindow(options)
                 end
                 
                 local function RefreshPlayerList()
-                    for _, child in pairs(OptionsContainer:GetChildren()) do
+                    for _, child in pairs(ScrollContainer:GetChildren()) do
                         child:Destroy()
                     end
                     
+                    local playerList = {}
                     for _, player in pairs(Players:GetPlayers()) do
                         if player ~= Player then
-                            CreatePlayerOption(player)
+                            table.insert(playerList, player)
                         end
+                    end
+                    
+                    for _, player in pairs(playerList) do
+                        CreatePlayerOption(player)
                     end
                 end
                 
@@ -2257,7 +2405,7 @@ function AxionLibrary:CreateWindow(options)
                 
                 local playerRemovingConn = Players.PlayerRemoving:Connect(function(player)
                     if PlayerSelector.Open then
-                        local opt = OptionsContainer:FindFirstChild(player.Name)
+                        local opt = ScrollContainer:FindFirstChild(player.Name)
                         if opt then opt:Destroy() end
                         
                         if PlayerSelector.Value == player then
@@ -2280,14 +2428,13 @@ function AxionLibrary:CreateWindow(options)
                 
                 Header.MouseButton1Click:Connect(function()
                     PlayerSelector.Open = not PlayerSelector.Open
-                    Utility:Ripple(Header, theme, Config)
                     
                     if PlayerSelector.Open then
                         RefreshPlayerList()
                     end
                     
                     local playerCount = #Players:GetPlayers() - 1
-                    local targetH = PlayerSelector.Open and math.min(42 + 8 + playerCount * 40, 250) or 42
+                    local targetH = PlayerSelector.Open and math.min(42 + 8 + math.min(playerCount, 4) * 46, 250) or 42
                     
                     Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, targetH)}, Config.AnimationSpeed)
                     Utility:Tween(Arrow, {Rotation = PlayerSelector.Open and 180 or 0}, Config.AnimationSpeed)
@@ -2298,7 +2445,7 @@ function AxionLibrary:CreateWindow(options)
                     PlayerSelector.Value = player
                     Selected.Text = player.DisplayName
                     
-                    for _, opt in pairs(OptionsContainer:GetChildren()) do
+                    for _, opt in pairs(ScrollContainer:GetChildren()) do
                         if opt:IsA("Frame") then
                             local isThisPlayer = opt.Name == player.Name
                             local optName = opt:FindFirstChild("Name")
@@ -2502,7 +2649,6 @@ function AxionLibrary:CreateWindow(options)
                     KeyButton.Text = "..."
                     Utility:Tween(KeyButton, {BackgroundColor3 = theme.Accent, BackgroundTransparency = 0}, Config.AnimationSpeed)
                     Utility:Tween(KeyButton:FindFirstChild("ButtonStroke"), {Color = theme.Accent, Transparency = 0.3}, Config.AnimationSpeed)
-                    Utility:Ripple(KeyButton, theme, Config)
                 end)
                 
                 local inputConn = UserInputService.InputBegan:Connect(function(input, gpe)
@@ -2785,7 +2931,6 @@ function AxionLibrary:CreateWindow(options)
                 
                 Display.MouseButton1Click:Connect(function()
                     ColorPicker.Open = not ColorPicker.Open
-                    Utility:Ripple(Display, theme, Config)
                     Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, ColorPicker.Open and 190 or 42)}, Config.AnimationSpeed)
                 end)
                 
@@ -3038,7 +3183,6 @@ function AxionLibrary:CreateWindow(options)
             end)
             
             DialogBtn.MouseButton1Click:Connect(function()
-                Utility:Ripple(DialogBtn, theme, Config)
                 btnCallback()
                 CloseDialog()
             end)
@@ -3112,7 +3256,9 @@ function AxionLibrary:CreateWindow(options)
             PlayerUsername.Font = fontName
             for _, tab in pairs(Window.Tabs) do
                 tab.Label.Font = fontName
-                tab.Icon.Font = fontName
+                if tab.IconLabel then
+                    tab.IconLabel.Font = fontName
+                end
             end
         end
     end
