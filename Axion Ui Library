@@ -1968,7 +1968,7 @@ function AxionLibrary:CreateWindow(options)
                     Position = UDim2.new(1, -35, 0, 0),
                     Size = UDim2.new(0, 25, 1, 0),
                     Font = currentFont,
-                    Text = "v",
+                    Text = "▼",
                     TextColor3 = theme.TextDark,
                     TextSize = 12,
                     Rotation = 0
@@ -2229,7 +2229,7 @@ function AxionLibrary:CreateWindow(options)
                     Position = UDim2.new(1, -35, 0, 0),
                     Size = UDim2.new(0, 25, 1, 0),
                     Font = currentFont,
-                    Text = "v",
+                    Text = "▼",
                     TextColor3 = theme.TextDark,
                     TextSize = 12,
                     Rotation = 0
