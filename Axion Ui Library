@@ -337,7 +337,8 @@ function Utility:MakeDraggable(frame, handle, config)
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
                 end
-            end)
+            end
+            )
         end
     end)
     
@@ -1883,14 +1884,15 @@ function AxionLibrary:CreateWindow(options)
                 return Slider
             end
             
-            function Section:CreateDropdown(opts)
-                opts = opts or {}
-                local name = opts.Name or "Dropdown"
-                local id = opts.Flag or name
-                local options = opts.Options or {}
-                local default = opts.CurrentOption or (options[1] or "")
-                local multiSelect = opts.MultiSelect or false
-                local callback = opts.Callback or function() end
+            -- UPDATED DROPDOWN FROM APOTO UI
+            function Section:CreateDropdown(args)
+                args = args or {}
+                local name = args.Name or "Dropdown"
+                local id = args.Flag or name
+                local options = args.Options or {"Option 1", "Option 2", "Option 3"}
+                local default = args.CurrentOption or options[1] or "Select..."
+                local multiSelect = args.MultiSelect or false
+                local callback = args.Callback or function() end
                 
                 if Window.ConfigData.Elements and Window.ConfigData.Elements[id] ~= nil then
                     default = Window.ConfigData.Elements[id]
@@ -1903,220 +1905,314 @@ function AxionLibrary:CreateWindow(options)
                 }
                 Window.Elements[id] = Dropdown
                 
-                local Frame = Utility:Create("Frame", {
-                    Name = name .. "Dropdown",
+                local DropdownFrame = Utility:Create("Frame", {
+                    Name = name .. "_Dropdown",
                     Parent = SectionFrame,
                     BackgroundColor3 = theme.Element,
                     BackgroundTransparency = theme.ElementTransparency,
+                    Position = UDim2.new(0, 0, 0, 0),
                     Size = UDim2.new(1, 0, 0, 42),
-                    ClipsDescendants = true
+                    Visible = true
                 }, {
                     Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius) }),
                     Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency + 0.2, Thickness = 1 })
                 })
                 
-                local Header = Utility:Create("TextButton", {
-                    Name = "Header",
-                    Parent = Frame,
-                    BackgroundTransparency = 1,
-                    Size = UDim2.new(1, 0, 0, 42),
-                    Text = "",
-                    AutoButtonColor = false
-                })
-                
                 local Label = Utility:Create("TextLabel", {
                     Name = "Label",
-                    Parent = Header,
+                    Parent = DropdownFrame,
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 15, 0, 0),
-                    Size = UDim2.new(0.5, -15, 1, 0),
+                    Position = UDim2.new(0.028, 0, 0, 0),
+                    Size = UDim2.new(0.482, 0, 1, 0),
                     Font = currentFont,
                     Text = name,
                     TextColor3 = theme.Text,
                     TextSize = 14,
-                    TextXAlignment = Enum.TextXAlignment.Left
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    TextWrapped = true
                 })
                 
-                local function GetDisplayText()
-                    if multiSelect then
-                        if #Dropdown.Value == 0 then return "None"
-                        elseif #Dropdown.Value == 1 then return Dropdown.Value[1]
-                        else return #Dropdown.Value .. " selected" end
-                    else
-                        return Dropdown.Value or "Select..."
-                    end
-                end
-                
-                local Selected = Utility:Create("TextLabel", {
-                    Name = "Selected",
-                    Parent = Header,
+                local ImageButton = Utility:Create("TextButton", {
+                    Name = "DropdownButton",
+                    Parent = DropdownFrame,
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0.5, 0, 0, 0),
-                    Size = UDim2.new(0.5, -45, 1, 0),
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Size = UDim2.new(1, 0, 1, 0),
+                    Text = "",
+                    AutoButtonColor = false
+                })
+                
+                local selectionFrame = Utility:Create("Frame", {
+                    Name = "selectionFrame",
+                    Parent = DropdownFrame,
+                    BackgroundColor3 = theme.Container,
+                    BackgroundTransparency = theme.ContainerTransparency,
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Position = UDim2.new(0.543, 0, 0.095, 0),
+                    Size = UDim2.new(-0.033, 200, 0.809, 0),
+                    ZIndex = 0
+                }, {
+                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
+                })
+                
+                local SelectedText = Utility:Create("TextLabel", {
+                    Name = "SelectedText",
+                    Parent = selectionFrame,
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Position = UDim2.new(-0.005, 0, 0, 0),
+                    Size = UDim2.new(1, 0, 1, 0),
                     Font = currentFont,
-                    Text = GetDisplayText(),
+                    Text = multiSelect and (type(default) == "table" and #default > 0 and #default .. " selected" or "None") or default,
                     TextColor3 = theme.TextDark,
                     TextSize = 13,
-                    TextXAlignment = Enum.TextXAlignment.Right,
+                    TextWrapped = true,
                     TextTruncate = Enum.TextTruncate.AtEnd
                 })
                 
-                local Arrow = Utility:Create("TextLabel", {
-                    Name = "Arrow",
-                    Parent = Header,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -35, 0, 0),
-                    Size = UDim2.new(0, 25, 1, 0),
-                    Font = currentFont,
-                    Text = "▼",
-                    TextColor3 = theme.TextDark,
-                    TextSize = 12,
-                    Rotation = 0
-                })
+                local canOpen = true
+                local currentDropdown = nil
                 
-                local ScrollContainer = Utility:Create("ScrollingFrame", {
-                    Name = "ScrollContainer",
-                    Parent = Frame,
-                    BackgroundColor3 = theme.Container,
-                    BackgroundTransparency = theme.ContainerTransparency,
-                    Position = UDim2.new(0, 8, 0, 48),
-                    Size = UDim2.new(1, -16, 0, 0),
-                    ScrollBarThickness = 3,
-                    ScrollBarImageColor3 = theme.Accent,
-                    ScrollBarImageTransparency = 0.5,
-                    CanvasSize = UDim2.new(0, 0, 0, 0),
-                    AutomaticCanvasSize = Enum.AutomaticSize.Y,
-                    ClipsDescendants = true
-                }, {
-                    Utility:Create("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) })
-                })
+                local function closeCurrentDropdown()
+                    if currentDropdown then
+                        local outroTween = TweenService:Create(currentDropdown, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.003, 0)})
+                        outroTween:Play()
+                        outroTween.Completed:Connect(function()
+                            if currentDropdown and currentDropdown.Parent then
+                                currentDropdown:Destroy()
+                            end
+                        end)
+                        currentDropdown = nil
+                    end
+                end
                 
-                table.insert(Window.ElementRefs, { Type = "Dropdown", Element = Dropdown, Frame = Frame, Label = Label, Selected = Selected, Arrow = Arrow, ScrollContainer = ScrollContainer })
-                
-                local function CreateOption(optName)
-                    local isSelected = multiSelect and table.find(Dropdown.Value, optName) or Dropdown.Value == optName
+                local function isMouseOverFrame(mouse, frame)
+                    local framePos = frame.AbsolutePosition
+                    local frameSize = frame.AbsoluteSize
+                    local mousePos = Vector2.new(mouse.X, mouse.Y)
                     
-                    local OptBtn = Utility:Create("TextButton", {
-                        Name = optName,
-                        Parent = ScrollContainer,
-                        BackgroundColor3 = isSelected and theme.Accent or theme.Container,
-                        BackgroundTransparency = isSelected and 0 or theme.ContainerTransparency,
-                        Size = UDim2.new(1, 0, 0, 32),
-                        Font = currentFont,
-                        Text = optName,
-                        TextColor3 = isSelected and theme.Text or theme.TextDark,
-                        TextSize = 13,
-                        AutoButtonColor = false
-                    }, {
-                        Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
+                    return mousePos.X >= framePos.X and mousePos.X <= framePos.X + frameSize.X and
+                           mousePos.Y >= framePos.Y and mousePos.Y <= framePos.Y + frameSize.Y
+                end
+                
+                local function popupMenu()
+                    if not canOpen then return end
+                    canOpen = false
+                    
+                    closeCurrentDropdown()
+                    
+                    local PlayerDropdownMenu = Utility:Create("Frame", {
+                        Name = "PlayerDropdownMenu",
+                        Parent = ScreenGui,
+                        BackgroundColor3 = theme.Container,
+                        BackgroundTransparency = theme.ContainerTransparency,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.5, -118, 0.5, -135),
+                        Size = UDim2.new(0, 237, 0, 271),
+                        ZIndex = 1000
                     })
                     
-                    OptBtn.MouseEnter:Connect(function()
-                        local isSel = multiSelect and table.find(Dropdown.Value, optName) or Dropdown.Value == optName
-                        if not isSel then
-                            Utility:Tween(OptBtn, {BackgroundColor3 = theme.AccentDark, BackgroundTransparency = 0.5, TextColor3 = theme.Text}, Config.AnimationSpeed * 0.5)
-                        end
-                    end)
+                    local ScrollingFrame = Utility:Create("ScrollingFrame", {
+                        Parent = PlayerDropdownMenu,
+                        Active = true,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0, 0, 0.110, 0),
+                        Size = UDim2.new(0, 236, 0, 213),
+                        ScrollBarThickness = 4,
+                        CanvasSize = UDim2.new(0, 0, 0, 0),
+                        ScrollingEnabled = true,
+                        ZIndex = 1001
+                    })
                     
-                    OptBtn.MouseLeave:Connect(function()
-                        local isSel = multiSelect and table.find(Dropdown.Value, optName) or Dropdown.Value == optName
-                        local t = Window.Theme
-                        Utility:Tween(OptBtn, {
-                            BackgroundColor3 = isSel and t.Accent or t.Container,
-                            BackgroundTransparency = isSel and 0 or t.ContainerTransparency,
-                            TextColor3 = isSel and t.Text or t.TextDark
-                        }, Config.AnimationSpeed * 0.5)
-                    end)
+                    local TitleText = Utility:Create("TextLabel", {
+                        Name = "TitleText",
+                        Parent = PlayerDropdownMenu,
+                        AnchorPoint = Vector2.new(0, 0.5),
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.042, 0, 0.058, 0),
+                        Size = UDim2.new(0, 226, 0, 28),
+                        Font = currentFont,
+                        Text = name,
+                        TextColor3 = theme.Text,
+                        TextSize = 18,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 1001
+                    })
                     
-                    OptBtn.MouseButton1Click:Connect(function()
-                        local t = Window.Theme
-                        
-                        if multiSelect then
-                            local idx = table.find(Dropdown.Value, optName)
-                            if idx then
-                                table.remove(Dropdown.Value, idx)
-                                Utility:Tween(OptBtn, {BackgroundColor3 = t.Container, BackgroundTransparency = t.ContainerTransparency, TextColor3 = t.TextDark}, Config.AnimationSpeed)
-                            else
-                                table.insert(Dropdown.Value, optName)
-                                Utility:Tween(OptBtn, {BackgroundColor3 = t.Accent, BackgroundTransparency = 0, TextColor3 = t.Text}, Config.AnimationSpeed)
-                            end
-                            Selected.Text = GetDisplayText()
-                            SaveConfig()
-                            callback(Dropdown.Value)
-                        else
-                            Dropdown.Value = optName
-                            Selected.Text = optName
-                            
-                            for _, opt in pairs(ScrollContainer:GetChildren()) do
-                                if opt:IsA("TextButton") then
-                                    local isThis = opt.Name == optName
-                                    Utility:Tween(opt, {
-                                        BackgroundColor3 = isThis and t.Accent or t.Container,
-                                        BackgroundTransparency = isThis and 0 or t.ContainerTransparency,
-                                        TextColor3 = isThis and t.Text or t.TextDark
-                                    }, Config.AnimationSpeed)
+                    local CloseButton = Utility:Create("ImageButton", {
+                        Name = "CloseButton",
+                        Parent = PlayerDropdownMenu,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.85, 0, 0.05, 0),
+                        Size = UDim2.new(0, 25, 0, 25),
+                        Image = "rbxassetid://3926305904",
+                        ImageRectOffset = Vector2.new(284, 4),
+                        ImageRectSize = Vector2.new(24, 24),
+                        ZIndex = 1001
+                    })
+                    
+                    Utility:Create("UIPadding", {
+                        Parent = ScrollingFrame,
+                        PaddingLeft = UDim.new(0, 10),
+                        PaddingRight = UDim.new(0, 10)
+                    })
+                    
+                    Utility:Create("UIListLayout", {
+                        Parent = ScrollingFrame,
+                        SortOrder = Enum.SortOrder.LayoutOrder,
+                        Padding = UDim.new(0, 7)
+                    })
+                    
+                    Utility:Tween(PlayerDropdownMenu, {Size = UDim2.new(0, 237, 0, 271)}, Config.AnimationSpeed, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                    canOpen = true
+                    
+                    currentDropdown = PlayerDropdownMenu
+                    
+                    local dropdownCloseConnection
+                    dropdownCloseConnection = UserInputService.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            local mouse = Player:GetMouse()
+                            if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
+                                closeCurrentDropdown()
+                                if dropdownCloseConnection then
+                                    dropdownCloseConnection:Disconnect()
                                 end
                             end
-                            
-                            SaveConfig()
-                            callback(optName)
-                            
-                            task.wait(Config.AnimationSpeed * 0.3)
-                            Dropdown.Open = false
-                            Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, 42)}, Config.AnimationSpeed)
-                            Utility:Tween(Arrow, {Rotation = 0}, Config.AnimationSpeed)
                         end
                     end)
                     
-                    return OptBtn
+                    CloseButton.MouseButton1Click:Connect(function()
+                        closeCurrentDropdown()
+                        if dropdownCloseConnection then
+                            dropdownCloseConnection:Disconnect()
+                        end
+                    end)
+                    
+                    local isItemSelected = false
+                    for i, v in ipairs(options) do
+                        local Selection = Utility:Create("Frame", {
+                            Name = "Selection",
+                            Parent = ScrollingFrame,
+                            BackgroundColor3 = theme.Element,
+                            BackgroundTransparency = theme.ElementTransparency,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Size = UDim2.new(1, 0, 0, 40),
+                            ZIndex = 1002
+                        }, {
+                            Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
+                        })
+                        
+                        local OptionLabel = Utility:Create("TextLabel", {
+                            Name = "Label1",
+                            Parent = Selection,
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            BackgroundTransparency = 1,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Position = UDim2.new(0.045, 0, 0.5, 0),
+                            Size = UDim2.new(0.953, 0, 1, 0),
+                            Font = currentFont,
+                            Text = v,
+                            TextColor3 = theme.Text,
+                            TextSize = 14,
+                            TextXAlignment = Enum.TextXAlignment.Left,
+                            ZIndex = 1003
+                        })
+                        
+                        local SelectionBox = Utility:Create("TextButton", {
+                            Name = "SelectionBox",
+                            Parent = Selection,
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            BackgroundTransparency = 1,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Size = UDim2.new(1, 0, 1, 0),
+                            Text = "",
+                            AutoButtonColor = false,
+                            ZIndex = 1004
+                        })
+                        
+                        SelectionBox.MouseButton1Click:Connect(function()
+                            if not isItemSelected then
+                                isItemSelected = true
+                                
+                                if multiSelect then
+                                    local idx = table.find(Dropdown.Value, v)
+                                    if idx then
+                                        table.remove(Dropdown.Value, idx)
+                                        Utility:Tween(Selection, {BackgroundColor3 = theme.Element, BackgroundTransparency = theme.ElementTransparency}, Config.AnimationSpeed)
+                                        Utility:Tween(OptionLabel, {TextColor3 = theme.Text}, Config.AnimationSpeed)
+                                    else
+                                        table.insert(Dropdown.Value, v)
+                                        Utility:Tween(Selection, {BackgroundColor3 = theme.Accent, BackgroundTransparency = 0}, Config.AnimationSpeed)
+                                        Utility:Tween(OptionLabel, {TextColor3 = theme.Text}, Config.AnimationSpeed)
+                                    end
+                                    SelectedText.Text = #Dropdown.Value > 0 and #Dropdown.Value .. " selected" or "None"
+                                else
+                                    Dropdown.Value = v
+                                    SelectedText.Text = v
+                                    
+                                    for _, opt in pairs(ScrollingFrame:GetChildren()) do
+                                        if opt:IsA("Frame") then
+                                            local isThis = opt.Name == "Selection" and opt:FindFirstChild("Label1") and opt.Label1.Text == v
+                                            Utility:Tween(opt, {
+                                                BackgroundColor3 = isThis and theme.Accent or theme.Element,
+                                                BackgroundTransparency = isThis and 0 or theme.ElementTransparency
+                                            }, Config.AnimationSpeed)
+                                            if opt.Label1 then
+                                                Utility:Tween(opt.Label1, {TextColor3 = isThis and theme.Text or theme.Text}, Config.AnimationSpeed)
+                                            end
+                                        end
+                                    end
+                                end
+                                
+                                SaveConfig()
+                                callback(Dropdown.Value)
+                                
+                                if not multiSelect then
+                                    task.wait(Config.AnimationSpeed * 0.3)
+                                    closeCurrentDropdown()
+                                    if dropdownCloseConnection then
+                                        dropdownCloseConnection:Disconnect()
+                                    end
+                                end
+                            end
+                        end)
+                    end
+                    
+                    local totalHeight = (#options * 47) + ((#options - 1) * 7)
+                    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
                 end
                 
-                for _, opt in pairs(options) do
-                    CreateOption(opt)
-                end
-                
-                Header.MouseEnter:Connect(function()
-                    Utility:Tween(Frame, {BackgroundColor3 = theme.ElementHover, BackgroundTransparency = theme.ElementTransparency - 0.1}, Config.AnimationSpeed * 0.5)
-                end)
-                
-                Header.MouseLeave:Connect(function()
-                    Utility:Tween(Frame, {BackgroundColor3 = theme.Element, BackgroundTransparency = theme.ElementTransparency}, Config.AnimationSpeed * 0.5)
-                end)
-                
-                Header.MouseButton1Click:Connect(function()
-                    Dropdown.Open = not Dropdown.Open
-                    
-                    local optCount = #options
-                    local targetH = Dropdown.Open and math.min(42 + 8 + math.min(optCount, 5) * 36, 250) or 42
-                    
-                    Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, targetH)}, Config.AnimationSpeed)
-                    Utility:Tween(Arrow, {Rotation = Dropdown.Open and 180 or 0}, Config.AnimationSpeed)
+                ImageButton.MouseButton1Click:Connect(function()
+                    popupMenu()
                 end)
                 
                 function Dropdown:Set(v, skip)
-                    local t = Window.Theme
                     if multiSelect then
                         Dropdown.Value = type(v) == "table" and v or {v}
-                        for _, opt in pairs(ScrollContainer:GetChildren()) do
-                            if opt:IsA("TextButton") then
-                                local isSel = table.find(Dropdown.Value, opt.Name)
-                                opt.BackgroundColor3 = isSel and t.Accent or t.Container
-                                opt.BackgroundTransparency = isSel and 0 or t.ContainerTransparency
-                                opt.TextColor3 = isSel and t.Text or t.TextDark
-                            end
-                        end
+                        SelectedText.Text = #Dropdown.Value > 0 and #Dropdown.Value .. " selected" or "None"
                     else
                         Dropdown.Value = v
-                        for _, opt in pairs(ScrollContainer:GetChildren()) do
-                            if opt:IsA("TextButton") then
-                                local isThis = opt.Name == v
-                                opt.BackgroundColor3 = isThis and t.Accent or t.Container
-                                opt.BackgroundTransparency = isThis and 0 or t.ContainerTransparency
-                                opt.TextColor3 = isThis and t.Text or t.TextDark
-                            end
-                        end
+                        SelectedText.Text = v
                     end
-                    Selected.Text = GetDisplayText()
                     SaveConfig()
                     if not skip then callback(Dropdown.Value) end
                 end
@@ -2125,24 +2221,9 @@ function AxionLibrary:CreateWindow(options)
                     options = newOpts
                     Dropdown.Options = newOpts
                     
-                    for _, child in pairs(ScrollContainer:GetChildren()) do
-                        if child:IsA("TextButton") then child:Destroy() end
-                    end
-                    
                     if not keepVal then
                         Dropdown.Value = multiSelect and {} or (newOpts[1] or "")
-                    end
-                    
-                    for _, opt in pairs(newOpts) do
-                        CreateOption(opt)
-                    end
-                    
-                    Selected.Text = GetDisplayText()
-                    
-                    if Dropdown.Open then
-                        local optCount = #newOpts
-                        local targetH = math.min(42 + 8 + math.min(optCount, 5) * 36, 250)
-                        Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, targetH)}, Config.AnimationSpeed)
+                        SelectedText.Text = multiSelect and "None" or (newOpts[1] or "")
                     end
                 end
                 
@@ -2150,12 +2231,13 @@ function AxionLibrary:CreateWindow(options)
                 return Dropdown
             end
             
-            function Section:CreatePlayerSelector(opts)
-                opts = opts or {}
-                local name = opts.Name or "Player Selector"
-                local id = opts.Flag or name
-                local default = opts.CurrentPlayer or Players.LocalPlayer
-                local callback = opts.Callback or function() end
+            -- UPDATED PLAYER SELECTOR FROM APOTO UI
+            function Section:CreatePlayerSelector(args)
+                args = args or {}
+                local name = args.Name or "Player Selector"
+                local id = args.Flag or name
+                local default = args.CurrentPlayer or Players.LocalPlayer
+                local callback = args.Callback or function() end
                 
                 if Window.ConfigData.Elements and Window.ConfigData.Elements[id] ~= nil then
                     local savedName = Window.ConfigData.Elements[id]
@@ -2174,292 +2256,374 @@ function AxionLibrary:CreateWindow(options)
                 }
                 Window.Elements[id] = { Value = default.Name }
                 
-                local Frame = Utility:Create("Frame", {
-                    Name = name .. "PlayerSelector",
+                local PlayerSelectorFrame = Utility:Create("Frame", {
+                    Name = name .. "_PlayerSelector",
                     Parent = SectionFrame,
                     BackgroundColor3 = theme.Element,
                     BackgroundTransparency = theme.ElementTransparency,
-                    Size = UDim2.new(1, 0, 0, 42),
-                    ClipsDescendants = true
+                    Position = UDim2.new(0, 0, 0, 0),
+                    Size = UDim2.new(1, 0, 0, 63),
+                    Visible = true
                 }, {
                     Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius) }),
                     Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency + 0.2, Thickness = 1 })
                 })
                 
-                local Header = Utility:Create("TextButton", {
-                    Name = "Header",
-                    Parent = Frame,
-                    BackgroundTransparency = 1,
-                    Size = UDim2.new(1, 0, 0, 42),
-                    Text = "",
-                    AutoButtonColor = false
-                })
-                
                 local Label = Utility:Create("TextLabel", {
                     Name = "Label",
-                    Parent = Header,
+                    Parent = PlayerSelectorFrame,
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 15, 0, 0),
-                    Size = UDim2.new(0.5, -15, 1, 0),
+                    Position = UDim2.new(0.028, 0, 0, 0),
+                    Size = UDim2.new(0.218, 0, 0, 63),
                     Font = currentFont,
                     Text = name,
                     TextColor3 = theme.Text,
                     TextSize = 14,
+                    TextWrapped = true,
                     TextXAlignment = Enum.TextXAlignment.Left
                 })
                 
-                local Selected = Utility:Create("TextLabel", {
-                    Name = "Selected",
-                    Parent = Header,
+                local ImageButton = Utility:Create("TextButton", {
+                    Name = "PlayerSelectorButton",
+                    Parent = PlayerSelectorFrame,
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                     BackgroundTransparency = 1,
-                    Position = UDim2.new(0.5, 0, 0, 0),
-                    Size = UDim2.new(0.5, -45, 1, 0),
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Size = UDim2.new(1, 0, 1, 0),
+                    Text = "",
+                    AutoButtonColor = false
+                })
+                
+                local selectionFrame = Utility:Create("Frame", {
+                    Name = "selectionFrame",
+                    Parent = PlayerSelectorFrame,
+                    BackgroundColor3 = theme.Container,
+                    BackgroundTransparency = theme.ContainerTransparency,
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    ZIndex = 0,
+                    Position = UDim2.new(0.543, 0, 0.095, 0),
+                    Size = UDim2.new(0, 185, 0, 51)
+                }, {
+                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
+                })
+                
+                local function getPlayersAndIcons()
+                    local players = Players:GetPlayers()
+                    local playerIcons = {}
+                    for _, player in pairs(players) do
+                        local userId = player.UserId
+                        local thumbType = Enum.ThumbnailType.HeadShot
+                        local thumbSize = Enum.ThumbnailSize.Size420x420
+                        local content, isReady = Players:GetUserThumbnailAsync(userId, thumbType, thumbSize)
+                        table.insert(playerIcons, {
+                            Name = player.Name,
+                            Icon = content
+                        })
+                    end
+                    return playerIcons
+                end
+                
+                local AvatarImage = Utility:Create("ImageLabel", {
+                    Name = "Avatar",
+                    Parent = selectionFrame,
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Position = UDim2.new(0.032, 0, 0.058, 0),
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(0, 45, 0, 45),
+                    Image = "http://www.roblox.com/asset/?id=10885644041"
+                }, {
+                    Utility:Create("UICorner", { CornerRadius = UDim.new(1, 0) })
+                })
+                
+                pcall(function()
+                    local thumbType = Enum.ThumbnailType.HeadShot
+                    local thumbSize = Enum.ThumbnailSize.Size420x420
+                    local content, isReady = Players:GetUserThumbnailAsync(default.UserId, thumbType, thumbSize)
+                    if isReady then
+                        AvatarImage.Image = content
+                    end
+                end)
+                
+                local SelectedText = Utility:Create("TextLabel", {
+                    Name = "SelectedText",
+                    Parent = selectionFrame,
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Position = UDim2.new(0.313, 0, 0.058, 0),
+                    Size = UDim2.new(0, 126, 0, 45),
                     Font = currentFont,
                     Text = default.DisplayName,
                     TextColor3 = theme.TextDark,
-                    TextSize = 13,
-                    TextXAlignment = Enum.TextXAlignment.Right,
-                    TextTruncate = Enum.TextTruncate.AtEnd
+                    TextSize = 14,
+                    TextWrapped = true,
+                    TextXAlignment = Enum.TextXAlignment.Left
                 })
                 
-                local Arrow = Utility:Create("TextLabel", {
-                    Name = "Arrow",
-                    Parent = Header,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(1, -35, 0, 0),
-                    Size = UDim2.new(0, 25, 1, 0),
-                    Font = currentFont,
-                    Text = "▼",
-                    TextColor3 = theme.TextDark,
-                    TextSize = 12,
-                    Rotation = 0
-                })
+                local canOpen = true
+                local currentDropdown = nil
                 
-                local ScrollContainer = Utility:Create("ScrollingFrame", {
-                    Name = "ScrollContainer",
-                    Parent = Frame,
-                    BackgroundColor3 = theme.Container,
-                    BackgroundTransparency = theme.ContainerTransparency,
-                    Position = UDim2.new(0, 8, 0, 48),
-                    Size = UDim2.new(1, -16, 0, 0),
-                    ScrollBarThickness = 3,
-                    ScrollBarImageColor3 = theme.Accent,
-                    ScrollBarImageTransparency = 0.5,
-                    CanvasSize = UDim2.new(0, 0, 0, 0),
-                    AutomaticCanvasSize = Enum.AutomaticSize.Y,
-                    ClipsDescendants = true
-                }, {
-                    Utility:Create("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 6) })
-                })
+                local function closeCurrentDropdown()
+                    if currentDropdown then
+                        local outroTween = TweenService:Create(currentDropdown, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.003, 0)})
+                        outroTween:Play()
+                        outroTween.Completed:Connect(function()
+                            if currentDropdown and currentDropdown.Parent then
+                                currentDropdown:Destroy()
+                            end
+                        end)
+                        currentDropdown = nil
+                    end
+                end
                 
-                table.insert(Window.ElementRefs, { Type = "PlayerSelector", Element = PlayerSelector, Frame = Frame, Label = Label, Selected = Selected, Arrow = Arrow, ScrollContainer = ScrollContainer })
-                
-                local function CreatePlayerOption(player)
-                    local isSelected = PlayerSelector.Value == player
+                local function isMouseOverFrame(mouse, frame)
+                    local framePos = frame.AbsolutePosition
+                    local frameSize = frame.AbsoluteSize
+                    local mousePos = Vector2.new(mouse.X, mouse.Y)
                     
-                    local OptFrame = Utility:Create("Frame", {
-                        Name = player.Name,
-                        Parent = ScrollContainer,
-                        BackgroundColor3 = isSelected and theme.Accent or theme.Container,
-                        BackgroundTransparency = isSelected and 0 or theme.ContainerTransparency,
-                        Size = UDim2.new(1, 0, 0, 40),
-                        ClipsDescendants = true
-                    }, {
-                        Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) }),
-                        Utility:Create("UIPadding", { PaddingLeft = UDim.new(0, 42), PaddingRight = UDim.new(0, 8) })
+                    return mousePos.X >= framePos.X and mousePos.X <= framePos.X + frameSize.X and
+                           mousePos.Y >= framePos.Y and mousePos.Y <= framePos.Y + frameSize.Y
+                end
+                
+                local function popupMenu()
+                    if not canOpen then return end
+                    canOpen = false
+                    
+                    local currentPlayerDropdown = currentDropdown
+                    
+                    if currentPlayerDropdown and currentPlayerDropdown.Name == "PlayerDropdownMenu" then
+                        local outroTween = TweenService:Create(currentPlayerDropdown, TweenInfo.new(.2, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.003, 0)})
+                        outroTween:Play()
+                        outroTween.Completed:Connect(function()
+                            if currentPlayerDropdown and currentPlayerDropdown.Parent then
+                                currentPlayerDropdown:Destroy()
+                            end
+                            if currentDropdown == currentPlayerDropdown then
+                                currentDropdown = nil
+                            end
+                        end)
+                    end
+                    
+                    local playerIcons = getPlayersAndIcons()
+                    local PlayerDropdownMenu = Utility:Create("Frame", {
+                        Name = "PlayerDropdownMenu",
+                        Parent = ScreenGui,
+                        BackgroundColor3 = theme.Container,
+                        BackgroundTransparency = theme.ContainerTransparency,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.5, -118, 0.5, -135),
+                        Size = UDim2.new(0, 237, 0, 271),
+                        ZIndex = 1000
                     })
                     
-                    local PlayerAvatar = Utility:Create("ImageLabel", {
-                        Name = "Avatar",
-                        Parent = OptFrame,
-                        BackgroundColor3 = theme.Accent,
-                        Position = UDim2.new(0, -34, 0.5, 0),
-                        Size = UDim2.new(0, 30, 0, 30),
+                    local ScrollingFrame = Utility:Create("ScrollingFrame", {
+                        Parent = PlayerDropdownMenu,
+                        Active = true,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0, 0, 0.110, 0),
+                        Size = UDim2.new(0, 236, 0, 213),
+                        ScrollBarThickness = 4,
+                        CanvasSize = UDim2.new(0, 0, 0, 0),
+                        ScrollingEnabled = true,
+                        ZIndex = 1001
+                    })
+                    
+                    local TitleText = Utility:Create("TextLabel", {
+                        Name = "TitleText",
+                        Parent = PlayerDropdownMenu,
                         AnchorPoint = Vector2.new(0, 0.5),
-                        Image = "rbxasset://textures/ui/GuiImagePlaceholder.png",
-                        ScaleType = Enum.ScaleType.Crop
-                    }, {
-                        Utility:Create("UICorner", { CornerRadius = UDim.new(1, 0) }),
-                        Utility:Create("UIStroke", { Color = theme.AccentDark, Thickness = 2 })
-                    })
-                    
-                    pcall(function()
-                        local thumbType = Enum.ThumbnailType.HeadShot
-                        local thumbSize = Enum.ThumbnailSize.Size100x100
-                        local content, isReady = Players:GetUserThumbnailAsync(player.UserId, thumbType, thumbSize)
-                        if isReady then
-                            PlayerAvatar.Image = content
-                        end
-                    end)
-                    
-                    local PlayerName = Utility:Create("TextLabel", {
-                        Name = "Name",
-                        Parent = OptFrame,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                         BackgroundTransparency = 1,
-                        Position = UDim2.new(0, 0, 0, 5),
-                        Size = UDim2.new(1, 0, 0, 18),
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.042, 0, 0.058, 0),
+                        Size = UDim2.new(0, 226, 0, 28),
                         Font = currentFont,
-                        Text = player.DisplayName,
-                        TextColor3 = isSelected and theme.Text or theme.TextDark,
-                        TextSize = 12,
+                        Text = name,
+                        TextColor3 = theme.Text,
+                        TextSize = 18,
                         TextXAlignment = Enum.TextXAlignment.Left,
-                        TextTruncate = Enum.TextTruncate.AtEnd
+                        ZIndex = 1001
                     })
                     
-                    local PlayerTag = Utility:Create("TextLabel", {
-                        Name = "Tag",
-                        Parent = OptFrame,
+                    local CloseButton = Utility:Create("ImageButton", {
+                        Name = "CloseButton",
+                        Parent = PlayerDropdownMenu,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
                         BackgroundTransparency = 1,
-                        Position = UDim2.new(0, 0, 0, 21),
-                        Size = UDim2.new(1, 0, 0, 14),
-                        Font = currentFont,
-                        Text = "@" .. player.Name,
-                        TextColor3 = isSelected and theme.TextMuted or theme.TextMuted,
-                        TextSize = 10,
-                        TextXAlignment = Enum.TextXAlignment.Left,
-                        TextTruncate = Enum.TextTruncate.AtEnd
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.85, 0, 0.05, 0),
+                        Size = UDim2.new(0, 25, 0, 25),
+                        Image = "rbxassetid://3926305904",
+                        ImageRectOffset = Vector2.new(284, 4),
+                        ImageRectSize = Vector2.new(24, 24),
+                        ZIndex = 1001
                     })
                     
-                    local OptBtn = Utility:Create("TextButton", {
-                        Parent = OptFrame,
-                        BackgroundTransparency = 1,
-                        Size = UDim2.new(1, 0, 1, 0),
-                        Text = "",
-                        AutoButtonColor = false
+                    Utility:Create("UIPadding", {
+                        Parent = ScrollingFrame,
+                        PaddingLeft = UDim.new(0, 10),
+                        PaddingRight = UDim.new(0, 10)
                     })
                     
-                    OptBtn.MouseEnter:Connect(function()
-                        if not isSelected then
-                            Utility:Tween(OptFrame, {BackgroundColor3 = theme.AccentDark, BackgroundTransparency = 0.5}, Config.AnimationSpeed * 0.5)
-                            Utility:Tween(PlayerName, {TextColor3 = theme.Text}, Config.AnimationSpeed * 0.5)
-                        end
+                    Utility:Create("UIListLayout", {
+                        Parent = ScrollingFrame,
+                        SortOrder = Enum.SortOrder.LayoutOrder,
+                        Padding = UDim.new(0, 7)
+                    })
+                    
+                    local introTween = TweenService:Create(PlayerDropdownMenu, TweenInfo.new(.1, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out), {Position = UDim2.new(0.5, -118, 0.5, -135)})
+                    introTween:Play()
+                    introTween.Completed:Connect(function()
+                        canOpen = true
                     end)
                     
-                    OptBtn.MouseLeave:Connect(function()
-                        local t = Window.Theme
-                        local nowSelected = PlayerSelector.Value == player
-                        Utility:Tween(OptFrame, {
-                            BackgroundColor3 = nowSelected and t.Accent or t.Container,
-                            BackgroundTransparency = nowSelected and 0 or t.ContainerTransparency
-                        }, Config.AnimationSpeed * 0.5)
-                        Utility:Tween(PlayerName, {TextColor3 = nowSelected and t.Text or t.TextDark}, Config.AnimationSpeed * 0.5)
-                    end)
+                    currentDropdown = PlayerDropdownMenu
                     
-                    OptBtn.MouseButton1Click:Connect(function()
-                        local t = Window.Theme
-                        
-                        PlayerSelector.Value = player
-                        Selected.Text = player.DisplayName
-                        
-                        for _, opt in pairs(ScrollContainer:GetChildren()) do
-                            if opt:IsA("Frame") then
-                                local isThisPlayer = opt.Name == player.Name
-                                local optName = opt:FindFirstChild("Name")
-                                
-                                Utility:Tween(opt, {
-                                    BackgroundColor3 = isThisPlayer and t.Accent or t.Container,
-                                    BackgroundTransparency = isThisPlayer and 0 or t.ContainerTransparency
-                                }, Config.AnimationSpeed)
-                                
-                                if optName then
-                                    Utility:Tween(optName, {TextColor3 = isThisPlayer and t.Text or t.TextDark}, Config.AnimationSpeed)
+                    local dropdownCloseConnection
+                    dropdownCloseConnection = UserInputService.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            local mouse = Player:GetMouse()
+                            if currentDropdown == PlayerDropdownMenu and not isMouseOverFrame(mouse, currentDropdown) then
+                                closeCurrentDropdown()
+                                if dropdownCloseConnection then
+                                    dropdownCloseConnection:Disconnect()
                                 end
                             end
                         end
-                        
-                        Window.Elements[id].Value = player.Name
-                        SaveConfig()
-                        callback(player)
-                        
-                        task.wait(Config.AnimationSpeed * 0.3)
-                        PlayerSelector.Open = false
-                        Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, 42)}, Config.AnimationSpeed)
-                        Utility:Tween(Arrow, {Rotation = 0}, Config.AnimationSpeed)
                     end)
                     
-                    return OptFrame
-                end
-                
-                local function RefreshPlayerList()
-                    for _, child in pairs(ScrollContainer:GetChildren()) do
-                        child:Destroy()
-                    end
-                    
-                    local playerList = {}
-                    for _, player in pairs(Players:GetPlayers()) do
-                        if player ~= Player then
-                            table.insert(playerList, player)
+                    CloseButton.MouseButton1Click:Connect(function()
+                        closeCurrentDropdown()
+                        if dropdownCloseConnection then
+                            dropdownCloseConnection:Disconnect()
                         end
-                    end
+                    end)
                     
-                    for _, player in pairs(playerList) do
-                        CreatePlayerOption(player)
-                    end
-                end
-                
-                RefreshPlayerList()
-                
-                local playerAddedConn = Players.PlayerAdded:Connect(function(player)
-                    if PlayerSelector.Open then
-                        CreatePlayerOption(player)
-                    end
-                end)
-                
-                local playerRemovingConn = Players.PlayerRemoving:Connect(function(player)
-                    if PlayerSelector.Open then
-                        local opt = ScrollContainer:FindFirstChild(player.Name)
-                        if opt then opt:Destroy() end
+                    local isPlayerSelected = false
+                    for i, v in pairs(playerIcons) do
+                        local Name = v.Name
+                        local Icon = v.Icon
                         
-                        if PlayerSelector.Value == player then
-                            PlayerSelector.Value = Players.LocalPlayer
-                            Selected.Text = Players.LocalPlayer.DisplayName
-                        end
+                        local PlayerFrame = Utility:Create("Frame", {
+                            Name = "PlayerFrame",
+                            Parent = ScrollingFrame,
+                            BackgroundColor3 = theme.Element,
+                            BackgroundTransparency = theme.ElementTransparency,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Size = UDim2.new(1, 0, 0, 40),
+                            ZIndex = 1002
+                        }, {
+                            Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
+                        })
+                        
+                        local PlayerImage = Utility:Create("ImageLabel", {
+                            Name = "PlayerImage",
+                            Parent = PlayerFrame,
+                            AnchorPoint = Vector2.new(0.5, 0.5),
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            BackgroundTransparency = 1,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Position = UDim2.new(0.115, 0, 0.5, 0),
+                            Size = UDim2.new(0, 40, 0, 40),
+                            Image = Icon,
+                            ZIndex = 1003
+                        }, {
+                            Utility:Create("UICorner", { CornerRadius = UDim.new(1, 0) })
+                        })
+                        
+                        local PlayerNameLabel = Utility:Create("TextLabel", {
+                            Name = "PlayerNameLabel",
+                            Parent = PlayerFrame,
+                            AnchorPoint = Vector2.new(0, 0.5),
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            BackgroundTransparency = 1,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Position = UDim2.new(0.230, 0, 0.5, 0),
+                            Size = UDim2.new(0, 166, 0, 40),
+                            Font = currentFont,
+                            Text = Name,
+                            TextColor3 = theme.Text,
+                            TextSize = 14,
+                            TextXAlignment = Enum.TextXAlignment.Left,
+                            ZIndex = 1003
+                        })
+                        
+                        local SelectionBox = Utility:Create("TextButton", {
+                            Name = "SelectionBox",
+                            Parent = PlayerFrame,
+                            BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                            BackgroundTransparency = 1,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Size = UDim2.new(1, 0, 1, 0),
+                            Text = "",
+                            AutoButtonColor = false,
+                            ZIndex = 1004
+                        })
+                        
+                        SelectionBox.MouseButton1Click:Connect(function()
+                            if isPlayerSelected == false then
+                                isPlayerSelected = true
+                                local outroTween = TweenService:Create(PlayerDropdownMenu, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.003, 0)})
+                                outroTween:Play()
+                                SelectedText.Text = Name
+                                AvatarImage.Image = Icon
+                                
+                                local selectedPlayer = Players:FindFirstChild(Name)
+                                if selectedPlayer then
+                                    PlayerSelector.Value = selectedPlayer
+                                    Window.Elements[id].Value = Name
+                                    SaveConfig()
+                                    callback(selectedPlayer)
+                                end
+                                
+                                outroTween.Completed:Connect(function()
+                                    PlayerDropdownMenu:Destroy()
+                                    if currentDropdown == PlayerDropdownMenu then
+                                        currentDropdown = nil
+                                    end
+                                    if dropdownCloseConnection then
+                                        dropdownCloseConnection:Disconnect()
+                                    end
+                                end)
+                            end
+                        end)
                     end
-                end)
-                
-                table.insert(Window.Connections, playerAddedConn)
-                table.insert(Window.Connections, playerRemovingConn)
-                
-                Header.MouseEnter:Connect(function()
-                    Utility:Tween(Frame, {BackgroundColor3 = theme.ElementHover, BackgroundTransparency = theme.ElementTransparency - 0.1}, Config.AnimationSpeed * 0.5)
-                end)
-                
-                Header.MouseLeave:Connect(function()
-                    Utility:Tween(Frame, {BackgroundColor3 = theme.Element, BackgroundTransparency = theme.ElementTransparency}, Config.AnimationSpeed * 0.5)
-                end)
-                
-                Header.MouseButton1Click:Connect(function()
-                    PlayerSelector.Open = not PlayerSelector.Open
                     
-                    if PlayerSelector.Open then
-                        RefreshPlayerList()
-                    end
-                    
-                    local playerCount = #Players:GetPlayers() - 1
-                    local targetH = PlayerSelector.Open and math.min(42 + 8 + math.min(playerCount, 4) * 46, 250) or 42
-                    
-                    Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, targetH)}, Config.AnimationSpeed)
-                    Utility:Tween(Arrow, {Rotation = PlayerSelector.Open and 180 or 0}, Config.AnimationSpeed)
+                    local totalHeight = (#playerIcons * 47) + ((#playerIcons - 1) * 7)
+                    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+                end
+                
+                ImageButton.MouseButton1Click:Connect(function()
+                    popupMenu()
                 end)
                 
                 function PlayerSelector:Set(player, skip)
-                    local t = Window.Theme
                     PlayerSelector.Value = player
-                    Selected.Text = player.DisplayName
+                    SelectedText.Text = player.DisplayName
                     
-                    for _, opt in pairs(ScrollContainer:GetChildren()) do
-                        if opt:IsA("Frame") then
-                            local isThisPlayer = opt.Name == player.Name
-                            local optName = opt:FindFirstChild("Name")
-                            
-                            opt.BackgroundColor3 = isThisPlayer and t.Accent or t.Container
-                            opt.BackgroundTransparency = isThisPlayer and 0 or t.ContainerTransparency
-                            
-                            if optName then
-                                optName.TextColor3 = isThisPlayer and t.Text or t.TextDark
-                            end
+                    pcall(function()
+                        local thumbType = Enum.ThumbnailType.HeadShot
+                        local thumbSize = Enum.ThumbnailSize.Size420x420
+                        local content, isReady = Players:GetUserThumbnailAsync(player.UserId, thumbType, thumbSize)
+                        if isReady then
+                            AvatarImage.Image = content
                         end
-                    end
+                    end)
                     
                     Window.Elements[id].Value = player.Name
                     SaveConfig()
@@ -2468,6 +2632,496 @@ function AxionLibrary:CreateWindow(options)
                 
                 callback(default)
                 return PlayerSelector
+            end
+            
+            -- UPDATED COLOR PICKER FROM APOTO UI
+            function Section:CreateColorPicker(args)
+                args = args or {}
+                local name = args.Name or "Color Picker"
+                local id = args.Flag or name
+                local default = args.Color or Color3.new(1, 1, 1)
+                local callback = args.Callback or function() end
+                
+                if Window.ConfigData.Elements and Window.ConfigData.Elements[id] ~= nil then
+                    local saved = Window.ConfigData.Elements[id]
+                    if type(saved) == "table" then
+                        default = Color3.fromRGB(saved[1], saved[2], saved[3])
+                    end
+                end
+                
+                local ColorPicker = { 
+                    Value = default, 
+                    Open = false 
+                }
+                Window.Elements[id] = { 
+                    Value = {
+                        math.floor(default.R * 255), 
+                        math.floor(default.G * 255), 
+                        math.floor(default.B * 255)
+                    } 
+                }
+                
+                local dH, dS, dV = default:ToHSV()
+                local DefaultRGB = Color3.fromRGB(
+                    math.floor(default.R * 255),
+                    math.floor(default.G * 255),
+                    math.floor(default.B * 255)
+                )
+                
+                local function Color3ToRGB(color)
+                    return Color3.new(
+                        math.floor(color.R * 255),
+                        math.floor(color.G * 255),
+                        math.floor(color.B * 255)
+                    )
+                end
+                
+                local function DPRound(decimal, points)
+                    local pow = math.pow(10, points)
+                    local newDP = decimal * pow
+                    newDP = math.floor(newDP)
+                    return newDP / pow
+                end
+                
+                local function setHueAndSaturation(color3, Sat, Value)
+                    local hue, sat, val = color3:ToHSV()
+                    return Color3.fromHSV(hue, Sat, Value)
+                end
+                
+                local Dropdown = Utility:Create("Frame", {
+                    Name = name .. "ColorPicker",
+                    Parent = SectionFrame,
+                    BackgroundColor3 = theme.Element,
+                    BackgroundTransparency = theme.ElementTransparency,
+                    Position = UDim2.new(0, 0, 0, 0),
+                    Size = UDim2.new(1, 0, 0, 42),
+                    Visible = true
+                }, {
+                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius) }),
+                    Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency + 0.2, Thickness = 1 })
+                })
+                
+                local Label = Utility:Create("TextLabel", {
+                    Name = "Label",
+                    Parent = Dropdown,
+                    BackgroundTransparency = 1,
+                    Position = UDim2.new(0.028, 0, 0, 0),
+                    Size = UDim2.new(0.482, 0, 1, 0),
+                    Font = currentFont,
+                    Text = name,
+                    TextColor3 = theme.Text,
+                    TextSize = 14,
+                    TextWrapped = true,
+                    TextXAlignment = Enum.TextXAlignment.Left
+                })
+                
+                local ImageButton = Utility:Create("TextButton", {
+                    Name = "ColorPickerButton",
+                    Parent = Dropdown,
+                    BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                    BackgroundTransparency = 1,
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    Size = UDim2.new(1, 0, 1, 0),
+                    Text = "",
+                    AutoButtonColor = false
+                })
+                
+                local selectionFrame = Utility:Create("Frame", {
+                    Name = "selectionFrame",
+                    Parent = Dropdown,
+                    BackgroundColor3 = default,
+                    BorderColor3 = Color3.fromRGB(0, 0, 0),
+                    BorderSizePixel = 0,
+                    AnchorPoint = Vector2.new(.5, .5),
+                    Position = UDim2.new(0.943, 0, 0.5, 0),
+                    Size = UDim2.new(0.08, 0, 0.81, 0),
+                    ZIndex = 0
+                }, {
+                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
+                })
+                
+                local canOpen = true
+                local currentDropdown = nil
+                
+                local function closeCurrentDropdown()
+                    if currentDropdown then
+                        local outroTween = TweenService:Create(currentDropdown, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.003, 0)})
+                        outroTween:Play()
+                        outroTween.Completed:Connect(function()
+                            if currentDropdown and currentDropdown.Parent then
+                                currentDropdown:Destroy()
+                            end
+                        end)
+                        currentDropdown = nil
+                    end
+                end
+                
+                local function isMouseOverFrame(mouse, frame)
+                    local framePos = frame.AbsolutePosition
+                    local frameSize = frame.AbsoluteSize
+                    local mousePos = Vector2.new(mouse.X, mouse.Y)
+                    
+                    return mousePos.X >= framePos.X and mousePos.X <= framePos.X + frameSize.X and
+                           mousePos.Y >= framePos.Y and mousePos.Y <= framePos.Y + frameSize.Y
+                end
+                
+                local function popupMenu()
+                    if not canOpen then return end
+                    canOpen = false
+                    
+                    closeCurrentDropdown()
+                    
+                    local PlayerDropdownMenu = Utility:Create("Frame", {
+                        Name = "ColorPickerMenu",
+                        Parent = ScreenGui,
+                        BackgroundColor3 = theme.Container,
+                        BackgroundTransparency = theme.ContainerTransparency,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.5, -118, 0.5, -135),
+                        Size = UDim2.new(0, 237, 0, 271),
+                        ZIndex = 1000
+                    })
+                    
+                    local TitleText = Utility:Create("TextLabel", {
+                        Name = "TitleText",
+                        Parent = PlayerDropdownMenu,
+                        AnchorPoint = Vector2.new(0, 0.5),
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.042, 0, 0.058, 0),
+                        Size = UDim2.new(0, 226, 0, 28),
+                        Font = currentFont,
+                        Text = name,
+                        TextColor3 = theme.Text,
+                        TextSize = 18,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 1001
+                    })
+                    
+                    local Frame = Utility:Create("Frame", {
+                        Parent = PlayerDropdownMenu,
+                        BackgroundColor3 = theme.Element,
+                        BackgroundTransparency = theme.ElementTransparency,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.042, 0, 0.107, 0),
+                        Size = UDim2.new(0.915, 0, 0.833, 0),
+                        ZIndex = 1001
+                    }, {
+                        Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius) })
+                    })
+                    
+                    local Frame_2 = Utility:Create("Frame", {
+                        Parent = Frame,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.838, 0, 0.044, 0),
+                        Size = UDim2.new(0.110, 0, 0.681, 0),
+                        ZIndex = 1002
+                    })
+                    
+                    local ValueButton = Utility:Create("TextButton", {
+                        Name = "ValueButton",
+                        Parent = Frame_2,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Size = UDim2.new(1, 0, 1, 0),
+                        Text = "",
+                        AutoButtonColor = false,
+                        ZIndex = 1003
+                    })
+                    
+                    local UIGradient = Utility:Create("UIGradient", {
+                        Color = ColorSequence.new{
+                            ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), 
+                            ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))
+                        },
+                        Rotation = 90,
+                        Parent = Frame_2
+                    })
+                    
+                    local ImageLabel = Utility:Create("ImageLabel", {
+                        Parent = Frame,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.059, 0, 0.044, 0),
+                        Size = UDim2.new(0.709, 0, 0.681, 0),
+                        Image = "http://www.roblox.com/asset/?id=13037988771",
+                        ZIndex = 1002
+                    })
+                    
+                    local HSIButton = Utility:Create("TextButton", {
+                        Name = "HSIButton",
+                        Parent = ImageLabel,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Size = UDim2.new(1, 0, 1, 0),
+                        Text = "",
+                        AutoButtonColor = false,
+                        ZIndex = 1003
+                    })
+                    
+                    local RGB_Box = Utility:Create("TextLabel", {
+                        Name = "RGB_Box",
+                        Parent = Frame,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.221, 0, 0.761, 0),
+                        Size = UDim2.new(0.548, 0, 0.070, 0),
+                        Font = currentFont,
+                        Text = string.format("%d, %d, %d", 
+                            math.floor(DefaultRGB.R * 255),
+                            math.floor(DefaultRGB.G * 255), 
+                            math.floor(DefaultRGB.B * 255)
+                        ),
+                        TextColor3 = theme.Text,
+                        TextSize = 12,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 1002
+                    })
+                    
+                    local RandomLabel1 = Utility:Create("TextLabel", {
+                        Name = "RandomLabel1",
+                        Parent = Frame,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.059, 0, 0.761, 0),
+                        Size = UDim2.new(0.161, 0, 0.061, 0),
+                        Font = currentFont,
+                        Text = "RGB:",
+                        TextColor3 = theme.Text,
+                        TextSize = 14,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 1002
+                    })
+                    
+                    local RandomLabel2 = Utility:Create("TextLabel", {
+                        Name = "RandomLabel2",
+                        Parent = Frame,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.059, 0, 0.840, 0),
+                        Size = UDim2.new(0.161, 0, 0.061, 0),
+                        Font = currentFont,
+                        Text = "HSV:",
+                        TextColor3 = theme.Text,
+                        TextSize = 14,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 1002
+                    })
+                    
+                    local HSV_Box = Utility:Create("TextLabel", {
+                        Name = "HSV_Box",
+                        Parent = Frame,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.221, 0, 0.840, 0),
+                        Size = UDim2.new(0.548, 0, 0.070, 0),
+                        Font = currentFont,
+                        Text = string.format("%.3f, %.3f, %.3f", DPRound(dH,3), DPRound(dS,3), DPRound(dV,3)),
+                        TextColor3 = theme.Text,
+                        TextSize = 12,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 1002
+                    })
+                    
+                    local CloseButton = Utility:Create("ImageButton", {
+                        Name = "CloseButton",
+                        Parent = PlayerDropdownMenu,
+                        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+                        BackgroundTransparency = 1,
+                        BorderColor3 = Color3.fromRGB(0, 0, 0),
+                        BorderSizePixel = 0,
+                        Position = UDim2.new(0.85, 0, 0.05, 0),
+                        Size = UDim2.new(0, 25, 0, 25),
+                        Image = "rbxassetid://3926305904",
+                        ImageRectOffset = Vector2.new(284, 4),
+                        ImageRectSize = Vector2.new(24, 24),
+                        ZIndex = 1001
+                    })
+                    
+                    local Continue = Utility:Create("ImageButton", {
+                        Name = "Continue",
+                        Parent = Frame,
+                        BackgroundTransparency = 1,
+                        LayoutOrder = 10,
+                        Position = UDim2.new(0.801, 0, 0.757, 0),
+                        Size = UDim2.new(0, 32, 0, 32),
+                        ZIndex = 1002,
+                        Image = "rbxassetid://3926307971",
+                        ImageRectOffset = Vector2.new(764, 244),
+                        ImageRectSize = Vector2.new(36, 36)
+                    })
+                    
+                    Utility:Tween(PlayerDropdownMenu, {Size = UDim2.new(0, 237, 0, 271)}, Config.AnimationSpeed, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+                    canOpen = true
+                    
+                    currentDropdown = PlayerDropdownMenu
+                    
+                    local dropdownCloseConnection
+                    dropdownCloseConnection = UserInputService.InputBegan:Connect(function(input)
+                        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            local mouse = Player:GetMouse()
+                            if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
+                                closeCurrentDropdown()
+                                if dropdownCloseConnection then
+                                    dropdownCloseConnection:Disconnect()
+                                end
+                            end
+                        end
+                    end)
+                    
+                    CloseButton.MouseButton1Click:Connect(function()
+                        closeCurrentDropdown()
+                        if dropdownCloseConnection then
+                            dropdownCloseConnection:Disconnect()
+                        end
+                    end)
+                    
+                    local isColorSelected = false
+                    local pickingColor = false
+                    local pickingValue = false
+                    
+                    HSIButton.MouseButton1Down:Connect(function() 
+                        pickingColor = true
+                    end)
+                    
+                    HSIButton.MouseButton1Up:Connect(function() 
+                        pickingColor = false
+                    end)
+                    
+                    ValueButton.MouseButton1Down:Connect(function() 
+                        pickingValue = true
+                    end)
+                    
+                    ValueButton.MouseButton1Up:Connect(function() 
+                        pickingValue = false
+                    end)
+                    
+                    local currentHue = dH
+                    local currentSaturation = dS
+                    local currentValue = dV
+                    
+                    local renderConnection
+                    renderConnection = RunService.RenderStepped:Connect(function(deltaTime)
+                        if pickingColor or pickingValue then
+                            local mouse = Player:GetMouse()
+                            local mouseX = mouse.X
+                            local mouseY = mouse.Y
+                            
+                            if pickingColor then
+                                local popX = math.clamp(mouseX - ImageLabel.AbsolutePosition.X, 0, ImageLabel.AbsoluteSize.X)
+                                local popY = math.clamp(mouseY - ImageLabel.AbsolutePosition.Y, 0, ImageLabel.AbsoluteSize.Y)
+                                
+                                currentHue = 1 - popX / ImageLabel.AbsoluteSize.X
+                                currentSaturation = 1 - (popY / ImageLabel.AbsoluteSize.Y)
+                            end
+                            
+                            if pickingValue then
+                                local valY = math.clamp(mouseY - ValueButton.AbsolutePosition.Y, 0, ValueButton.AbsoluteSize.Y)
+                                currentValue = 1 - (valY / ValueButton.AbsoluteSize.Y)
+                            end
+                            
+                            local finalColorHSV = Color3.fromHSV(currentHue, currentSaturation, currentValue)
+                            local finalColorRGB = Color3.fromRGB(
+                                math.floor((finalColorHSV.R * 255) + 0.5),
+                                math.floor((finalColorHSV.G * 255) + 0.5),
+                                math.floor((finalColorHSV.B * 255) + 0.5)
+                            )
+                            
+                            selectionFrame.BackgroundColor3 = finalColorRGB
+                            UIGradient.Color = ColorSequence.new{
+                                ColorSequenceKeypoint.new(0.00, Color3.fromHSV(currentHue, currentSaturation, 1)),
+                                ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))
+                            }
+                            
+                            RGB_Box.Text = string.format("%d, %d, %d", 
+                                finalColorRGB.R * 255, 
+                                finalColorRGB.G * 255, 
+                                finalColorRGB.B * 255
+                            )
+                            HSV_Box.Text = string.format("%.3f, %.3f, %.3f", 
+                                currentHue, 
+                                currentSaturation, 
+                                currentValue
+                            )
+                            
+                            ColorPicker.Value = finalColorRGB
+                            Window.Elements[id].Value = {
+                                math.floor(finalColorRGB.R * 255),
+                                math.floor(finalColorRGB.G * 255),
+                                math.floor(finalColorRGB.B * 255)
+                            }
+                            
+                            SaveConfig()
+                            callback(finalColorRGB)
+                        end
+                    end)
+                    
+                    table.insert(Window.Connections, renderConnection)
+                    
+                    Continue.MouseButton1Click:Connect(function() 
+                        local outroTween = TweenService:Create(PlayerDropdownMenu, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.003, 0)})
+                        outroTween:Play()
+                        outroTween.Completed:Connect(function()
+                            PlayerDropdownMenu:Destroy()
+                            if currentDropdown == PlayerDropdownMenu then
+                                currentDropdown = nil
+                            end
+                            if dropdownCloseConnection then
+                                dropdownCloseConnection:Disconnect()
+                            end
+                            if renderConnection then
+                                renderConnection:Disconnect()
+                            end
+                        end)
+                    end)
+                end
+                
+                ImageButton.MouseButton1Click:Connect(function()
+                    popupMenu()
+                end)
+                
+                function ColorPicker:Set(color, skip)
+                    local h, s, v = color:ToHSV()
+                    local finalColorRGB = Color3.fromRGB(
+                        math.floor(color.R * 255),
+                        math.floor(color.G * 255),
+                        math.floor(color.B * 255)
+                    )
+                    
+                    selectionFrame.BackgroundColor3 = color
+                    ColorPicker.Value = color
+                    Window.Elements[id].Value = {
+                        math.floor(color.R * 255),
+                        math.floor(color.G * 255),
+                        math.floor(color.B * 255)
+                    }
+                    
+                    SaveConfig()
+                    if not skip then callback(color) end
+                end
+                
+                callback(default)
+                return ColorPicker
             end
             
             function Section:CreateInput(opts)
@@ -2714,244 +3368,6 @@ function AxionLibrary:CreateWindow(options)
                 end
                 
                 return Keybind
-            end
-            
-            function Section:CreateColorPicker(opts)
-                opts = opts or {}
-                local name = opts.Name or "Color Picker"
-                local id = opts.Flag or name
-                local default = opts.Color or Color3.fromRGB(255, 255, 255)
-                local callback = opts.Callback or function() end
-                
-                if Window.ConfigData.Elements and Window.ConfigData.Elements[id] ~= nil then
-                    local saved = Window.ConfigData.Elements[id]
-                    if type(saved) == "table" then
-                        default = Color3.fromRGB(saved[1], saved[2], saved[3])
-                    end
-                end
-                
-                local ColorPicker = { Value = default, Open = false }
-                Window.Elements[id] = { Value = {math.floor(default.R * 255), math.floor(default.G * 255), math.floor(default.B * 255)} }
-                
-                local h, s, v = default:ToHSV()
-                
-                local Frame = Utility:Create("Frame", {
-                    Name = name .. "ColorPicker",
-                    Parent = SectionFrame,
-                    BackgroundColor3 = theme.Element,
-                    BackgroundTransparency = theme.ElementTransparency,
-                    Size = UDim2.new(1, 0, 0, 42),
-                    ClipsDescendants = true
-                }, {
-                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius) }),
-                    Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency + 0.2, Thickness = 1 })
-                })
-                
-                local Label = Utility:Create("TextLabel", {
-                    Name = "Label",
-                    Parent = Frame,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 15, 0, 0),
-                    Size = UDim2.new(0.6, 0, 0, 42),
-                    Font = currentFont,
-                    Text = name,
-                    TextColor3 = theme.Text,
-                    TextSize = 14,
-                    TextXAlignment = Enum.TextXAlignment.Left
-                })
-                
-                local Display = Utility:Create("TextButton", {
-                    Name = "Display",
-                    Parent = Frame,
-                    BackgroundColor3 = default,
-                    Position = UDim2.new(1, -55, 0, 9),
-                    Size = UDim2.new(0, 40, 0, 24),
-                    Text = "",
-                    AutoButtonColor = false
-                }, {
-                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) }),
-                    Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency, Thickness = 1 })
-                })
-                
-                local PickerContainer = Utility:Create("Frame", {
-                    Name = "Picker",
-                    Parent = Frame,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 15, 0, 50),
-                    Size = UDim2.new(1, -30, 0, 130)
-                })
-                
-                local SatVal = Utility:Create("ImageLabel", {
-                    Name = "SatVal",
-                    Parent = PickerContainer,
-                    BackgroundColor3 = Color3.fromHSV(h, 1, 1),
-                    Size = UDim2.new(1, -40, 0, 100),
-                    Image = "rbxassetid://4155801252",
-                    ScaleType = Enum.ScaleType.Stretch
-                }, {
-                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
-                })
-                
-                local SatValCursor = Utility:Create("Frame", {
-                    Name = "Cursor",
-                    Parent = SatVal,
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    Position = UDim2.new(s, 0, 1 - v, 0),
-                    Size = UDim2.new(0, 12, 0, 12),
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    ZIndex = 5
-                }, {
-                    Utility:Create("UICorner", { CornerRadius = UDim.new(1, 0) }),
-                    Utility:Create("UIStroke", { Color = Color3.new(0, 0, 0), Thickness = 2 })
-                })
-                
-                local HueSlider = Utility:Create("Frame", {
-                    Name = "Hue",
-                    Parent = PickerContainer,
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    Position = UDim2.new(1, -30, 0, 0),
-                    Size = UDim2.new(0, 25, 0, 100)
-                }, {
-                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) }),
-                    Utility:Create("UIGradient", {
-                        Color = ColorSequence.new({
-                            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
-                            ColorSequenceKeypoint.new(0.167, Color3.fromRGB(255, 255, 0)),
-                            ColorSequenceKeypoint.new(0.333, Color3.fromRGB(0, 255, 0)),
-                            ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
-                            ColorSequenceKeypoint.new(0.667, Color3.fromRGB(0, 0, 255)),
-                            ColorSequenceKeypoint.new(0.833, Color3.fromRGB(255, 0, 255)),
-                            ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
-                        }),
-                        Rotation = 90
-                    })
-                })
-                
-                local HueCursor = Utility:Create("Frame", {
-                    Name = "Cursor",
-                    Parent = HueSlider,
-                    BackgroundColor3 = Color3.new(1, 1, 1),
-                    Position = UDim2.new(0.5, 0, h, 0),
-                    Size = UDim2.new(1, 6, 0, 8),
-                    AnchorPoint = Vector2.new(0.5, 0.5),
-                    ZIndex = 5
-                }, {
-                    Utility:Create("UICorner", { CornerRadius = UDim.new(0, 4) }),
-                    Utility:Create("UIStroke", { Color = Color3.new(0, 0, 0), Thickness = 2 })
-                })
-                
-                local RGBLabel = Utility:Create("TextLabel", {
-                    Name = "RGB",
-                    Parent = PickerContainer,
-                    BackgroundTransparency = 1,
-                    Position = UDim2.new(0, 0, 0, 108),
-                    Size = UDim2.new(1, 0, 0, 20),
-                    Font = currentFont,
-                    Text = string.format("RGB: %d, %d, %d", math.floor(default.R * 255), math.floor(default.G * 255), math.floor(default.B * 255)),
-                    TextColor3 = theme.TextDark,
-                    TextSize = 11,
-                    TextXAlignment = Enum.TextXAlignment.Left
-                })
-                
-                table.insert(Window.ElementRefs, { Type = "ColorPicker", Element = ColorPicker, Frame = Frame, Label = Label, Display = Display, RGBLabel = RGBLabel })
-                
-                local function UpdateColor()
-                    local color = Color3.fromHSV(h, s, v)
-                    ColorPicker.Value = color
-                    Display.BackgroundColor3 = color
-                    SatVal.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
-                    RGBLabel.Text = string.format("RGB: %d, %d, %d", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255))
-                    
-                    Window.Elements[id].Value = {math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)}
-                    SaveConfig()
-                    callback(color)
-                end
-                
-                local draggingSV, draggingH = false, false
-                
-                local SatValInput = Utility:Create("TextButton", {
-                    Parent = SatVal,
-                    BackgroundTransparency = 1,
-                    Size = UDim2.new(1, 0, 1, 0),
-                    Text = "",
-                    AutoButtonColor = false
-                })
-                
-                local function UpdateSatVal(input)
-                    local rx = math.clamp((input.Position.X - SatVal.AbsolutePosition.X) / SatVal.AbsoluteSize.X, 0, 1)
-                    local ry = math.clamp((input.Position.Y - SatVal.AbsolutePosition.Y) / SatVal.AbsoluteSize.Y, 0, 1)
-                    s = rx
-                    v = 1 - ry
-                    Utility:Tween(SatValCursor, {Position = UDim2.new(rx, 0, ry, 0)}, Config.AnimationSpeed * 0.3)
-                    UpdateColor()
-                end
-                
-                SatValInput.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        draggingSV = true
-                        UpdateSatVal(input)
-                    end
-                end)
-                
-                local HueInput = Utility:Create("TextButton", {
-                    Parent = HueSlider,
-                    BackgroundTransparency = 1,
-                    Size = UDim2.new(1, 0, 1, 0),
-                    Text = "",
-                    AutoButtonColor = false
-                })
-                
-                local function UpdateHue(input)
-                    local ry = math.clamp((input.Position.Y - HueSlider.AbsolutePosition.Y) / HueSlider.AbsoluteSize.Y, 0, 1)
-                    h = ry
-                    Utility:Tween(HueCursor, {Position = UDim2.new(0.5, 0, ry, 0)}, Config.AnimationSpeed * 0.3)
-                    UpdateColor()
-                end
-                
-                HueInput.InputBegan:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        draggingH = true
-                        UpdateHue(input)
-                    end
-                end)
-                
-                local colorInputEndConn = UserInputService.InputEnded:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                        draggingSV = false
-                        draggingH = false
-                    end
-                end)
-                table.insert(Window.Connections, colorInputEndConn)
-                
-                local colorInputChangeConn = UserInputService.InputChanged:Connect(function(input)
-                    if input.UserInputType == Enum.UserInputType.MouseMovement then
-                        if draggingSV then UpdateSatVal(input)
-                        elseif draggingH then UpdateHue(input) end
-                    end
-                end)
-                table.insert(Window.Connections, colorInputChangeConn)
-                
-                Display.MouseButton1Click:Connect(function()
-                    ColorPicker.Open = not ColorPicker.Open
-                    Utility:Tween(Frame, {Size = UDim2.new(1, 0, 0, ColorPicker.Open and 190 or 42)}, Config.AnimationSpeed)
-                end)
-                
-                function ColorPicker:Set(color, skip)
-                    h, s, v = color:ToHSV()
-                    ColorPicker.Value = color
-                    Display.BackgroundColor3 = color
-                    SatVal.BackgroundColor3 = Color3.fromHSV(h, 1, 1)
-                    SatValCursor.Position = UDim2.new(s, 0, 1 - v, 0)
-                    HueCursor.Position = UDim2.new(0.5, 0, h, 0)
-                    RGBLabel.Text = string.format("RGB: %d, %d, %d", math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255))
-                    
-                    Window.Elements[id].Value = {math.floor(color.R * 255), math.floor(color.G * 255), math.floor(color.B * 255)}
-                    SaveConfig()
-                    if not skip then callback(color) end
-                end
-                
-                callback(default)
-                return ColorPicker
             end
             
             function Section:CreateLabel(text)
