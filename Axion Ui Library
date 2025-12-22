@@ -1884,7 +1884,6 @@ function AxionLibrary:CreateWindow(options)
                 return Slider
             end
             
-            -- UPDATED DROPDOWN FROM APOTO UI
             function Section:CreateDropdown(args)
                 args = args or {}
                 local name = args.Name or "Dropdown"
@@ -2231,7 +2230,6 @@ function AxionLibrary:CreateWindow(options)
                 return Dropdown
             end
             
-            -- UPDATED PLAYER SELECTOR FROM APOTO UI
             function Section:CreatePlayerSelector(args)
                 args = args or {}
                 local name = args.Name or "Player Selector"
@@ -2634,7 +2632,6 @@ function AxionLibrary:CreateWindow(options)
                 return PlayerSelector
             end
             
-            -- UPDATED COLOR PICKER FROM APOTO UI
             function Section:CreateColorPicker(args)
                 args = args or {}
                 local name = args.Name or "Color Picker"
