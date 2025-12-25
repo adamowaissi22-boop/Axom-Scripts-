@@ -159,14 +159,19 @@ function Apoto:CreateWindow(ConfigArgs)
 
 	local function closeCurrentDropdown()
 		if currentDropdown then
+			local dropdownCloseConnection = currentDropdown:FindFirstChild("DropdownCloseConnection")
+			if dropdownCloseConnection then
+				dropdownCloseConnection:Disconnect()
+			end
+			
 			local outroTween = game:GetService("TweenService"):Create(currentDropdown, TweenInfo.new(.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.0032258064, 0)})
 			outroTween:Play()
 			outroTween.Completed:Connect(function()
 				if currentDropdown and currentDropdown.Parent then
 					currentDropdown:Destroy()
 				end
+				currentDropdown = nil
 			end)
-			currentDropdown = nil
 		end
 	end
 
@@ -714,7 +719,7 @@ function Apoto:CreateWindow(ConfigArgs)
 			Contents = Apoto.contents.Tabs[tabName]
 		}
 
-		function thisTab:CreateText(args)
+function thisTab:CreateText(args)
 args.Text = args.Text or "Text"
 args.TextSize = args.TextSize or 18
 args.TextColor = args.TextColor or Color3.fromRGB(193, 193, 193)
@@ -873,12 +878,11 @@ local function showCopyMenu()
 			local mouse = game:GetService("Players").LocalPlayer:GetMouse()
 			if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
 				closeCurrentDropdown()
-				if dropdownCloseConnection then
-					dropdownCloseConnection:Disconnect()
-				end
 			end
 		end
 	end)
+	
+	CopyMenu.DropdownCloseConnection = dropdownCloseConnection
 	
 	assignClickAnimation(CopyButton)
 	addConnection(CopyButton.MouseButton1Click, function()
@@ -892,25 +896,12 @@ local function showCopyMenu()
 			})
 		end
 		
-		local outroTween = game:GetService("TweenService"):Create(CopyMenu, TweenInfo.new(.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.In), {Position = UDim2.new(-1.1, 0, -0.0032258064, 0)})
-		outroTween:Play()
-		outroTween.Completed:Connect(function()
-			CopyMenu:Destroy()
-			if currentDropdown == CopyMenu then
-				currentDropdown = nil
-			end
-			if dropdownCloseConnection then
-				dropdownCloseConnection:Disconnect()
-			end
-		end)
+		closeCurrentDropdown()
 	end)
 	
 	assignClickAnimation(CloseButton)
 	addConnection(CloseButton.MouseButton1Click, function()
 		closeCurrentDropdown()
-		if dropdownCloseConnection then
-			dropdownCloseConnection:Disconnect()
-		end
 	end)
 end
 
@@ -1687,19 +1678,15 @@ local function popupMenu()
 			local mouse = game:GetService("Players").LocalPlayer:GetMouse()
 			if currentDropdown == PlayerDropdownMenu and not isMouseOverFrame(mouse, currentDropdown) then
 				closeCurrentDropdown()
-				if dropdownCloseConnection then
-					dropdownCloseConnection:Disconnect()
-				end
 			end
 		end
 	end)
+	
+	PlayerDropdownMenu.DropdownCloseConnection = dropdownCloseConnection
 
 	assignClickAnimation(CloseButton)
 	addConnection(CloseButton.MouseButton1Click, function()
 		closeCurrentDropdown()
-		if dropdownCloseConnection then
-			dropdownCloseConnection:Disconnect()
-		end
 	end)
 
 	local isPlayerSelected = false
@@ -1771,9 +1758,6 @@ local function popupMenu()
 					PlayerDropdownMenu:Destroy()
 					if currentDropdown == PlayerDropdownMenu then
 						currentDropdown = nil
-					end
-					if dropdownCloseConnection then
-						dropdownCloseConnection:Disconnect()
 					end
 				end)
 			end
@@ -1949,19 +1933,15 @@ local function popupMenu()
 			local mouse = game:GetService("Players").LocalPlayer:GetMouse()
 			if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
 				closeCurrentDropdown()
-				if dropdownCloseConnection then
-					dropdownCloseConnection:Disconnect()
-				end
 			end
 		end
 	end)
+	
+	PlayerDropdownMenu.DropdownCloseConnection = dropdownCloseConnection
 
 	assignClickAnimation(CloseButton)
 	addConnection(CloseButton.MouseButton1Click, function()
 		closeCurrentDropdown()
-		if dropdownCloseConnection then
-			dropdownCloseConnection:Disconnect()
-		end
 	end)
 
 	local isItemSelected = false
@@ -2016,9 +1996,6 @@ local function popupMenu()
 					PlayerDropdownMenu:Destroy()
 					if currentDropdown == PlayerDropdownMenu then
 						currentDropdown = nil
-					end
-					if dropdownCloseConnection then
-						dropdownCloseConnection:Disconnect()
 					end
 				end)
 			end
@@ -2283,15 +2260,15 @@ local function popupMenu()
 			local mouse = game:GetService("Players").LocalPlayer:GetMouse()
 			if currentDropdown and not isMouseOverFrame(mouse, currentDropdown) then
 				closeCurrentDropdown()
-				dropdownCloseConnection:Disconnect()
 			end
 		end
 	end)
+	
+	PlayerDropdownMenu.DropdownCloseConnection = dropdownCloseConnection
 
 	assignClickAnimation(CloseButton)
 	addConnection(CloseButton.MouseButton1Click, function()
 		closeCurrentDropdown()
-		dropdownCloseConnection:Disconnect()
 	end)
 
 	local isColorSelected = false
@@ -2361,7 +2338,6 @@ local function popupMenu()
 			if currentDropdown == PlayerDropdownMenu then
 				currentDropdown = nil
 			end
-			dropdownCloseConnection:Disconnect()
 		end)
 	end)
 end
