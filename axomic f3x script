@@ -1,0 +1,183 @@
+local Axion = loadstring(game:HttpGet("https://raw.githubusercontent.com/adamowaissi22-boop/Axom-Scripts-/refs/heads/main/Axion%20Ui%20Library"))()
+
+local Window = Axion:CreateWindow({
+    Name = "Axomic f3x script",
+    Subtitle = "by Axom",
+    Version = "v1.0",
+    LoadingTitle = "Axomic f3x script Admin",
+    LoadingSubtitle = "Made by Axom",
+    Theme = "Default",
+    ToggleKey = Enum.KeyCode.RightShift,
+    ConfigurationSaving = {
+        Enabled = true,
+        FolderName = "AxomicF3XConfig",
+        FileName = "settings"
+    },
+    AnimationSpeed = 0.25,
+    RippleEnabled = true,
+    CornerRadius = 12
+})
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RequestCommand = ReplicatedStorage:WaitForChild("HDAdminHDClient").Signals.RequestCommandSilent
+
+local MainTab = Window:CreateTab({Name = "Main", Icon = "⚡"})
+local MainSection = MainTab:CreateSection({Name = "Main Commands"})
+
+MainSection:CreateButton({
+    Name = "Shutdown Server",
+    Callback = function()
+        RequestCommand:InvokeServer(";shutdown")
+    end
+})
+
+MainSection:CreateButton({
+    Name = "Kick All",
+    Callback = function()
+        RequestCommand:InvokeServer(";kick all")
+    end
+})
+
+MainSection:CreateButton({
+    Name = "Bring All",
+    Callback = function()
+        RequestCommand:InvokeServer(";bring all")
+    end
+})
+
+MainSection:CreateButton({
+    Name = "Btools",
+    Callback = function()
+        RequestCommand:InvokeServer(";btools me")
+    end
+})
+
+MainSection:CreateButton({
+    Name = "Server Hint",
+    Callback = function()
+        RequestCommand:InvokeServer(";serverHint AXOM ON TOP")
+    end
+})
+
+MainSection:CreateButton({
+    Name = "Explode All",
+    Callback = function()
+        RequestCommand:InvokeServer(";explode all")
+    end
+})
+
+MainSection:CreateButton({
+    Name = "Alert",
+    Callback = function()
+        RequestCommand:InvokeServer(";alert axom is here!!!")
+    end
+})
+
+MainSection:CreateButton({
+    Name = "Server Message",
+    Callback = function()
+        RequestCommand:InvokeServer(";serverMessage AXOM IS HERE! - AXOM ON TOP")
+    end
+})
+
+local EffectsTab = Window:CreateTab({Name = "Effects", Icon = "🎭"})
+local EffectsSection = EffectsTab:CreateSection({Name = "Visual Effects"})
+
+local DiscoToggle = EffectsSection:CreateToggle({
+    Name = "Disco Mode",
+    Flag = "DiscoToggle",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            RequestCommand:InvokeServer(";fog 250")
+            RequestCommand:InvokeServer(";disco")
+        else
+            RequestCommand:InvokeServer(";fog 0")
+            RequestCommand:InvokeServer(";undisco")
+        end
+    end
+})
+
+local MusicToggle = EffectsSection:CreateToggle({
+    Name = "Music",
+    Flag = "MusicToggle",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            RequestCommand:InvokeServer(";music 112866115008172 ;pitch 0.85 ;volume inf")
+        else
+            RequestCommand:InvokeServer(";music 0")
+        end
+    end
+})
+
+local PlayerTab = Window:CreateTab({Name = "Player", Icon = "👤"})
+local PlayerSection = PlayerTab:CreateSection({Name = "Player Commands"})
+
+local ForceFieldToggle = PlayerSection:CreateToggle({
+    Name = "Force Field",
+    Flag = "ForceFieldToggle",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            RequestCommand:InvokeServer(";ff me")
+        else
+            RequestCommand:InvokeServer(";unff me")
+        end
+    end
+})
+
+local GodModeToggle = PlayerSection:CreateToggle({
+    Name = "God Mode",
+    Flag = "GodModeToggle",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            RequestCommand:InvokeServer(";god me")
+        else
+            RequestCommand:InvokeServer(";ungod me")
+        end
+    end
+})
+
+local TitleMeToggle = PlayerSection:CreateToggle({
+    Name = "Title Me",
+    Flag = "TitleMeToggle",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            RequestCommand:InvokeServer(";title me AXOM ON TOP ▄︻デ══━一")
+        else
+            RequestCommand:InvokeServer(";untitle me")
+        end
+    end
+})
+
+local TitlerMeToggle = PlayerSection:CreateToggle({
+    Name = "Titler Me",
+    Flag = "TitlerMeToggle",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            RequestCommand:InvokeServer(";titler me Axom On Top XD")
+        else
+            RequestCommand:InvokeServer(";untitler me")
+        end
+    end
+})
+
+local AllPlayersTab = Window:CreateTab({Name = "All Players", Icon = "👥"})
+local AllPlayersSection = AllPlayersTab:CreateSection({Name = "All Players Commands"})
+
+local CharAllToggle = AllPlayersSection:CreateToggle({
+    Name = "Char All",
+    Flag = "CharAllToggle",
+    CurrentValue = false,
+    Callback = function(value)
+        if value then
+            RequestCommand:InvokeServer(";char all adamofficial0022")
+        else
+            RequestCommand:InvokeServer(";unchar all")
+        end
+    end
+})
