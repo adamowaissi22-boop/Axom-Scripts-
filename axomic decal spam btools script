@@ -1,7 +1,6 @@
 local ScreenGui = Instance.new("ScreenGui")
 local MainFrame = Instance.new("Frame")
 local Title = Instance.new("TextLabel")
-local SkyboxButton = Instance.new("TextButton")
 local DecalSpamButton = Instance.new("TextButton")
 local UICorner = Instance.new("UICorner")
 local UIStroke = Instance.new("UIStroke")
@@ -16,7 +15,7 @@ MainFrame.Parent = ScreenGui
 MainFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 MainFrame.BorderSizePixel = 0
 MainFrame.Position = UDim2.new(0.3, 0, 0.3, 0)
-MainFrame.Size = UDim2.new(0, 350, 0, 200)
+MainFrame.Size = UDim2.new(0, 300, 0, 150)
 MainFrame.Active = true
 MainFrame.Draggable = true
 
@@ -34,7 +33,7 @@ Title.BackgroundTransparency = 1
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.Size = UDim2.new(1, 0, 0, 40)
 Title.Font = Enum.Font.Highway
-Title.Text = "Axomic Skybox and Decal Spam Script"
+Title.Text = "Axomic Decal Spam Script"
 Title.TextColor3 = Color3.fromRGB(255, 0, 0)
 Title.TextScaled = true
 Title.TextSize = 20
@@ -52,24 +51,12 @@ CloseButton.TextColor3 = Color3.fromRGB(255, 0, 0)
 CloseButton.TextSize = 16
 CloseButton.TextWrapped = true
 
-SkyboxButton.Name = "SkyboxButton"
-SkyboxButton.Parent = MainFrame
-SkyboxButton.BackgroundColor3 = Color3.fromRGB(50, 50, 255)
-SkyboxButton.BackgroundTransparency = 0.2
-SkyboxButton.Position = UDim2.new(0.05, 0, 0.3, 0)
-SkyboxButton.Size = UDim2.new(0.4, 0, 0.3, 0)
-SkyboxButton.Font = Enum.Font.SourceSansBold
-SkyboxButton.Text = "Skybox"
-SkyboxButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-SkyboxButton.TextScaled = true
-SkyboxButton.TextWrapped = true
-
 DecalSpamButton.Name = "DecalSpamButton"
 DecalSpamButton.Parent = MainFrame
 DecalSpamButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
 DecalSpamButton.BackgroundTransparency = 0.2
-DecalSpamButton.Position = UDim2.new(0.55, 0, 0.3, 0)
-DecalSpamButton.Size = UDim2.new(0.4, 0, 0.3, 0)
+DecalSpamButton.Position = UDim2.new(0.15, 0, 0.35, 0)
+DecalSpamButton.Size = UDim2.new(0.7, 0, 0.5, 0)
 DecalSpamButton.Font = Enum.Font.SourceSansBold
 DecalSpamButton.Text = "Decal Spam"
 DecalSpamButton.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -78,73 +65,6 @@ DecalSpamButton.TextWrapped = true
 
 CloseButton.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
-end)
-
-SkyboxButton.MouseButton1Click:Connect(function()
-    local player = game:GetService("Players").LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-    
-    local positionArgs = {
-        "CreatePart",
-        "Normal",
-        humanoidRootPart.CFrame + Vector3.new(0, 3, 0),
-        workspace
-    }
-    game:GetService("Players").LocalPlayer:WaitForChild("Backpack"):WaitForChild("Building Tools"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint"):InvokeServer(unpack(positionArgs))
-    
-    wait(0.5)
-    
-    local args = {
-        "CreateMeshes",
-        {
-            {
-                Part = workspace:WaitForChild("Part")
-            }
-        }
-    }
-    game:GetService("Players").LocalPlayer.Character:WaitForChild("Building Tools"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint"):InvokeServer(unpack(args))
-    
-    local args = {
-        "SyncMesh",
-        {
-            {
-                MeshType = Enum.MeshType.FileMesh,
-                Part = workspace:WaitForChild("Part")
-            }
-        }
-    }
-    game:GetService("Players").LocalPlayer.Character:WaitForChild("Building Tools"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint"):InvokeServer(unpack(args))
-    
-    local args = {
-        "SyncMesh",
-        {
-            {
-                Scale = Vector3.new(-1000, -1000, -1000),
-                Part = workspace:WaitForChild("Part")
-            }
-        }
-    }
-    game:GetService("Players").LocalPlayer.Character:WaitForChild("Building Tools"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint"):InvokeServer(unpack(args))
-    
-    local args = {
-        "ExtractImageFromDecal",
-        71007442178709
-    }
-    game:GetService("Players").LocalPlayer.Character:WaitForChild("Building Tools"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint"):InvokeServer(unpack(args))
-    
-    local args = {
-        "SyncTexture",
-        {
-            {
-                Part = workspace:WaitForChild("Part"),
-                Face = Enum.NormalId.Front,
-                TextureType = "Decal",
-                Texture = "rbxassetid://71007442178709"
-            }
-        }
-    }
-    game:GetService("Players").LocalPlayer.Character:WaitForChild("Building Tools"):WaitForChild("SyncAPI"):WaitForChild("ServerEndpoint"):InvokeServer(unpack(args))
 end)
 
 DecalSpamButton.MouseButton1Click:Connect(function()
