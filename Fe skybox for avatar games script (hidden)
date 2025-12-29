@@ -108,7 +108,7 @@ ToggleButton.MouseButton1Click:Connect(function()
                     currentAnimation:Stop()
                 end
                 local animation = Instance.new("Animation")
-                animation.AnimationId = "rbxassetid://101852027997337"
+                animation.AnimationId = "rbxassetid://93224413172183"
                 currentAnimation = humanoid:LoadAnimation(animation)
                 currentAnimation:Play()
             end
@@ -124,7 +124,7 @@ ToggleButton.MouseButton1Click:Connect(function()
                     currentAnimation:Stop()
                 end
                 local animation = Instance.new("Animation")
-                animation.AnimationId = "rbxassetid://101852027997337"
+                animation.AnimationId = "rbxassetid://93224413172183"
                 currentAnimation = humanoid:LoadAnimation(animation)
                 currentAnimation:Play()
             end
@@ -144,7 +144,7 @@ ToggleButton.MouseButton1Click:Connect(function()
                     currentAnimation:Stop()
                 end
                 local animation = Instance.new("Animation")
-                animation.AnimationId = "rbxassetid://101852027997337"
+                animation.AnimationId = "rbxassetid://93224413172183"
                 currentAnimation = humanoid:LoadAnimation(animation)
                 currentAnimation:Play()
             end
