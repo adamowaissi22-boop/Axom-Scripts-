@@ -325,9 +325,8 @@ end
 
 function Utility:MakeDraggable(frame, handle, config)
     local dragging, dragInput, dragStart, startPos
-    handle = handle or frame
     
-    handle.InputBegan:Connect(function(input)
+    local function handleInput(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
@@ -337,25 +336,28 @@ function Utility:MakeDraggable(frame, handle, config)
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
                 end
-            end
-            )
+            end)
         end
-    end)
+    end
     
-    handle.InputChanged:Connect(function(input)
+    local function handleInputChanged(input)
         if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
             dragInput = input
         end
-    end)
+    end
     
-    UserInputService.InputChanged:Connect(function(input)
+    local function handleUserInputChanged(input)
         if input == dragInput and dragging then
             local delta = input.Position - dragStart
             Utility:Tween(frame, {
                 Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
             }, config.AnimationSpeed * 0.5)
         end
-    end)
+    end
+    
+    handle.InputBegan:Connect(handleInput)
+    handle.InputChanged:Connect(handleInputChanged)
+    UserInputService.InputChanged:Connect(handleUserInputChanged)
 end
 
 local ConfigManager = {}
@@ -756,7 +758,17 @@ function AxionLibrary:CreateWindow(options)
         end
     end)
     
+    local BottomDragHandle = Utility:Create("Frame", {
+        Name = "BottomDragHandle",
+        Parent = MainContainer,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 0, 1, -10),
+        Size = UDim2.new(1, 0, 0, 10),
+        ZIndex = 5
+    })
+    
     Utility:MakeDraggable(MainContainer, Header, Config)
+    Utility:MakeDraggable(MainContainer, BottomDragHandle, Config)
     
     local ContentArea = Utility:Create("Frame", {
         Name = "ContentArea",
