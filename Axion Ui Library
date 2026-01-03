@@ -1,4 +1,3 @@
-```lua
 local AxionLibrary = {}
 
 local TweenService = game:GetService("TweenService")
@@ -32,229 +31,6 @@ local function CleanupAllBlur()
             effect:Destroy()
         end
     end
-end
-
-local function createLoadingDots(parent, theme)
-    local loadingDots = Instance.new("Frame")
-    loadingDots.Name = "LoadingDots"
-    loadingDots.BackgroundTransparency = 1
-    loadingDots.AnchorPoint = Vector2.new(0.5, 0.5)
-    loadingDots.Position = UDim2.new(0.5, 0, 0.5, 0)
-    loadingDots.Size = UDim2.new(0, 30, 0, 10)
-    loadingDots.Parent = parent
-    
-    local dotSize = 4
-    local dotSpacing = 10
-    local dots = {}
-    
-    for i = 1, 3 do
-        local dot = Instance.new("Frame")
-        dot.Name = "Dot" .. i
-        dot.BackgroundColor3 = theme.TextMuted or Color3.fromRGB(120, 120, 130)
-        dot.AnchorPoint = Vector2.new(0.5, 0.5)
-        dot.Position = UDim2.new(0.5, (i - 2) * dotSpacing, 0.5, 0)
-        dot.Size = UDim2.new(0, dotSize, 0, dotSize)
-        dot.Parent = loadingDots
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(1, 0)
-        corner.Parent = dot
-        
-        table.insert(dots, dot)
-    end
-    
-    local connection = RunService.RenderStepped:Connect(function()
-        local t = os.clock() * 3
-        for i, dot in ipairs(dots) do
-            local offset = math.sin(t + i * 0.8) * 2
-            dot.Position = UDim2.new(0.5, (i - 2) * dotSpacing, 0.5, offset)
-            dot.BackgroundTransparency = 0.3 + math.abs(math.sin(t + i * 0.8)) * 0.4
-        end
-    end)
-    
-    loadingDots.Destroy = function()
-        connection:Disconnect()
-        loadingDots:Destroy()
-    end
-    
-    return loadingDots
-end
-
-local function createSpinner(parent, size, color, speed)
-    size = size or 24
-    color = color or Color3.fromRGB(100, 100, 120)
-    speed = speed or 120
-    
-    local spinner = Instance.new("Frame")
-    spinner.Name = "Spinner"
-    spinner.BackgroundTransparency = 1
-    spinner.AnchorPoint = Vector2.new(0.5, 0.5)
-    spinner.Size = UDim2.new(0, size, 0, size)
-    spinner.Position = UDim2.new(0.5, 0, 0.5, 0)
-    spinner.Parent = parent
-    
-    local numSegments = 8
-    local segmentAngle = 360 / numSegments
-    
-    for i = 1, numSegments do
-        local segment = Instance.new("Frame")
-        segment.Name = "Segment" .. i
-        segment.BackgroundColor3 = color
-        segment.BorderSizePixel = 0
-        segment.AnchorPoint = Vector2.new(0.5, 0)
-        segment.Position = UDim2.new(0.5, 0, 0, 0)
-        segment.Size = UDim2.new(0, 2, 0, size / 3)
-        segment.Rotation = (i - 1) * segmentAngle
-        segment.Parent = spinner
-        
-        local corner = Instance.new("UICorner")
-        corner.CornerRadius = UDim.new(1, 0)
-        corner.Parent = segment
-    end
-    
-    local connection = RunService.RenderStepped:Connect(function(dt)
-        spinner.Rotation = spinner.Rotation + dt * speed
-    end)
-    
-    local fadeConnection = RunService.RenderStepped:Connect(function()
-        local t = os.clock() * 2
-        for i, segment in ipairs(spinner:GetChildren()) do
-            if segment:IsA("Frame") then
-                local segmentIndex = tonumber(segment.Name:match("%d+")) or 1
-                local fadeOffset = (segmentIndex - 1) * 0.3
-                local alpha = 0.3 + 0.7 * (0.5 + 0.5 * math.sin(t * 2 + fadeOffset))
-                segment.BackgroundTransparency = 1 - alpha
-            end
-        end
-    end)
-    
-    spinner.Destroy = function()
-        connection:Disconnect()
-        fadeConnection:Disconnect()
-        spinner:Destroy()
-    end
-    
-    return spinner
-end
-
-local function createProgressBar(parent, width, height, theme)
-    width = width or 200
-    height = height or 6
-    
-    local container = Instance.new("Frame")
-    container.Name = "ProgressBar"
-    container.BackgroundColor3 = theme.Container or Color3.fromRGB(30, 30, 45)
-    container.Size = UDim2.new(0, width, 0, height)
-    container.Parent = parent
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = container
-    
-    local progressFill = Instance.new("Frame")
-    progressFill.Name = "Fill"
-    progressFill.BackgroundColor3 = theme.Accent or Color3.fromRGB(100, 120, 255)
-    progressFill.Size = UDim2.new(0, 0, 1, 0)
-    progressFill.Parent = container
-    
-    local fillCorner = Instance.new("UICorner")
-    fillCorner.CornerRadius = UDim.new(1, 0)
-    fillCorner.Parent = progressFill
-    
-    local shimmer = Instance.new("Frame")
-    shimmer.Name = "Shimmer"
-    shimmer.BackgroundColor3 = Color3.new(1, 1, 1)
-    shimmer.BackgroundTransparency = 0.8
-    shimmer.Size = UDim2.new(0, 30, 1, 0)
-    shimmer.Position = UDim2.new(-0.2, 0, 0, 0)
-    shimmer.Visible = false
-    shimmer.Parent = progressFill
-    
-    local shimmerGradient = Instance.new("UIGradient")
-    shimmerGradient.Transparency = NumberSequence.new({
-        NumberSequenceKeypoint.new(0, 0.9),
-        NumberSequenceKeypoint.new(0.5, 0.5),
-        NumberSequenceKeypoint.new(1, 0.9)
-    })
-    shimmerGradient.Rotation = 45
-    shimmerGradient.Parent = shimmer
-    
-    local function setProgress(percentage)
-        percentage = math.clamp(percentage, 0, 100)
-        local targetWidth = (percentage / 100) * width
-        
-        TweenService:Create(progressFill, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Size = UDim2.new(0, targetWidth, 1, 0)
-        }):Play()
-        
-        if percentage > 0 and percentage < 100 then
-            shimmer.Visible = true
-            TweenService:Create(shimmer, TweenInfo.new(0.8, Enum.EasingStyle.Linear), {
-                Position = UDim2.new(1.2, 0, 0, 0)
-            }):Play()
-        else
-            shimmer.Visible = false
-        end
-    end
-    
-    local function startIndeterminate()
-        local pulseTween = TweenService:Create(progressFill, TweenInfo.new(0.8, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
-            Size = UDim2.new(0.6, 0, 1, 0),
-            Position = UDim2.new(0.2, 0, 0, 0)
-        })
-        pulseTween:Play()
-        
-        shimmer.Visible = true
-        local shimmerTween = TweenService:Create(shimmer, TweenInfo.new(1.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1), {
-            Position = UDim2.new(1.2, 0, 0, 0)
-        })
-        shimmerTween:Play()
-        
-        return {
-            Stop = function()
-                pulseTween:Cancel()
-                shimmerTween:Cancel()
-                shimmer.Visible = false
-            end
-        }
-    end
-    
-    return {
-        Container = container,
-        SetProgress = setProgress,
-        StartIndeterminate = startIndeterminate
-    }
-end
-
-local function createPulseEffect(parent, color, duration, size)
-    color = color or Color3.new(1, 1, 1)
-    duration = duration or 0.8
-    size = size or 50
-    
-    local pulse = Instance.new("Frame")
-    pulse.Name = "PulseEffect"
-    pulse.BackgroundColor3 = color
-    pulse.BackgroundTransparency = 0.7
-    pulse.AnchorPoint = Vector2.new(0.5, 0.5)
-    pulse.Size = UDim2.new(0, 0, 0, 0)
-    pulse.Parent = parent
-    
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = pulse
-    
-    TweenService:Create(pulse, TweenInfo.new(duration, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-        Size = UDim2.new(0, size * 3, 0, size * 3),
-        BackgroundTransparency = 1
-    }):Play()
-    
-    task.delay(duration, function()
-        if pulse and pulse.Parent then
-            pulse:Destroy()
-        end
-    end)
-    
-    return pulse
 end
 
 local Themes = {
@@ -1154,23 +930,23 @@ function AxionLibrary:CreateWindow(options)
                 local frameStroke = ref.Frame:FindFirstChildOfClass("UIStroke")
                 if frameStroke then Utility:Tween(frameStroke, {Color = newTheme.Border}, dur) end
                 for _, opt in pairs(ref.ScrollContainer:GetChildren()) do
-                    if opt:IsA("TextButton") then
-                        local dropdownValue = ref.Element.Value
-                        local isSelected = false
-                        
-                        if type(dropdownValue) == "table" then
-                            isSelected = table.find(dropdownValue, opt.Name) ~= nil
-                        else
-                            isSelected = dropdownValue == opt.Name
-                        end
-                        
-                        Utility:Tween(opt, {
-                            BackgroundColor3 = isSelected and newTheme.Accent or newTheme.Container,
-                            BackgroundTransparency = isSelected and 0 or newTheme.ContainerTransparency,
-                            TextColor3 = isSelected and newTheme.Text or newTheme.TextDark
-                        }, dur)
-                    end
-                end
+				    if opt:IsA("TextButton") then
+				        local dropdownValue = ref.Element.Value
+				        local isSelected = false
+				        
+				        if type(dropdownValue) == "table" then
+				            isSelected = table.find(dropdownValue, opt.Name) ~= nil
+				        else
+				            isSelected = dropdownValue == opt.Name
+				        end
+				        
+				        Utility:Tween(opt, {
+				            BackgroundColor3 = isSelected and newTheme.Accent or newTheme.Container,
+				            BackgroundTransparency = isSelected and 0 or newTheme.ContainerTransparency,
+				            TextColor3 = isSelected and newTheme.Text or newTheme.TextDark
+				        }, dur)
+				    end
+				end
                 
             elseif ref.Type == "Input" then
                 Utility:Tween(ref.Frame, {BackgroundColor3 = newTheme.Element, BackgroundTransparency = newTheme.ElementTransparency}, dur)
@@ -1521,28 +1297,28 @@ function AxionLibrary:CreateWindow(options)
         })
         
         local TabContent = Utility:Create("ScrollingFrame", {
-            Name = tabName .. "Content",
-            Parent = MainContent,
-            BackgroundTransparency = 1,
-            Position = UDim2.new(0, 18, 0, 15),
-            Size = UDim2.new(1, -36, 1, -30),
-            ScrollBarThickness = 4,
-            ScrollBarImageColor3 = theme.Accent,
-            ScrollBarImageTransparency = 0.3,
-            CanvasSize = UDim2.new(0, 0, 0, 0),
-            AutomaticCanvasSize = Enum.AutomaticSize.Y,
-            Visible = false,
-            ClipsDescendants = true
-        }, {
-            Utility:Create("UIListLayout", { 
-                SortOrder = Enum.SortOrder.LayoutOrder, 
-                Padding = UDim.new(0, 10) 
-            }),
-            Utility:Create("UIPadding", {
-                PaddingLeft = UDim.new(0, 2),
-                PaddingRight = UDim.new(0, 6)
-            })
-        })
+		    Name = tabName .. "Content",
+		    Parent = MainContent,
+		    BackgroundTransparency = 1,
+		    Position = UDim2.new(0, 18, 0, 15),
+		    Size = UDim2.new(1, -36, 1, -30),
+		    ScrollBarThickness = 4,
+		    ScrollBarImageColor3 = theme.Accent,
+		    ScrollBarImageTransparency = 0.3,
+		    CanvasSize = UDim2.new(0, 0, 0, 0),
+		    AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		    Visible = false,
+		    ClipsDescendants = true
+		}, {
+		    Utility:Create("UIListLayout", { 
+		        SortOrder = Enum.SortOrder.LayoutOrder, 
+		        Padding = UDim.new(0, 10) 
+		    }),
+		    Utility:Create("UIPadding", {
+		        PaddingLeft = UDim.new(0, 2),
+		        PaddingRight = UDim.new(0, 6)
+		    })
+		})
         
         Tab.Button = TabButton
         Tab.Content = TabContent
@@ -2210,16 +1986,6 @@ function AxionLibrary:CreateWindow(options)
                     TextTruncate = Enum.TextTruncate.AtEnd
                 })
                 
-                local function filterOptions(searchText)
-                    local filtered = {}
-                    for _, option in pairs(options) do
-                        if string.find(string.lower(option), string.lower(searchText)) then
-                            table.insert(filtered, option)
-                        end
-                    end
-                    return filtered
-                end
-                
                 local function closeCurrentDropdown()
                     if Window.ActiveDropdown then
                         local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Cubic, Enum.EasingDirection.In)
@@ -2253,39 +2019,6 @@ function AxionLibrary:CreateWindow(options)
                         Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency, Thickness = 1 })
                     })
                     
-                    local SearchBoxContainer = Utility:Create("Frame", {
-                        Name = "SearchBoxContainer",
-                        Parent = DropdownMenu,
-                        BackgroundColor3 = theme.Element,
-                        BackgroundTransparency = theme.ElementTransparency - 0.1,
-                        BorderColor3 = Color3.fromRGB(0, 0, 0),
-                        BorderSizePixel = 0,
-                        Position = UDim2.new(0, 8, 0, 45),
-                        Size = UDim2.new(0, 184, 0, 28),
-                        ZIndex = 1001
-                    }, {
-                        Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) }),
-                        Utility:Create("UIStroke", { Color = theme.Border, Transparency = theme.BorderTransparency, Thickness = 1 })
-                    })
-                    
-                    local SearchTextBox = Utility:Create("TextBox", {
-                        Name = "SearchTextBox",
-                        Parent = SearchBoxContainer,
-                        BackgroundTransparency = 1,
-                        BorderColor3 = Color3.fromRGB(0, 0, 0),
-                        BorderSizePixel = 0,
-                        Position = UDim2.new(0, 8, 0, 0),
-                        Size = UDim2.new(0, 168, 1, 0),
-                        Font = currentFont,
-                        PlaceholderText = "Search...",
-                        PlaceholderColor3 = theme.TextMuted,
-                        Text = "",
-                        TextColor3 = theme.Text,
-                        TextSize = 12,
-                        ClearTextOnFocus = false,
-                        ZIndex = 1002
-                    })
-                    
                     local ScrollingFrame = Utility:Create("ScrollingFrame", {
                         Parent = DropdownMenu,
                         Active = true,
@@ -2293,7 +2026,7 @@ function AxionLibrary:CreateWindow(options)
                         BackgroundTransparency = 1,
                         BorderColor3 = Color3.fromRGB(0, 0, 0),
                         BorderSizePixel = 0,
-                        Position = UDim2.new(0, 0, 0, 78),
+                        Position = UDim2.new(0, 0, 0, 40),
                         Size = UDim2.new(1, 0, 0, 180),
                         ScrollBarThickness = 4,
                         CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -2346,113 +2079,7 @@ function AxionLibrary:CreateWindow(options)
                         Padding = UDim.new(0, 5)
                     })
                     
-                    local function createOptions(filteredOptions)
-                        for _, child in pairs(ScrollingFrame:GetChildren()) do
-                            if child:IsA("TextButton") then
-                                child:Destroy()
-                            end
-                        end
-                        
-                        local optionHeight = 0
-                        for i, v in ipairs(filteredOptions) do
-                            local OptionButton = Utility:Create("TextButton", {
-                                Name = v,
-                                Parent = ScrollingFrame,
-                                BackgroundColor3 = theme.Element,
-                                BackgroundTransparency = theme.ElementTransparency,
-                                BorderColor3 = Color3.fromRGB(0, 0, 0),
-                                BorderSizePixel = 0,
-                                Size = UDim2.new(1, 0, 0, 40),
-                                Font = currentFont,
-                                Text = v,
-                                TextColor3 = theme.Text,
-                                TextSize = 13,
-                                AutoButtonColor = false,
-                                ZIndex = 1002
-                            }, {
-                                Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
-                            })
-                            
-                            optionHeight = optionHeight + 45
-                            
-                            local isSelected = false
-                            if multiSelect then
-                                isSelected = table.find(Dropdown.Value, v) ~= nil
-                            else
-                                isSelected = Dropdown.Value == v
-                            end
-                            
-                            if isSelected then
-                                OptionButton.BackgroundColor3 = theme.Accent
-                                OptionButton.BackgroundTransparency = 0
-                                OptionButton.TextColor3 = theme.Text
-                            end
-                            
-                            OptionButton.MouseEnter:Connect(function()
-                                Utility:Tween(OptionButton, {BackgroundColor3 = isSelected and theme.AccentDark or theme.ElementHover, BackgroundTransparency = isSelected and 0.1 or theme.ElementTransparency - 0.2}, Config.AnimationSpeed * 0.3)
-                            end)
-                            
-                            OptionButton.MouseLeave:Connect(function()
-                                Utility:Tween(OptionButton, {BackgroundColor3 = isSelected and theme.Accent :Lerp(theme.Element, 0.2) or theme.Element, BackgroundTransparency = isSelected and 0.1 or theme.ElementTransparency}, Config.AnimationSpeed * 0.3)
-                            end)
-                            
-                            OptionButton.MouseButton1Click:Connect(function()
-                                if multiSelect then
-                                    local idx = table.find(Dropdown.Value, v)
-                                    if idx then
-                                        table.remove(Dropdown.Value, idx)
-                                        OptionButton.BackgroundColor3 = theme.Element
-                                        OptionButton.BackgroundTransparency = theme.ElementTransparency
-                                        OptionButton.TextColor3 = theme.Text
-                                    else
-                                        table.insert(Dropdown.Value, v)
-                                        OptionButton.BackgroundColor3 = theme.Accent
-                                        OptionButton.BackgroundTransparency = 0
-                                        OptionButton.TextColor3 = theme.Text
-                                    end
-                                    SelectedText.Text = #Dropdown.Value > 0 and #Dropdown.Value .. " selected" or "None"
-                                else
-                                    Dropdown.Value = v
-                                    SelectedText.Text = v
-                                    
-                                    for _, opt in pairs(ScrollingFrame:GetChildren()) do
-                                        if opt:IsA("TextButton") then
-                                            local optIsSelected = opt.Name == v
-                                            Utility:Tween(opt, {
-                                                BackgroundColor3 = optIsSelected and theme.Accent or theme.Element,
-                                                BackgroundTransparency = optIsSelected and 0 or theme.ElementTransparency
-                                            }, Config.AnimationSpeed * 0.3)
-                                        end
-                                    end
-                                end
-                                
-                                SaveConfig()
-                                callback(Dropdown.Value)
-                                
-                                if not multiSelect then
-                                    task.wait(Config.AnimationSpeed * 0.3)
-                                    closeCurrentDropdown()
-                                    if dropdownCloseConnection then
-                                        dropdownCloseConnection:Disconnect()
-                                    end
-                                end
-                            end)
-                        end
-                        
-                        ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, optionHeight)
-                    end
-                    
-                    SearchTextBox:GetPropertyChangedSignal("Text"):Connect(function()
-                        local searchText = SearchTextBox.Text
-                        if searchText == "" then
-                            createOptions(options)
-                        else
-                            local filtered = filterOptions(searchText)
-                            createOptions(filtered)
-                        end
-                    end)
-                    
-                    local dropdownHeight = math.min(40 + (math.min(#options, 6) * 45) + 38, 280)
+                    local dropdownHeight = math.min(40 + (math.min(#options, 6) * 45), 250)
                     local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
                     local introTween = TweenService:Create(DropdownMenu, tweenInfo, {Size = UDim2.new(0, 200, 0, dropdownHeight)})
                     introTween:Play()
@@ -2483,7 +2110,91 @@ function AxionLibrary:CreateWindow(options)
                         end
                     end)
                     
-                    createOptions(options)
+                    for i, v in ipairs(options) do
+                        local OptionButton = Utility:Create("TextButton", {
+                            Name = v,
+                            Parent = ScrollingFrame,
+                            BackgroundColor3 = theme.Element,
+                            BackgroundTransparency = theme.ElementTransparency,
+                            BorderColor3 = Color3.fromRGB(0, 0, 0),
+                            BorderSizePixel = 0,
+                            Size = UDim2.new(1, 0, 0, 40),
+                            Font = currentFont,
+                            Text = v,
+                            TextColor3 = theme.Text,
+                            TextSize = 13,
+                            AutoButtonColor = false,
+                            ZIndex = 1002
+                        }, {
+                            Utility:Create("UICorner", { CornerRadius = UDim.new(0, Config.ElementCornerRadius - 2) })
+                        })
+                        
+                        local isSelected = false
+                        if multiSelect then
+                            isSelected = table.find(Dropdown.Value, v) ~= nil
+                        else
+                            isSelected = Dropdown.Value == v
+                        end
+                        
+                        if isSelected then
+                            OptionButton.BackgroundColor3 = theme.Accent
+                            OptionButton.BackgroundTransparency = 0
+                            OptionButton.TextColor3 = theme.Text
+                        end
+                        
+                        OptionButton.MouseEnter:Connect(function()
+                            Utility:Tween(OptionButton, {BackgroundColor3 = isSelected and theme.AccentDark or theme.ElementHover, BackgroundTransparency = isSelected and 0.1 or theme.ElementTransparency - 0.2}, Config.AnimationSpeed * 0.3)
+                        end)
+                        
+                        OptionButton.MouseLeave:Connect(function()
+                            Utility:Tween(OptionButton, {BackgroundColor3 = isSelected and theme.Accent :Lerp(theme.Element, 0.2) or theme.Element, BackgroundTransparency = isSelected and 0.1 or theme.ElementTransparency}, Config.AnimationSpeed * 0.3)
+                        end)
+                        
+                        OptionButton.MouseButton1Click:Connect(function()
+                            if multiSelect then
+                                local idx = table.find(Dropdown.Value, v)
+                                if idx then
+                                    table.remove(Dropdown.Value, idx)
+                                    OptionButton.BackgroundColor3 = theme.Element
+                                    OptionButton.BackgroundTransparency = theme.ElementTransparency
+                                    OptionButton.TextColor3 = theme.Text
+                                else
+                                    table.insert(Dropdown.Value, v)
+                                    OptionButton.BackgroundColor3 = theme.Accent
+                                    OptionButton.BackgroundTransparency = 0
+                                    OptionButton.TextColor3 = theme.Text
+                                end
+                                SelectedText.Text = #Dropdown.Value > 0 and #Dropdown.Value .. " selected" or "None"
+                            else
+                                Dropdown.Value = v
+                                SelectedText.Text = v
+                                
+                                for _, opt in pairs(ScrollingFrame:GetChildren()) do
+                                    if opt:IsA("TextButton") then
+                                        local optIsSelected = opt.Name == v
+                                        Utility:Tween(opt, {
+                                            BackgroundColor3 = optIsSelected and theme.Accent or theme.Element,
+                                            BackgroundTransparency = optIsSelected and 0 or theme.ElementTransparency
+                                        }, Config.AnimationSpeed * 0.3)
+                                    end
+                                end
+                            end
+                            
+                            SaveConfig()
+                            callback(Dropdown.Value)
+                            
+                            if not multiSelect then
+                                task.wait(Config.AnimationSpeed * 0.3)
+                                closeCurrentDropdown()
+                                if dropdownCloseConnection then
+                                    dropdownCloseConnection:Disconnect()
+                                end
+                            end
+                        end)
+                    end
+                    
+                    local totalHeight = (#options * 45)
+                    ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
                 end
                 
                 ImageButton.MouseButton1Click:Connect(function()
@@ -3920,11 +3631,6 @@ function AxionLibrary:CreateWindow(options)
             end
         end
     end
-    
-    Window.CreateLoadingDots = function(parent) return createLoadingDots(parent, Window.Theme) end
-    Window.CreateSpinner = function(parent, size, color, speed) return createSpinner(parent, size, color, speed) end
-    Window.CreateProgressBar = function(parent, width, height) return createProgressBar(parent, width, height, Window.Theme) end
-    Window.CreatePulseEffect = createPulseEffect
     
     local toggleKey = options.ToggleKey or Enum.KeyCode.RightShift
     local toggleConn = UserInputService.InputBegan:Connect(function(input, gpe)
