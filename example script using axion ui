@@ -1,719 +1,310 @@
 local Axion = loadstring(game:HttpGet("https://raw.githubusercontent.com/adamowaissi22-boop/Axom-Scripts-/refs/heads/main/Axion%20Ui%20Library"))()
 
 local Window = Axion:CreateWindow({
-    Name = "Axion - Demo Script",
-    Subtitle = "UI Library Demo",
-    Version = "v1.0",
-    LoadingTitle = "Demo Script",
-    LoadingSubtitle = "Axion Demo",
-    Theme = "Default",
+    Name = "Example Script using axion UI",
+    Subtitle = "Showcase - Example",
+    Version = "v2.0",
+    LoadingTitle = "demo axion ui",
+    LoadingSubtitle = "made by axom",
+    Theme = "Ocean",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "AxionConfig",
-        FileName = "DemoConfig"
+        FileName = "ExampleScript"
     },
-    AnimationSpeed = 0.3,
+    AnimationSpeed = 0.25,
     RippleEnabled = true,
-    CornerRadius = 12,
+    CornerRadius = 14,
     ToggleKey = Enum.KeyCode.RightShift
 })
 
-local ButtonTab = Window:CreateTab({
-    Name = "Button",
-    Icon = "🟦"
+local MainTab = Window:CreateTab({
+    Name = "All Elements Showcase",
+    Icon = "⭐"
 })
 
-local ToggleTab = Window:CreateTab({
-    Name = "Toggle",
-    Icon = "🔘"
-})
+local ToggleSection = MainTab:CreateSection("Toggle Elements")
 
-local SliderTab = Window:CreateTab({
-    Name = "Slider",
-    Icon = "📊"
-})
-
-local DropdownTab = Window:CreateTab({
-    Name = "Dropdown",
-    Icon = "📋"
-})
-
-local InputTab = Window:CreateTab({
-    Name = "Input",
-    Icon = "⌨️"
-})
-
-local KeybindTab = Window:CreateTab({
-    Name = "Keybind",
-    Icon = "🔑"
-})
-
-local ColorPickerTab = Window:CreateTab({
-    Name = "Color Picker",
-    Icon = "🎨"
-})
-
-local NotificationTab = Window:CreateTab({
-    Name = "Notification",
-    Icon = "🔔"
-})
-
-local SettingsTab = Window:CreateTab({
-    Name = "Settings",
-    Icon = "⚙️"
-})
-
-Window:Notify({
-    Title = "Welcome",
-    Content = "Axion Demo Script Loaded Successfully!",
-    Duration = 5,
-    Type = "Success"
-})
-
-local ButtonSection = ButtonTab:CreateSection("Button Examples")
-
-local button1 = ButtonSection:CreateButton({
-    Name = "Show Info Notification",
-    Callback = function()
-        Window:Notify({
-            Title = "Info Notification",
-            Content = "This is an info notification from Button 1",
-            Duration = 3,
-            Type = "Info"
-        })
-    end
-})
-
-local button2 = ButtonSection:CreateButton({
-    Name = "Teleport to Spawn",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        if player.Character then
-            player.Character.HumanoidRootPart.CFrame = CFrame.new(0, 5, 0)
-            Window:Notify({
-                Title = "Teleported",
-                Content = "Teleported to spawn point!",
-                Duration = 3,
-                Type = "Success"
-            })
-        end
-    end
-})
-
-local button3 = ButtonSection:CreateButton({
-    Name = "Kill Character",
-    Callback = function()
-        Window:Dialog({
-            Title = "Confirm Kill",
-            Content = "Are you sure you want to kill your character?",
-            Buttons = {
-                {
-                    Title = "Yes",
-                    Primary = true,
-                    Callback = function()
-                        game.Players.LocalPlayer.Character.Humanoid.Health = 0
-                        Window:Notify({
-                            Title = "Character Killed",
-                            Content = "Your character has been killed!",
-                            Duration = 3,
-                            Type = "Warning"
-                        })
-                    end
-                },
-                {
-                    Title = "No",
-                    Callback = function()
-                        Window:Notify({
-                            Title = "Cancelled",
-                            Content = "Kill action cancelled",
-                            Duration = 2,
-                            Type = "Info"
-                        })
-                    end
-                }
-            }
-        })
-    end
-})
-
-local button4 = ButtonSection:CreateButton({
-    Name = "Test Dialog",
-    Callback = function()
-        Window:Dialog({
-            Title = "Test Dialog",
-            Content = "This is a test dialog box with multiple buttons",
-            Buttons = {
-                {
-                    Title = "OK",
-                    Primary = true,
-                    Callback = function()
-                        Window:Notify({
-                            Title = "OK Clicked",
-                            Content = "You clicked OK!",
-                            Duration = 2,
-                            Type = "Success"
-                        })
-                    end
-                },
-                {
-                    Title = "Cancel",
-                    Callback = function()
-                        Window:Notify({
-                            Title = "Cancel Clicked",
-                            Content = "You clicked Cancel!",
-                            Duration = 2,
-                            Type = "Warning"
-                        })
-                    end
-                }
-            }
-        })
-    end
-})
-
-local ToggleSection = ToggleTab:CreateSection("Toggle Examples")
-
-local toggle1 = ToggleSection:CreateToggle({
-    Name = "NoClip",
+local simpleToggle = ToggleSection:CreateToggle({
+    Name = "Simple Toggle",
     CurrentValue = false,
-    Flag = "NoClip",
+    Flag = "Toggle1",
     Callback = function(value)
-        if value then
-            game:GetService("RunService").Stepped:Connect(function()
-                if game.Players.LocalPlayer.Character then
-                    for _, part in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-                        if part:IsA("BasePart") then
-                            part.CanCollide = false
-                        end
-                    end
-                end
-            end)
-            Window:Notify({
-                Title = "NoClip",
-                Content = "NoClip Enabled",
-                Duration = 3,
-                Type = "Success"
-            })
-        else
-            Window:Notify({
-                Title = "NoClip",
-                Content = "NoClip Disabled",
-                Duration = 2,
-                Type = "Warning"
-            })
-        end
+        print("Simple Toggle:", value)
     end
 })
 
-local toggle2 = ToggleSection:CreateToggle({
-    Name = "Speed Hack",
-    CurrentValue = false,
-    Flag = "SpeedHack",
+local advancedToggle = ToggleSection:CreateToggle({
+    Name = "Advanced Feature",
+    CurrentValue = true,
+    Flag = "Toggle2",
     Callback = function(value)
-        if value then
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
-            Window:Notify({
-                Title = "Speed Hack",
-                Content = "Walk Speed: 50 studs/sec",
-                Duration = 3,
-                Type = "Success"
-            })
-        else
-            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-            Window:Notify({
-                Title = "Speed Hack",
-                Content = "Walk Speed: 16 studs/sec",
-                Duration = 2,
-                Type = "Info"
-            })
-        end
+        print("Advanced Toggle:", value)
     end
 })
 
-local toggle3 = ToggleSection:CreateToggle({
-    Name = "High Jump",
-    CurrentValue = false,
-    Flag = "HighJump",
-    Callback = function(value)
-        if value then
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 100
-            Window:Notify({
-                Title = "High Jump",
-                Content = "Jump Power: 100",
-                Duration = 3,
-                Type = "Success"
-            })
-        else
-            game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
-            Window:Notify({
-                Title = "High Jump",
-                Content = "Jump Power: 50",
-                Duration = 2,
-                Type = "Info"
-            })
-        end
+local ButtonSection = MainTab:CreateSection("Button Elements")
+
+ButtonSection:CreateButton({
+    Name = "Primary Action",
+    Icon = "🚀",
+    Callback = function()
+        print("Primary button clicked!")
     end
 })
 
-local toggle4 = ToggleSection:CreateToggle({
-    Name = "ESP",
-    CurrentValue = false,
-    Flag = "ESP",
-    Callback = function(value)
-        if value then
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player ~= game.Players.LocalPlayer then
-                    local highlight = Instance.new("Highlight")
-                    highlight.Name = "AxionESP"
-                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
-                    highlight.Adornee = player.Character
-                    highlight.Parent = player.Character
-                end
-            end
-            Window:Notify({
-                Title = "ESP",
-                Content = "ESP Enabled",
-                Duration = 3,
-                Type = "Success"
-            })
-        else
-            for _, player in pairs(game.Players:GetPlayers()) do
-                if player.Character then
-                    local esp = player.Character:FindFirstChild("AxionESP")
-                    if esp then
-                        esp:Destroy()
-                    end
-                end
-            end
-            Window:Notify({
-                Title = "ESP",
-                Content = "ESP Disabled",
-                Duration = 2,
-                Type = "Warning"
-            })
-        end
+ButtonSection:CreateButton({
+    Name = "Secondary Action",
+    Icon = "⚙️",
+    Callback = function()
+        print("Secondary button clicked!")
     end
 })
 
-local SliderSection = SliderTab:CreateSection("Slider Examples")
+ButtonSection:CreateButton({
+    Name = "Danger Action",
+    Icon = "⚠️",
+    Callback = function()
+        print("Danger button clicked!")
+    end
+})
 
-local slider1 = SliderSection:CreateSlider({
-    Name = "Walk Speed",
-    Range = {16, 200},
+local SliderSection = MainTab:CreateSection("Slider Elements")
+
+local volumeSlider = SliderSection:CreateSlider({
+    Name = "Volume",
+    Range = {0, 100},
     Increment = 1,
-    Suffix = " studs",
+    Suffix = "%",
+    CurrentValue = 75,
+    Flag = "Volume",
+    Callback = function(value)
+        print("Volume:", value)
+    end
+})
+
+local speedSlider = SliderSection:CreateSlider({
+    Name = "Speed",
+    Range = {1, 50},
+    Increment = 0.5,
+    Suffix = " studs/s",
     CurrentValue = 16,
-    Flag = "WalkSpeed",
+    Flag = "Speed",
     Callback = function(value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
-        Window:Notify({
-            Title = "Walk Speed",
-            Content = "Set to " .. value .. " studs/sec",
-            Duration = 2,
-            Type = "Info"
-        })
+        print("Speed:", value)
     end
 })
 
-local slider2 = SliderSection:CreateSlider({
-    Name = "Jump Power",
-    Range = {50, 500},
-    Increment = 5,
-    Suffix = " power",
-    CurrentValue = 50,
-    Flag = "JumpPower",
-    Callback = function(value)
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = value
-        Window:Notify({
-            Title = "Jump Power",
-            Content = "Set to " .. value,
-            Duration = 2,
-            Type = "Info"
-        })
-    end
-})
+local InputSection = MainTab:CreateSection("Input Elements")
 
-local slider3 = SliderSection:CreateSlider({
-    Name = "FOV",
-    Range = {70, 120},
-    Increment = 1,
-    Suffix = "°",
-    CurrentValue = 70,
-    Flag = "FOV",
-    Callback = function(value)
-        workspace.CurrentCamera.FieldOfView = value
-        Window:Notify({
-            Title = "Field of View",
-            Content = "Set to " .. value .. "°",
-            Duration = 2,
-            Type = "Info"
-        })
-    end
-})
-
-local slider4 = SliderSection:CreateSlider({
-    Name = "Gravity",
-    Range = {0, 196},
-    Increment = 1,
-    Suffix = " m/s²",
-    CurrentValue = 196,
-    Flag = "Gravity",
-    Callback = function(value)
-        workspace.Gravity = value
-        Window:Notify({
-            Title = "Gravity",
-            Content = "Set to " .. value .. " m/s²",
-            Duration = 2,
-            Type = "Info"
-        })
-    end
-})
-
-local DropdownSection = DropdownTab:CreateSection("Dropdown Examples")
-
-local dropdown1 = DropdownSection:CreateDropdown({
-    Name = "Select Weapon",
-    Options = {"Sword", "Axe", "Bow", "Staff", "Gun"},
-    CurrentOption = "Sword",
-    Flag = "Weapon",
-    Callback = function(value)
-        Window:Notify({
-            Title = "Weapon Selected",
-            Content = "Selected: " .. value,
-            Duration = 3,
-            Type = "Success"
-        })
-    end
-})
-
-local dropdown2 = DropdownSection:CreateDropdown({
-    Name = "Select Team",
-    Options = {"Red", "Blue", "Green", "Yellow", "Purple"},
-    CurrentOption = "Red",
-    Flag = "Team",
-    Callback = function(value)
-        Window:Notify({
-            Title = "Team Selected",
-            Content = "Joined: " .. value .. " Team",
-            Duration = 3,
-            Type = "Info"
-        })
-    end
-})
-
-local dropdown3 = DropdownSection:CreateDropdown({
-    Name = "Multiple Selection",
-    Options = {"Option 1", "Option 2", "Option 3", "Option 4", "Option 5"},
-    MultiSelect = true,
-    Flag = "MultiSelect",
-    Callback = function(values)
-        Window:Notify({
-            Title = "Multiple Selection",
-            Content = "Selected: " .. table.concat(values, ", "),
-            Duration = 3,
-            Type = "Info"
-        })
-    end
-})
-
-local InputSection = InputTab:CreateSection("Input Examples")
-
-local input1 = InputSection:CreateInput({
-    Name = "Teleport to Player",
+local usernameInput = InputSection:CreateInput({
+    Name = "Username",
     PlaceholderText = "Enter username...",
-    RemoveTextAfterFocusLost = true,
-    Flag = "TeleportTarget",
+    CurrentValue = "",
+    Flag = "Username",
     Callback = function(value)
-        local found = false
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player.Name:lower():find(value:lower()) or player.DisplayName:lower():find(value:lower()) then
-                if player.Character then
-                    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(player.Character.HumanoidRootPart.CFrame)
-                    Window:Notify({
-                        Title = "Teleported",
-                        Content = "Teleported to " .. player.DisplayName,
-                        Duration = 3,
-                        Type = "Success"
-                    })
-                    found = true
-                end
-                break
-            end
-        end
-        if not found then
-            Window:Notify({
-                Title = "Error",
-                Content = "Player not found!",
-                Duration = 3,
-                Type = "Error"
-            })
-        end
+        print("Username:", value)
     end
 })
 
-local input2 = InputSection:CreateInput({
-    Name = "Set Cash Amount",
-    PlaceholderText = "Enter amount...",
-    Flag = "CashAmount",
+local messageInput = InputSection:CreateInput({
+    Name = "Message",
+    PlaceholderText = "Type your message...",
+    CurrentValue = "",
+    Flag = "Message",
     Callback = function(value)
-        local amount = tonumber(value)
-        if amount then
-            Window:Notify({
-                Title = "Cash Set",
-                Content = "Set cash to " .. amount,
-                Duration = 3,
-                Type = "Success"
-            })
-        else
-            Window:Notify({
-                Title = "Error",
-                Content = "Invalid number!",
-                Duration = 3,
-                Type = "Error"
-            })
-        end
+        print("Message:", value)
     end
 })
 
-local KeybindSection = KeybindTab:CreateSection("Keybind Examples")
+local DropdownSection = MainTab:CreateSection("Dropdown Elements")
 
-local keybind1 = KeybindSection:CreateKeybind({
-    Name = "Toggle UI",
+local qualityDropdown = DropdownSection:CreateDropdown({
+    Name = "Quality",
+    Options = {"Low", "Medium", "High", "Ultra"},
+    CurrentOption = "Medium",
+    Flag = "Quality",
+    Callback = function(value)
+        print("Quality:", value)
+    end
+})
+
+local modeDropdown = DropdownSection:CreateDropdown({
+    Name = "Game Mode",
+    Options = {"Normal", "Hard", "Expert", "Insane"},
+    CurrentOption = "Normal",
+    Flag = "GameMode",
+    Callback = function(value)
+        print("Game Mode:", value)
+    end
+})
+
+local multiDropdown = DropdownSection:CreateDropdown({
+    Name = "Features",
+    Options = {"ESP", "Aimbot", "Speed", "Fly", "NoClip", "Anti-AFK"},
+    CurrentOption = {},
+    MultiSelect = true,
+    Flag = "Features",
+    Callback = function(value)
+        print("Features:", table.concat(value, ", "))
+    end
+})
+
+local ColorPickerSection = MainTab:CreateSection("Color Picker Elements")
+
+local primaryColor = ColorPickerSection:CreateColorPicker({
+    Name = "Primary Color",
+    Color = Color3.fromRGB(100, 120, 255),
+    Flag = "PrimaryColor",
+    Callback = function(color)
+        print("Primary Color:", color)
+    end
+})
+
+local secondaryColor = ColorPickerSection:CreateColorPicker({
+    Name = "Secondary Color",
+    Color = Color3.fromRGB(255, 100, 100),
+    Flag = "SecondaryColor",
+    Callback = function(color)
+        print("Secondary Color:", color)
+    end
+})
+
+local KeybindSection = MainTab:CreateSection("Keybind Elements")
+
+local menuKeybind = KeybindSection:CreateKeybind({
+    Name = "Toggle Menu",
     CurrentKeybind = "RightShift",
-    Flag = "ToggleUIKey",
+    Flag = "MenuKey",
     Callback = function()
         Window:Toggle()
-        Window:Notify({
-            Title = "UI Toggled",
-            Content = "Interface visibility changed",
-            Duration = 2,
-            Type = "Info"
-        })
     end
 })
 
-local keybind2 = KeybindSection:CreateKeybind({
-    Name = "NoClip Toggle",
-    CurrentKeybind = "N",
-    Flag = "NoClipKey",
-    Callback = function()
-        toggle1:Set(not toggle1.Value)
-    end
-})
-
-local keybind3 = KeybindSection:CreateKeybind({
-    Name = "Fly (Hold)",
+local flyKeybind = KeybindSection:CreateKeybind({
+    Name = "Fly Toggle",
     CurrentKeybind = "F",
     Flag = "FlyKey",
-    HoldToInteract = true,
-    Callback = function(value)
-        if value then
-            Window:Notify({
-                Title = "Fly",
-                Content = "Fly activated",
-                Duration = 2,
-                Type = "Success"
-            })
-        else
-            Window:Notify({
-                Title = "Fly",
-                Content = "Fly deactivated",
-                Duration = 2,
-                Type = "Warning"
-            })
-        end
-    end
-})
-
-local ColorPickerSection = ColorPickerTab:CreateSection("Color Picker Examples")
-
-local colorpicker1 = ColorPickerSection:CreateColorPicker({
-    Name = "ESP Color",
-    Color = Color3.fromRGB(255, 0, 0),
-    Flag = "ESPColor",
-    Callback = function(color)
-        for _, player in pairs(game.Players:GetPlayers()) do
-            if player ~= game.Players.LocalPlayer then
-                local esp = player.Character:FindFirstChild("AxionESP")
-                if esp then
-                    esp.FillColor = color
-                end
-            end
-        end
-        Window:Notify({
-            Title = "ESP Color",
-            Content = "Color updated to RGB(" .. math.floor(color.R * 255) .. ", " .. math.floor(color.G * 255) .. ", " .. math.floor(color.B * 255) .. ")",
-            Duration = 3,
-            Type = "Info"
-        })
-    end
-})
-
-local colorpicker2 = ColorPickerSection:CreateColorPicker({
-    Name = "Interface Color",
-    Color = Color3.fromRGB(100, 120, 255),
-    Flag = "InterfaceColor",
-    Callback = function(color)
-        Window:Notify({
-            Title = "Interface Color",
-            Content = "Color changed",
-            Duration = 2,
-            Type = "Info"
-        })
-    end
-})
-
-local NotificationSection = NotificationTab:CreateSection("Notification Tests")
-
-local notif1 = NotificationSection:CreateButton({
-    Name = "Info Notification",
     Callback = function()
-        Window:Notify({
-            Title = "Information",
-            Content = "This is an info notification",
-            Duration = 4,
-            Type = "Info"
-        })
+        print("Fly toggled!")
     end
 })
 
-local notif2 = NotificationSection:CreateButton({
+local PlayerSelectorSection = MainTab:CreateSection("Player Selector Element")
+
+local targetPlayer = PlayerSelectorSection:CreatePlayerSelector({
+    Name = "Target Player",
+    CurrentPlayer = game.Players.LocalPlayer,
+    Flag = "TargetPlayer",
+    Callback = function(player)
+        print("Target Player:", player.Name)
+    end
+})
+
+local LabelSection = MainTab:CreateSection("Label Elements")
+
+local infoLabel = LabelSection:CreateLabel("Welcome to the UI Showcase!")
+
+local statusLabel = LabelSection:CreateLabel("Status: Ready")
+
+local ParagraphSection = MainTab:CreateSection("Paragraph Elements")
+
+local aboutParagraph = ParagraphSection:CreateParagraph({
+    Title = "About This Script",
+    Content = "This script demonstrates all available UI elements in the Axion UI Library. Each element is fully functional and can be customized."
+})
+
+local DividerSection = MainTab:CreateSection("Divider Elements")
+
+local divider1 = DividerSection:CreateDivider()
+
+local NotificationSection = MainTab:CreateSection("Notification Elements")
+
+local notifySuccessBtn = NotificationSection:CreateButton({
     Name = "Success Notification",
+    Icon = "✅",
     Callback = function()
         Window:Notify({
-            Title = "Success",
-            Content = "This is a success notification",
-            Duration = 4,
+            Title = "Success!",
+            Content = "Operation completed successfully.",
+            Duration = 3,
             Type = "Success"
         })
     end
 })
 
-local notif3 = NotificationSection:CreateButton({
-    Name = "Warning Notification",
-    Callback = function()
-        Window:Notify({
-            Title = "Warning",
-            Content = "This is a warning notification",
-            Duration = 4,
-            Type = "Warning"
-        })
-    end
-})
-
-local notif4 = NotificationSection:CreateButton({
+local notifyErrorBtn = NotificationSection:CreateButton({
     Name = "Error Notification",
+    Icon = "❌",
     Callback = function()
         Window:Notify({
-            Title = "Error",
-            Content = "This is an error notification",
-            Duration = 4,
+            Title = "Error!",
+            Content = "Something went wrong. Please try again.",
+            Duration = 5,
             Type = "Error"
         })
     end
 })
 
-local notif5 = NotificationSection:CreateButton({
-    Name = "Long Notification",
+local notifyWarningBtn = NotificationSection:CreateButton({
+    Name = "Warning Notification",
+    Icon = "⚠️",
     Callback = function()
         Window:Notify({
-            Title = "Long Notification Test",
-            Content = "This is a longer notification to demonstrate how the notification system handles extended text. The notification will automatically adjust its size to fit the content.",
-            Duration = 6,
-            Type = "Info",
-            Buttons = true
-        })
-    end
-})
-
-local notif6 = NotificationSection:CreateButton({
-    Name = "Multiple Notifications",
-    Callback = function()
-        Window:Notify({
-            Title = "Notification 1",
-            Content = "First notification",
-            Duration = 3,
-            Type = "Info"
-        })
-        task.wait(0.5)
-        Window:Notify({
-            Title = "Notification 2",
-            Content = "Second notification",
-            Duration = 3,
-            Type = "Success"
-        })
-        task.wait(0.5)
-        Window:Notify({
-            Title = "Notification 3",
-            Content = "Third notification",
-            Duration = 3,
+            Title = "Warning",
+            Content = "This action may have unintended consequences.",
+            Duration = 4,
             Type = "Warning"
         })
     end
 })
 
-local SettingsSection = SettingsTab:CreateSection("Settings")
-
-local themeDropdown = SettingsSection:CreateDropdown({
-    Name = "Select Theme",
-    Options = {"Default", "Dark", "Light", "Ocean", "Midnight", "Emerald", "Crimson", "Galaxy", "Sunset", "Cyberpunk"},
-    CurrentOption = "Default",
-    Flag = "Theme",
-    Callback = function(value)
-        Window:SetTheme(value)
+local notifyInfoBtn = NotificationSection:CreateButton({
+    Name = "Info Notification",
+    Icon = "ℹ️",
+    Callback = function()
         Window:Notify({
-            Title = "Theme Changed",
-            Content = "Changed to " .. value .. " theme",
+            Title = "Information",
+            Content = "This is an informational message.",
             Duration = 3,
-            Type = "Success"
+            Type = "Info"
         })
     end
 })
 
-local resetButton = SettingsSection:CreateButton({
-    Name = "Reset All Settings",
+local ThemeSection = MainTab:CreateSection("Theme Elements")
+
+local themeDropdown = ThemeSection:CreateDropdown({
+    Name = "UI Theme",
+    Options = {"Default", "Dark", "Light", "Ocean", "Midnight", "Emerald", "Crimson", "Galaxy", "Sunset", "Cyberpunk"},
+    CurrentOption = "Ocean",
+    Flag = "UITheme",
+    Callback = function(value)
+        Window:SetTheme(value)
+    end
+})
+
+local DialogSection = MainTab:CreateSection("Dialog Elements")
+
+local showDialogBtn = DialogSection:CreateButton({
+    Name = "Show Dialog",
+    Icon = "💬",
     Callback = function()
         Window:Dialog({
-            Title = "Reset Settings",
-            Content = "Are you sure you want to reset ALL settings to default?",
+            Title = "Confirmation",
+            Content = "Are you sure you want to proceed with this action?",
             Buttons = {
                 {
-                    Title = "Yes",
-                    Primary = true,
+                    Title = "Confirm",
                     Callback = function()
-                        toggle1:Set(false)
-                        toggle2:Set(false)
-                        toggle3:Set(false)
-                        toggle4:Set(false)
-                        slider1:Set(16)
-                        slider2:Set(50)
-                        slider3:Set(70)
-                        slider4:Set(196)
-                        dropdown1:Set("Sword")
-                        dropdown2:Set("Red")
-                        dropdown3:Set({})
-                        colorpicker1:Set(Color3.fromRGB(255, 0, 0))
-                        colorpicker2:Set(Color3.fromRGB(100, 120, 255))
-                        themeDropdown:Set("Default")
-                        
-                        Window:Notify({
-                            Title = "Settings Reset",
-                            Content = "All settings have been reset to default!",
-                            Duration = 4,
-                            Type = "Success"
-                        })
-                    end
+                        print("Action confirmed!")
+                    end,
+                    Primary = true
                 },
                 {
-                    Title = "No",
+                    Title = "Cancel",
                     Callback = function()
-                        Window:Notify({
-                            Title = "Cancelled",
-                            Content = "Reset cancelled",
-                            Duration = 2,
-                            Type = "Info"
-                        })
+                        print("Action cancelled!")
                     end
                 }
             }
@@ -721,29 +312,52 @@ local resetButton = SettingsSection:CreateButton({
     end
 })
 
-local destroyButton = SettingsSection:CreateButton({
+local ResetSection = MainTab:CreateSection("Reset Elements")
+
+local resetBtn = ResetSection:CreateButton({
+    Name = "Reset All Settings",
+    Icon = "🔄",
+    Callback = function()
+        simpleToggle:Set(false)
+        advancedToggle:Set(true)
+        volumeSlider:Set(75)
+        speedSlider:Set(16)
+        usernameInput:Set("")
+        messageInput:Set("")
+        qualityDropdown:Set("Medium")
+        modeDropdown:Set("Normal")
+        multiDropdown:Set({})
+        primaryColor:Set(Color3.fromRGB(100, 120, 255))
+        secondaryColor:Set(Color3.fromRGB(255, 100, 100))
+        menuKeybind:Set("RightShift")
+        flyKeybind:Set("F")
+        targetPlayer:Set(game.Players.LocalPlayer)
+        themeDropdown:Set("Ocean")
+        print("All settings have been reset!")
+    end
+})
+
+local DestroySection = MainTab:CreateSection("Destroy Elements")
+
+local destroyBtn = DestroySection:CreateButton({
     Name = "Destroy UI",
+    Icon = "🗑️",
     Callback = function()
         Window:Dialog({
             Title = "Destroy UI",
-            Content = "Are you sure you want to destroy the interface?",
+            Content = "Are you sure you want to destroy the UI? This action cannot be undone.",
             Buttons = {
                 {
-                    Title = "Yes",
-                    Primary = true,
+                    Title = "Yes, Destroy",
                     Callback = function()
                         Window:Destroy()
-                    end
+                    end,
+                    Primary = true
                 },
                 {
-                    Title = "No",
+                    Title = "Cancel",
                     Callback = function()
-                        Window:Notify({
-                            Title = "Cancelled",
-                            Content = "UI destruction cancelled",
-                            Duration = 2,
-                            Type = "Info"
-                        })
+                        print("UI destruction cancelled.")
                     end
                 }
             }
@@ -751,8 +365,9 @@ local destroyButton = SettingsSection:CreateButton({
     end
 })
 
-local InfoSection = SettingsTab:CreateSection("Information")
-
-local authorLabel = InfoSection:CreateLabel("Made with Axion UI Library")
-local versionLabel = InfoSection:CreateLabel("Version: 1.0")
-local playerLabel = InfoSection:CreateLabel("Player: " .. game.Players.LocalPlayer.Name)
+Window:Notify({
+    Title = "Welcome to Axion UI Demo",
+    Content = "This script showcases all UI elements.\nPress RightShift to toggle the UI.",
+    Duration = 5,
+    Type = "Info"
+})
